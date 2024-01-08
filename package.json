@@ -1,0 +1,43 @@
+{
+  "name": "scuffed_tcg",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "",
+  "scripts": {
+    "start": "npm run server",
+		"docker-start": "npm run build && npm run server",
+		"husky": "husky install",
+		"clean": "rm -rf client/dist && rm -rf server/dist",
+		"build": "npm run client:build && npm run server:build",
+
+		"server": "node server/dist/index.js",
+		"server:build": "npm run server:tsc && node esbuild.js",
+		"server:dev": "tsx watch --tsconfig server/tsconfig.json server/src",
+		"server:tsc": "tsc --p server/tsconfig.json",
+		
+		"client:build": "npm run client:tsc && vite build client/",
+		"client:tsc": "tsc --p client/",
+		"client:dev": "vite client/",
+		"client:preview": "vite preview --port 3002 client/"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "terser": "^5.26.0",
+    "tsc": "^2.0.4",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
+    "sass": "^1.69.7",
+    "tsx": "^4.7.0"
+  }
+}
