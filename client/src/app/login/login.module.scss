@@ -1,0 +1,42 @@
+.container {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-content: flex-start center;
+	padding-top: 10vh;
+	gap: 1vh;
+	margin-inline: auto;
+	grid-template-areas: 'username username' 'password password' 'login signup';
+}
+
+.navItem {
+	display: grid;
+}
+
+#textInput {
+	height: 30px;
+	margin: 5px;
+	padding-left: 2px;
+}
+
+#username {
+	@extend .navItem;
+	@extend #textInput;
+	grid-area: username;
+}
+
+#password {
+	@extend .navItem;
+	@extend #textInput;
+	grid-area: password;
+}
+
+#login {
+	@extend .navItem;
+	grid-area: login;
+}
+
+#signup {
+	@extend .navItem;
+	grid-area: signup;
+}

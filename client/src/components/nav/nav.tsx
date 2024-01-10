@@ -8,7 +8,6 @@ type ItemProps = {
 }
 
 function NavItem({element, hoveredItem, setHoveredItem}: ItemProps) {
-
 	return (
 		<li
 			className={hoveredItem !== element ? css.navButton : css.navButtonHovered}

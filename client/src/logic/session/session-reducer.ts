@@ -1,18 +1,27 @@
-import { UnknownAction } from "redux"
+import {UnknownAction} from 'redux'
 
 type SessionState = {
-
+	username: string,
+	secret: string
 }
 
 const defaultState: SessionState = {
-    
+	username: '',
+	secret: ''
 }
 
 const sessionReducer = (state = defaultState, action: UnknownAction): SessionState => {
+	if (!action.payload) return {...state}
 	switch (action.type) {
-        default:
-            return state
-    }
+		case 'LOGIN':
+			return {
+				...state,
+				...action.payload,
+			}
+		case 'SIGNUP':
+		default:
+			return state
+	}
 }
 
 export default sessionReducer
