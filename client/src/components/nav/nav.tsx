@@ -1,15 +1,49 @@
-import { useState } from 'react';
-import css from './nav.module.css'
+import {useState} from 'react'
+import css from './nav.module.scss'
 
-
-type Props = {
-    elements: Array<string>
+type ItemProps = {
+	element: string
+	hoveredItem: string
+	setHoveredItem: (element: string) => void
 }
 
-export default function NavBar({elements}: Props) {
-    const [isShown, setIsShown] = useState(false);
+function NavItem({element, hoveredItem, setHoveredItem}: ItemProps) {
+	return (
+		<li
+			className={hoveredItem !== element ? css.navButton : css.navButtonHovered}
+			onMouseEnter={() => setHoveredItem(element)}
+			onMouseLeave={() => setHoveredItem('')}
+			onMouseUp={() => {}}
+		>
+			{element}
+		</li>
+	)
+}
 
-    return (
-        <ul onMouseEnter={() => setIsShown(true)} onMouseLeave={() => setIsShown(false)} style={{"width": isShown ? "20%" : "5%"}} className={css.navList}>{elements.map((element) => <li className={css.navItem}>{element}</li>)}</ul>
-    )
+type Props = {
+	default_elements: Array<string>
+	unauthorised: Array<string>
+	authorised: Array<string>
+}
+
+export default function NavBar({
+	default_elements: defaultElements,
+	unauthorised,
+	authorised,
+}: Props) {
+	const [isHovered, setListHovered] = useState(false)
+	const [hoveredItem, setHoveredItem] = useState('')
+
+	return (
+		<ul
+			onMouseEnter={() => setListHovered(true)}
+			onMouseLeave={() => setListHovered(false)}
+			style={{width: isHovered ? '20%' : '5%'}}
+			className={css.navList}
+		>
+			{defaultElements.map((element) => (
+				<NavItem element={element} hoveredItem={hoveredItem} setHoveredItem={setHoveredItem} />
+			))}
+		</ul>
+	)
 }
