@@ -1,4 +1,4 @@
-import {Middleware, Tuple, configureStore} from '@reduxjs/toolkit'
+import {Tuple, configureStore} from '@reduxjs/toolkit'
 import createSagaMiddleware from 'redux-saga'
 import sessionReducer from 'logic/session/session-reducer'
 import rootSaga from './root-saga'
