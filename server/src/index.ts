@@ -4,6 +4,8 @@ import {fileURLToPath} from 'url'
 import {createServer} from 'http'
 import cors from 'cors'
 import {CONFIG} from '../../common/config'
+import {createTables} from 'db/db'
+import startSocketIO from 'sockets'
 
 const port = process.env.PORT || CONFIG.port || 9000
 
@@ -16,6 +18,12 @@ const server = createServer(app)
 
 app.use(express.json())
 app.use(cors({origin: CONFIG.cors}))
+
+// Database
+createTables()
+
+// Sockets
+startSocketIO(server)
 
 app.use(
 	express.static(path.join(__dirname, '../..', CONFIG.clientPath), {
