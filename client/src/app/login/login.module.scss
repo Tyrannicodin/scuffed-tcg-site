@@ -6,11 +6,12 @@
 	padding-top: 10vh;
 	gap: 1vh;
 	margin-inline: auto;
-	grid-template-areas: 'username username' 'password password' 'login signup';
+	grid-template-areas: 'username username' 'email email' 'password password' 'login signup' 'message message';
 }
 
 .navItem {
 	display: grid;
+	text-align: center;
 }
 
 #textInput {
@@ -23,6 +24,12 @@
 	@extend .navItem;
 	@extend #textInput;
 	grid-area: username;
+}
+
+#email {
+	@extend .navItem;
+	@extend #textInput;
+	grid-area: email;
 }
 
 #password {
@@ -39,4 +46,9 @@
 #signup {
 	@extend .navItem;
 	grid-area: signup;
+}
+
+#message {
+	@extend .navItem;
+	grid-area: message;
 }

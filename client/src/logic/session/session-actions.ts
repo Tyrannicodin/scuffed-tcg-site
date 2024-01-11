@@ -11,10 +11,10 @@ export const auth_fail = (message?: string) => ({
 })
 
 export const onboarding = () => ({
-	type: 'ONBOARDING'
+	type: 'ONBOARDING',
 })
 
-export const connect = (userInfo:userInfoT) => ({
+export const connect = (userInfo: userInfoT) => ({
 	type: 'CONNECTED',
-	payload: userInfo
+	payload: userInfo,
 })
