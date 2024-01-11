@@ -117,3 +117,21 @@ export const selectUserUUID = async (username: string, hash: string): Promise<Uu
 	}
 	return null
 }
+
+export const selectUserRowFromUuid = async (uuid: Uuid): Promise<Record<string, any> | null> => {
+	try {
+		const result = await pool.query(
+			sql`
+                SELECT uuid,username,tokens,picture,is_admin FROM users WHERE uuid = $1;
+            `,
+			[uuid]
+		)
+
+		if (result.rowCount && result.rowCount > 0) {
+			return result.rows[0]
+		}
+	} catch (err) {
+		console.log(err)
+	}
+	return null
+}
