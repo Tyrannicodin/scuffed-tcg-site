@@ -1,29 +1,55 @@
 import {createUser, selectUserUUID} from 'db/db'
-import {takeEvery} from 'typed-redux-saga'
+import { takeEvery } from 'typed-redux-saga'
+import {v4 as uuidv4} from 'uuid'
+
+const isValidName = (name: string) => {
+	if (name.length < 1) return false
+	if (name.length > 25) return false
+	return true
+}
+
+const isValidPassword = (name:string) => {
+	return true
+}
 
 async function loginSaga(action: any) {
 	const {username, password} = action.payload.payload
+	const {socket} = action
 
 	const uuid = await selectUserUUID(username, password)
-	console.log(uuid)
+	console.log(`Login: ${uuid}`)
 	if (uuid === null) {
 		// Do code when login doesn't work here
+		socket.emit('FAIL_LOGIN', {
+			type: 'FAIL_LOGIN',
+			payload: {
+				message: 'Invalid username or password'
+			}
+		})
 		return
 	}
+	
+	const userSecret = uuidv4()
 
-	// socket.emit('ONBOARDING', null)
+	socket.emit('LOGGED_IN', {
+		type: 'LOGGED_IN',
+		payload: {
+			username,
+			userSecret
+		}
+	})
 }
 
 async function signUpSaga(action: any) {
 	const {username, password, email} = action.payload.payload
+	const {socket} = action
 
 	console.log(await createUser(username, email, password))
 	console.log(await selectUserUUID(username, password))
 
-	// socket.emit('LOGGED_IN', {
-	// 	type: 'LOGGED_IN',
-	// 	payload: true,
-	// })
+	socket.emit('ONBOARDING', {
+		type: 'ONBOARDING'
+	})
 }
 
 export function* entrySaga() {

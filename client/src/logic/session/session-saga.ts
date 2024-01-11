@@ -42,11 +42,11 @@ export function* loginSaga() {
 	})
 
 	if (login) {
-		yield put(connect(login))
+		yield put(connect(login.payload))
 	} else if (onboard) {
 		yield put(onboarding())
 	} else if (login_fail || signup_fail) {
-		yield put(disconnect((login_fail || signup_fail).message))
+		yield put(disconnect((login_fail || signup_fail).payload.message))
 	} else if (timeout) {
 		yield put(disconnect('Connection timed out'))
 	}
