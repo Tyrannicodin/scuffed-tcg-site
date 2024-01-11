@@ -38,6 +38,3 @@ app.get('/', (req, res) => {
 server.listen(port, () => {
 	console.log(`Server listening on port ${port}`)
 })
-
-console.log(await createUser('user_3', 'email', 'password'))
-console.log(await selectUserUUID('user_3', 'password'))
