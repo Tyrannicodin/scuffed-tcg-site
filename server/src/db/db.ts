@@ -1,5 +1,5 @@
 import pg from 'pg'
-import {signupResultT, UuidT} from '../../../common/types/user'
+import {signupResultT, Uuid} from '../../../common/types/user'
 
 const {Pool} = pg
 
@@ -74,9 +74,9 @@ export const createUser = async (
 			[username, email]
 		)
 
-		if (unique_check.rows[0].username) {
+		if (unique_check.rows.length > 0 && unique_check.rows[0].username) {
 			return 'username_taken'
-		} else if (unique_check.rows[0].email) {
+		} else if (unique_check.rows.length > 0 && unique_check.rows[0].email) {
 			return 'email_taken'
 		}
 
@@ -100,7 +100,7 @@ export const createUser = async (
 	}
 }
 
-export const selectUserUUID = async (username: string, hash: string): Promise<UuidT> => {
+export const selectUserUUID = async (username: string, hash: string): Promise<Uuid | null> => {
 	try {
 		const uuid = await pool.query(
 			sql`
