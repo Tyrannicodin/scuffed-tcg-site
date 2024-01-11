@@ -4,7 +4,7 @@ import {fileURLToPath} from 'url'
 import {createServer} from 'http'
 import cors from 'cors'
 import {CONFIG} from '../../common/config'
-import {createTables} from 'db/db'
+import {createTables, createUser, selectUserUUID} from 'db/db'
 import startSocketIO from 'sockets'
 
 const port = process.env.PORT || CONFIG.port || 9000
@@ -38,3 +38,6 @@ app.get('/', (req, res) => {
 server.listen(port, () => {
 	console.log(`Server listening on port ${port}`)
 })
+
+console.log(await createUser('user_3', 'email', 'password'))
+console.log(await selectUserUUID('user_3', 'password'))

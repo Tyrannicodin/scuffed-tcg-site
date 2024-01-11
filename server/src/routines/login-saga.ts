@@ -1,17 +1,16 @@
+import {createUser} from 'db/db'
 import {takeEvery} from 'typed-redux-saga'
 
-function signInSaga(action: any) {
+function loginSaga(action: any) {
 	const {username, password, socket} = action.payload
 
 	socket.emit('ONBOARDING', null)
 }
 
 function signUpSaga(action: any) {
-	const {username, password, email, socket} = action.payload`
-	INSERT INTO users (hash) VALUES (
-		crypt($1, gen_salt('bf'))
-	);
-	`
+	const {username, password, email, socket} = action.payload
+
+	createUser(password, username, email)
 
 	socket.emit('LOGGED_IN', {
 		type: 'LOGGED_IN',
@@ -19,7 +18,7 @@ function signUpSaga(action: any) {
 	})
 }
 
-export function* loginSaga() {
-	yield* takeEvery('LOGIN', signInSaga)
+export function* entrySaga() {
+	yield* takeEvery('LOGIN', loginSaga)
 	yield* takeEvery('SIGN_UP', signUpSaga)
 }
