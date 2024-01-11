@@ -44,8 +44,16 @@ async function signUpSaga(action: any) {
 	const {username, password, email} = action.payload.payload
 	const {socket} = action
 
-	console.log(await createUser(username, email, password))
-	console.log(await selectUserUUID(username, password))
+	const result = await createUser(username, email, password)
+	if (result !== 'success') {
+		socket.emit('FAIL_SIGNUP', {
+			type: 'FAIL_SIGNUP',
+			payload: {
+				message: `Signup failed: ${result.replaceAll('_', ' ')}`
+			}
+		})
+		return
+	}
 
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING'
