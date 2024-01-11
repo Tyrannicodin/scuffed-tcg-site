@@ -74,9 +74,9 @@ export const createUser = async (
 			[username, email]
 		)
 
-		if (unique_check.rows[0].username) {
+		if (unique_check.rows.length > 0 && unique_check.rows[0].username) {
 			return 'username_taken'
-		} else if (unique_check.rows[0].email) {
+		} else if (unique_check.rows.length > 0 && unique_check.rows[0].email) {
 			return 'email_taken'
 		}
 
