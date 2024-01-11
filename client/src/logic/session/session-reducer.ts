@@ -15,7 +15,7 @@ const defaultState: SessionState = {
 	email: '',
 	userSecret: '',
 	errorMessage: '',
-	awaiting_code: false
+	awaiting_code: false,
 }
 
 const sessionReducer = (state = defaultState, action: UnknownAction): SessionState => {
@@ -34,19 +34,19 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 				username: '',
 				userSecret: '',
 				password: '',
-				errorMessage: action.payload as string
+				errorMessage: action.payload as string,
 			}
 		case 'ONBOARDING':
 			return {
 				...state,
 				password: '',
-				awaiting_code: true
+				awaiting_code: true,
 			}
 		case 'CONNECTED':
 			return {
 				...state,
 				password: '',
-				...action.payload
+				...action.payload,
 			}
 		default:
 			return state
