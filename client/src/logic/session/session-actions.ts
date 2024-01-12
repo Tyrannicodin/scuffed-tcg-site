@@ -10,8 +10,9 @@ export const auth_fail = (message?: string) => ({
 	payload: message,
 })
 
-export const onboarding = () => ({
+export const onboarding = (userInfo: userInfoT) => ({
 	type: 'ONBOARDING',
+	payload: userInfo
 })
 
 export const connect = (userInfo: userInfoT) => ({

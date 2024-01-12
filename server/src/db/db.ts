@@ -75,9 +75,9 @@ export const createUser = async (
 		)
 
 		if (unique_check.rows.length > 0 && unique_check.rows[0].username === username) {
-			return 'username_taken'
+			return {result: 'username_taken'}
 		} else if (unique_check.rows.length > 0 && unique_check.rows[0].email === email) {
-			return 'email_taken'
+			return {result: 'email_taken'}
 		}
 
 		const result = await pool.query(
@@ -93,10 +93,10 @@ export const createUser = async (
 			[hash, username, email]
 		)
 
-		return 'success'
+		return {result: 'success'}
 	} catch (err) {
 		console.log(err)
-		return 'failure'
+		return {result: 'failure'}
 	}
 }
 
@@ -116,4 +116,8 @@ export const selectUserUUID = async (username: string, hash: string): Promise<Uu
 		console.log(err)
 	}
 	return null
+}
+
+export const deleteUser = async (username:string): Promise<signupResultT> => {
+    return {result: 'success'}
 }
