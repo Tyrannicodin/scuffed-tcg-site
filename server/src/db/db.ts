@@ -119,5 +119,15 @@ export const selectUserUUID = async (username: string, hash: string): Promise<Uu
 }
 
 export const deleteUser = async (username: string): Promise<signupResultT> => {
-	return {result: 'success'}
+	try {
+		await pool.query(
+			sql`
+                DELETE FROM users WHERE username = $1;
+            `,
+			[username]
+		)
+		return {result: 'success'}
+	} catch (err) {
+		return {result: 'failure'}
+	}
 }
