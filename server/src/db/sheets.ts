@@ -83,6 +83,30 @@ function getItemTypeArray(name: string, rarity: string, costCell: string, isSeco
 	return output
 }
 
+export function generateItemCards(types: Set<string>) {
+	const itemCardMap: Record<string, any> = {
+		names: [],
+		rarities: [],
+		expansions: [],
+		updates: [],
+		types: [],
+		subtypes: [],
+		tokens: [],
+	}
+
+	types.forEach((type) => {
+		itemCardMap.names.push(`${type} x2`)
+		itemCardMap.rarities.push('Rare')
+		itemCardMap.expansions.push('Hermitcraft')
+		itemCardMap.updates.push(0)
+		itemCardMap.types.push('item')
+		itemCardMap.subtypes.push(type)
+		itemCardMap.tokens.push(2)
+	})
+
+	return itemCardMap
+}
+
 async function getCards(auth: any) {
 	const sheets = google.sheets({version: 'v4', auth})
 	const res = await sheets.spreadsheets.get({
@@ -201,6 +225,7 @@ async function getCards(auth: any) {
 	return {
 		hermitCards: hermitCardMap,
 		effectCards: effectCardMap,
+		itemCards: generateItemCards(new Set(hermitCardMap.subtypes)),
 	}
 }
 

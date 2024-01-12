@@ -20,7 +20,11 @@ export const createTables = async () => {
 	try {
 		pool.query(sql`
              --Dropping ability_cost is a bandaid, will fix properly later
+			ALTER TABLE IF EXISTS libraries DROP CONSTRAINT card_constr;
             DROP TABLE IF EXISTS  ability_cost;
+			DROP TABLE IF EXISTS  hermit_cards;
+			DROP TABLE IF EXISTS  effect_cards;
+			DROP TABLE IF EXISTS  cards;
             
             CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
             CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -75,9 +79,10 @@ export const createTables = async () => {
                 user_id uuid REFERENCES users(user_id),
                 card_name varchar(255),
                 rarity varchar(255),
-                copies integer NOT NULL,
-                FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
+                copies integer NOT NULL
+                --CONSTRAINT card_constr FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
             );
+			ALTER TABLE libraries ADD CONSTRAINT card_constr FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity);
         `)
 	} catch (err) {
 		console.log(err)
@@ -163,7 +168,8 @@ export const addCardsToDatabase = async () => {
 	const cards = await grabCardsFromGoogleSheets()
 	const effectCards = cards?.effectCards
 	const hermitCards = cards?.hermitCards
-	if (!effectCards || !hermitCards) return
+	const itemCards = cards?.itemCards
+	if (!effectCards || !hermitCards || !itemCards) return
 
 	try {
 		// Insert cards to main sheet
@@ -180,13 +186,13 @@ export const addCardsToDatabase = async () => {
                 );
             `,
 			[
-				[...hermitCards.names, ...effectCards.names],
-				[...hermitCards.rarities, ...effectCards.rarities],
-				[...hermitCards.expansions, ...effectCards.expansions],
-				[...hermitCards.updates, ...effectCards.updates],
-				[...hermitCards.types, ...effectCards.types],
-				[...hermitCards.subtypes, ...effectCards.subtypes],
-				[...hermitCards.tokens, ...effectCards.tokens],
+				[...hermitCards.names, ...effectCards.names, ...itemCards.names],
+				[...hermitCards.rarities, ...effectCards.rarities, ...itemCards.rarities],
+				[...hermitCards.expansions, ...effectCards.expansions, ...itemCards.expansions],
+				[...hermitCards.updates, ...effectCards.updates, ...itemCards.updates],
+				[...hermitCards.types, ...effectCards.types, ...itemCards.types],
+				[...hermitCards.subtypes, ...effectCards.subtypes, ...itemCards.subtypes],
+				[...hermitCards.tokens, ...effectCards.tokens, ...itemCards.tokens],
 			]
 		)
 

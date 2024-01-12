@@ -16,12 +16,15 @@ const __dirname = path.dirname(__filename)
 
 const server = createServer(app)
 
+process.argv.forEach(function (val) {
+	if (val === 'buildDatabase') {
+		createTables()
+		addCardsToDatabase()
+	}
+})
+
 app.use(express.json())
 app.use(cors({origin: CONFIG.cors}))
-
-// Database
-createTables()
-addCardsToDatabase()
 
 // Sockets
 startSocketIO(server)
