@@ -41,6 +41,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 				...state,
 				password: '',
 				awaiting_code: true,
+				...action.payload,
 			}
 		case 'CONNECTED':
 			return {
@@ -48,6 +49,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 				password: '',
 				...action.payload,
 			}
+		case 'CODE_SUBMIT':
 		default:
 			return state
 	}

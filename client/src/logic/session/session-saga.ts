@@ -1,7 +1,19 @@
 import {receiveMsg} from 'logic/socket/socket-saga'
 import {call, delay, put, race, take} from 'redux-saga/effects'
 import socket from 'socket'
-import {auth_fail, connect, disconnect, onboarding} from './session-actions'
+import {connect, disconnect, onboarding} from './session-actions'
+import store from 'store'
+import { getUserSecret } from './session-selectors'
+
+function* verifySaga() {
+	socket.emit('VERIFY', {
+		type: 'VERIFY',
+		payload: {
+			code: '',
+			userSecret: getUserSecret(store.getState())
+		}
+	})
+}
 
 export function* loginSaga() {
 	const {login: clientLogin, signup: clientSignup} = yield race({
@@ -44,7 +56,8 @@ export function* loginSaga() {
 	if (login) {
 		yield put(connect(login.payload))
 	} else if (onboard) {
-		yield put(onboarding())
+		yield put(onboarding(onboard.payload))
+		yield call(verifySaga)
 	} else if (login_fail || signup_fail) {
 		yield put(disconnect((login_fail || signup_fail).payload.message))
 	} else if (timeout) {

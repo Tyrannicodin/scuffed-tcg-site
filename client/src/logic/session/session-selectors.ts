@@ -7,3 +7,7 @@ export const getSession = (state: RootState) => {
 export const getMessage = (state: RootState): string => {
 	return getSession(state).errorMessage
 }
+
+export const getUserSecret = (state: RootState): string => {
+	return getSession(state).userSecret
+}

@@ -97,10 +97,10 @@ export const createUser = async (
 			[username, email]
 		)
 
-		if (unique_check.rows.length > 0 && unique_check.rows[0].username) {
-			return 'username_taken'
-		} else if (unique_check.rows.length > 0 && unique_check.rows[0].email) {
-			return 'email_taken'
+		if (unique_check.rows.length > 0 && unique_check.rows[0].username === username) {
+			return {result: 'username_taken'}
+		} else if (unique_check.rows.length > 0 && unique_check.rows[0].email === email) {
+			return {result: 'email_taken'}
 		}
 
 		const result = await pool.query(
@@ -116,10 +116,10 @@ export const createUser = async (
 			[hash, username, email]
 		)
 
-		return 'success'
+		return {result: 'success'}
 	} catch (err) {
 		console.log(err)
-		return 'failure'
+		return {result: 'failure'}
 	}
 }
 
@@ -249,4 +249,8 @@ export const addCardsToDatabase = async () => {
 		console.log(err)
 	}
 	return null
+}
+
+export const deleteUser = async (username: string): Promise<signupResultT> => {
+	return {result: 'success'}
 }
