@@ -118,6 +118,6 @@ export const selectUserUUID = async (username: string, hash: string): Promise<Uu
 	return null
 }
 
-export const deleteUser = async (username:string): Promise<signupResultT> => {
-    return {result: 'success'}
+export const deleteUser = async (username: string): Promise<signupResultT> => {
+	return {result: 'success'}
 }
