@@ -5,7 +5,7 @@ import {authenticate} from '@google-cloud/local-auth'
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 const TOKEN_PATH = path.join(process.cwd(), 'server/token.json')
-const CREDENTIALS_PATH = path.join(process.cwd(), 'server/credentials.json')
+const CREDENTIALS_PATH = path.join(process.cwd(), 'server/.credentials.json')
 
 function loadSavedCredentialsIfExist(): any | null {
 	try {
