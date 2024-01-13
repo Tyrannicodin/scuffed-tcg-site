@@ -20,7 +20,7 @@ type Props = {
 export function CardInfo({card}: Props) {
     const getType = (card: Card) => {
         if (card.type === 'effect') {
-            return (card as EffectCard).single_use ? 'Single use': 'Attach'
+            return (card as EffectCard).category === 'Attachable' ? 'Attach': (card as EffectCard).category
         } else if (card.type === 'hermit') {
             return (card as HermitCard).hermitType
         }

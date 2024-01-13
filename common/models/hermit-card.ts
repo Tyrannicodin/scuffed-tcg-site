@@ -1,4 +1,4 @@
-import {HermitAttackType, ExpansionT, HermitTypeT, rarityT, HermitTypeT} from '../types/cards'
+import {HermitAttackType, ExpansionT, HermitTypeT, rarityT} from '../types/cards'
 import {Card} from './card'
 
 type HermitDefs = {
