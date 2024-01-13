@@ -7,6 +7,7 @@ type SessionState = {
 	userSecret: string
 	errorMessage: string
 	awaiting_code: boolean
+	otpCode: string
 }
 
 const defaultState: SessionState = {
@@ -15,25 +16,34 @@ const defaultState: SessionState = {
 	email: '',
 	userSecret: '',
 	errorMessage: '',
+	otpCode: '',
 	awaiting_code: false,
 }
 
 const sessionReducer = (state = defaultState, action: UnknownAction): SessionState => {
-	if (!action.payload) return {...state}
+	if (!action.payload) return state
 	switch (action.type) {
 		case 'LOGIN':
 		case 'SIGNUP':
+		case 'CODE_SUBMIT':
 			return {
 				...state,
 				...action.payload,
 			}
 		case 'DISCONNECT':
-		case 'AUTH_FAIL':
 			return {
 				...state,
 				username: '',
-				userSecret: '',
 				password: '',
+				email: '',
+				userSecret: '',
+				otpCode: '',
+				awaiting_code: false,
+				errorMessage: action.payload as string,
+			}
+		case 'SET_MESSAGE':
+			return {
+				...state,
 				errorMessage: action.payload as string,
 			}
 		case 'ONBOARDING':
@@ -49,7 +59,6 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 				password: '',
 				...action.payload,
 			}
-		case 'CODE_SUBMIT':
 		default:
 			return state
 	}

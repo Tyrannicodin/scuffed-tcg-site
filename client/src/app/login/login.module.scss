@@ -52,3 +52,12 @@
 	@extend .navItem;
 	grid-area: message;
 }
+
+.flexAlign {
+	display: flex;
+	justify-content: center;
+	align-content: center;
+	flex-direction: column;
+	flex-wrap: wrap;
+	text-align: center;
+}

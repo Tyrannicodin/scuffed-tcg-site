@@ -1,18 +1,47 @@
 import {receiveMsg} from 'logic/socket/socket-saga'
 import {call, delay, put, race, take} from 'redux-saga/effects'
 import socket from 'socket'
-import {connect, disconnect, onboarding} from './session-actions'
+import {connect, disconnect, onboarding, setMsg} from './session-actions'
 import store from 'store'
-import { getUserSecret } from './session-selectors'
+import {getOTPCode, getUserSecret} from './session-selectors'
 
 function* verifySaga() {
-	socket.emit('VERIFY', {
-		type: 'VERIFY',
-		payload: {
-			code: '',
-			userSecret: getUserSecret(store.getState())
+	while (true) {
+		const {failure} = yield race({
+			code: take('CODE_SUBMIT'),
+			failure: call(receiveMsg, 'AUTH_FAIL'),
+		})
+		if (failure) {
+			yield put(disconnect('Signup failure: One time password timed out'))
+			return
 		}
-	})
+
+		const state = store.getState()
+
+		socket.emit('VERIFY', {
+			type: 'VERIFY',
+			payload: {
+				code: getOTPCode(state),
+				userSecret: getUserSecret(state),
+			},
+		})
+
+		const {login, failOnSend} = yield race({
+			login: call(receiveMsg, 'LOGGED_IN'),
+			failOnSend: call(receiveMsg, 'AUTH_FAIL'), //Low chance happening then, but possible
+			timeout: delay(2500), //2.5s
+		})
+
+		if (login) {
+			yield put(connect(login.payload))
+		} else if (failOnSend) {
+			yield put(disconnect('Signup failure: One time password timed out'))
+		} else {
+			yield put(setMsg('Incorrect one time password, please double check it'))
+			continue
+		}
+		return
+	}
 }
 
 export function* loginSaga() {

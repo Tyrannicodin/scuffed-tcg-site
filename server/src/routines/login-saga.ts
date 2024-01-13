@@ -1,7 +1,7 @@
 import {createUser, deleteUser, selectUserUUID} from 'db/db'
-import { call, delay, race, take, takeEvery } from 'typed-redux-saga'
+import {call, delay, race, take, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
-import { Action } from 'redux'
+import {Action} from 'redux'
 
 const isValidName = (name: string) => {
 	if (name.length < 1) return false
@@ -9,7 +9,7 @@ const isValidName = (name: string) => {
 	return true
 }
 
-const isValidPassword = (name:string) => {
+const isValidPassword = (name: string) => {
 	return true
 }
 
@@ -24,20 +24,20 @@ async function loginSaga(action: any) {
 		socket.emit('FAIL_LOGIN', {
 			type: 'FAIL_LOGIN',
 			payload: {
-				message: 'Login failed: Invalid username or password'
-			}
+				message: 'Login failed: Invalid username or password',
+			},
 		})
 		return
 	}
-	
+
 	const userSecret = uuidv4()
 
 	socket.emit('LOGGED_IN', {
 		type: 'LOGGED_IN',
 		payload: {
 			username,
-			userSecret
-		}
+			userSecret,
+		},
 	})
 }
 
@@ -49,8 +49,8 @@ function* signUpSaga(action: any) {
 		socket.emit('FAIL_SIGNUP', {
 			type: 'FAIL_SIGNUP',
 			payload: {
-				message: 'Signup failed: Invalid username or password'
-			}
+				message: 'Signup failed: Invalid username or password',
+			},
 		})
 		return
 	}
@@ -60,8 +60,8 @@ function* signUpSaga(action: any) {
 		socket.emit('FAIL_SIGNUP', {
 			type: 'FAIL_SIGNUP',
 			payload: {
-				message: `Signup failed: ${result.replaceAll('_', ' ')}`
-			}
+				message: `Signup failed: ${result.replaceAll('_', ' ')}`,
+			},
 		})
 		return
 	}
@@ -72,40 +72,40 @@ function* signUpSaga(action: any) {
 		type: 'ONBOARDING',
 		payload: {
 			username,
-			userSecret
-		}
+			userSecret,
+		},
 	})
 
-	const verifyMessage = () => new Promise<Action>((resolve) => {
-		const listener = (message: Action) => {
-			resolve(message)
-		}
-		socket.once('VERIFY', listener)
-	})
+	const verifyMessage = () =>
+		new Promise<Action>((resolve) => {
+			const listener = (message: Action) => {
+				resolve(message)
+			}
+			socket.once('VERIFY', listener)
+		})
 
 	var code = Math.floor(Math.random() * 10000000).toString(16)
 	while (code.length < 6) {
 		code = '0' + code
-	} 
+	}
 	console.log(code)
 
-	var inputCode = 'w'
-	while (code !== inputCode) {
-		if (inputCode === '') break
+	const endTime = Date.now() + 5 * 60 * 1000
+	var inputCode = ''
+	while (code !== inputCode) { //@FIXME remove second part to enable OTP check
 		const {verify, timeout} = yield race({
 			verify: verifyMessage(),
-			timeout: delay(5*60*1000) //5 minutes
+			timeout: delay(endTime - Date.now()), //5 minutes
 		})
-		console.log(verify)
 		if (verify && verify.payload.userSecret === userSecret) {
 			inputCode = verify.payload.code
 		} else if (timeout) {
-			yield call(deleteUser, username)
+			 yield call(deleteUser, username)
 			socket.emit('AUTH_FAIL', {
 				type: 'AUTH_FAIL',
 				payload: {
-					message: 'Signup failed: OTP timed out'
-				}
+					message: 'Signup failed: OTP timed out',
+				},
 			})
 			return
 		}
@@ -115,8 +115,8 @@ function* signUpSaga(action: any) {
 		type: 'LOGGED_IN',
 		payload: {
 			username,
-			userSecret
-		}
+			userSecret,
+		},
 	})
 }
 
