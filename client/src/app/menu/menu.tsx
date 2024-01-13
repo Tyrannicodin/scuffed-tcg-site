@@ -1,10 +1,9 @@
 import CardInfo from "components/card";
+import { Card } from "common/models/card";
 import css from './menu.module.scss'
+import { CardList } from "components/card-list/card-list";
 
 export function MainMenu() {
-    return <div className={css.outerContainer}>
-        <ul className={css.cardList}>
-            <CardInfo name="Tyrannicodin" rarity={'Common'}/>
-        </ul>
-    </div>
+    const cards: Card[] = []
+    return <CardList>{cards}</CardList>
 }

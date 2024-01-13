@@ -2,13 +2,23 @@ $bg: rgb(3, 2, 40);
 
 .outer {
     width: 100%;
-    height: 10vh;
     background-color: $bg;
-    padding-left: 1vh;
+    padding: 1vh;
 
     border-radius: 1vh;
     border: 0.75vh solid lighten($bg, 10);
 
     color:whitesmoke;
+}
+
+.cardName {
     text-decoration: underline;
+}
+
+.pack {
+    color: darken(whitesmoke, 30);
+}
+
+.description {
+    color: purple;
 }
