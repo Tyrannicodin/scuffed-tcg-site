@@ -6,6 +6,8 @@ export type HermitAttackType = {
 }
 export type rarityT = 'Common' | 'Rare' | 'Ultra rare' | 'Mythic'
 
+export type EffectTypeT = 'Attachable' | 'Single Use' | 'Biome'
+
 export type ExpansionT = {
 	name: string
 	color: string
