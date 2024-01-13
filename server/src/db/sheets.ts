@@ -179,7 +179,7 @@ async function getCards(auth: any) {
 		colors: [],
 	}
 
-	hermits.map((row) => {
+	hermits.map((row: any) => {
 		const values = row.values
 		if (!values) return
 		if (
@@ -238,7 +238,7 @@ async function getCards(auth: any) {
 		hermitCardCosts.map((row) => row[colIndex])
 	)
 
-	effects.map((row) => {
+	effects.map((row: any) => {
 		const values = row.values
 		if (!values) return
 		if (!values[0].formattedValue) return

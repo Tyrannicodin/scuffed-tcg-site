@@ -1,4 +1,4 @@
-import {User} from '../../../common/classes/user.ts'
+import {User} from '../../../common/models/user.ts'
 import {Uuid} from '../../../common/types/user.ts'
 import {selectUserRowFromUuid} from '../db/db.ts'
 import {Socket} from 'socket.io'

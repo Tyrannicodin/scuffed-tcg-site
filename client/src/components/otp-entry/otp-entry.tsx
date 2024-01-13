@@ -6,7 +6,7 @@ type Props = {
 	children: string
 }
 
-export function OTPEntry({children}: Props) {
+export function OtpEntry({children}: Props) {
 	const digits = Number.parseInt(children)
 	const [otp, setOtp] = useState(new Array(digits).fill(''))
 	const otpBoxReference: MutableRefObject<HTMLInputElement[] | null[]> = useRef([])

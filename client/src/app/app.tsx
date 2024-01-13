@@ -1,8 +1,8 @@
-import {Login} from './login'
+import Login from './login'
 import css from './app.module.scss'
 import { useSelector } from 'react-redux'
 import { getAwaitingCode, getUserSecret } from 'logic/session/session-selectors'
-import { MainMenu } from './menu'
+import MainMenu from './menu'
 
 export function App() {
 	return <MainMenu />
