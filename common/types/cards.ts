@@ -1,0 +1,1 @@
+export type rarityT = 'Common' | 'Rare' | 'Ultra rare' | 'Mythic'
