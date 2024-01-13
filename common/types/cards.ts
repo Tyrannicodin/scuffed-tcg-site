@@ -4,3 +4,4 @@ export type HermitAttackType = {
 	cost: Array<string>
 	ability: string | null
 }
+export type rarityT = 'Common' | 'Rare' | 'Ultra rare' | 'Mythic'
