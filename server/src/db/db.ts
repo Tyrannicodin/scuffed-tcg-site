@@ -1,5 +1,10 @@
 import pg from 'pg'
 import {signupResultT, Uuid} from '../../../common/types/user'
+import {Card} from '../../../common/models/card'
+import {HermitCard} from '../../../common/models/hermit-card'
+import {EffectCard} from '../../../common/models/effect-card'
+import {ItemCard} from '../../../common/models/item-card'
+
 import {grabCardsFromGoogleSheets} from './sheets'
 
 const {Pool} = pg
@@ -25,6 +30,8 @@ export const createTables = async () => {
 			DROP TABLE IF EXISTS  hermit_cards;
 			DROP TABLE IF EXISTS  effect_cards;
 			DROP TABLE IF EXISTS  cards;
+			DROP TABLE IF EXISTS  expansions;
+			DROP TABLE IF EXISTS  types;
             
             CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
             CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -37,13 +44,21 @@ export const createTables = async () => {
                 picture varchar(255),
                 is_admin boolean NOT NULL
             );
+			CREATE TABLE IF NOT EXISTS expansions(
+				expansion_name varchar(31) PRIMARY KEY,
+				expansion_color varchar(6) NOT NULL
+			);
+			CREATE TABLE IF NOT EXISTS types(
+				type_name varchar(31) PRIMARY KEY,
+				type_color varchar(6) NOT NULL
+			);
             CREATE TABLE IF NOT EXISTS cards(
                 card_name varchar(31) NOT NULL,
                 rarity varchar(31) NOT NULL,
-                expansion varchar(255) NOT NULL,
+                expansion varchar(255) REFERENCES expansions(expansion_name),
                 card_update integer NOT NULL,
                 main_type varchar(255) NOT NULL,
-                sub_type varchar(255) NOT NULL,
+                sub_type varchar(255) REFERENCES types(type_name),
                 picture varchar(1027),
                 tokens integer,
                 PRIMARY KEY (card_name, rarity)
@@ -169,9 +184,31 @@ export const addCardsToDatabase = async () => {
 	const effectCards = cards?.effectCards
 	const hermitCards = cards?.hermitCards
 	const itemCards = cards?.itemCards
-	if (!effectCards || !hermitCards || !itemCards) return
+	const expansions = cards?.expansions
+	const types = cards?.types
+	if (!effectCards || !hermitCards || !itemCards || !expansions || !types) return
 
 	try {
+		// Insert expansions
+		await pool.query(
+			sql`
+                INSERT INTO expansions (expansion_name,expansion_color) SELECT * FROM UNNEST (
+                    $1::text[],
+                    $2::text[]
+                );
+            `,
+			[expansions.names, expansions.colors]
+		)
+		// Insert types
+		await pool.query(
+			sql`
+                INSERT INTO types (type_name,type_color) SELECT * FROM UNNEST (
+                    $1::text[],
+                    $2::text[]
+                );
+            `,
+			[types.names, types.colors]
+		)
 		// Insert cards to main sheet
 		await pool.query(
 			sql`
@@ -257,7 +294,6 @@ export const addCardsToDatabase = async () => {
 	return null
 }
 
-
 export const deleteUser = async (username: string): Promise<signupResultT> => {
 	try {
 		await pool.query(
@@ -269,5 +305,122 @@ export const deleteUser = async (username: string): Promise<signupResultT> => {
 		return {result: 'success'}
 	} catch (err) {
 		return {result: 'failure'}
+	}
+}
+
+function getAbilityCost(
+	name: string,
+	rarity: string,
+	includeSecondary: boolean,
+	rows: Array<Record<string, any>>
+) {
+	const filtered_rows = rows.filter((row) => {
+		if (row.card_name !== name || row.rarity !== rarity) return false
+		if (row.is_secondary !== includeSecondary) return false
+		return true
+	})
+
+	const mapped_rows = filtered_rows.map((row) => {
+		return row.item_type
+	})
+
+	return mapped_rows
+}
+
+export const createCardObjects = async (): Promise<Array<Card>> => {
+	try {
+		const result = await pool.query(
+			sql`
+                SELECT cards.card_name, cards.rarity, cards.expansion, cards.card_update, cards.main_type, cards.sub_type, 
+                       cards.picture, cards.tokens ,
+                       hermit_cards.health, hermit_cards.primary_move, hermit_cards.primary_dmg, hermit_cards.primary_ability,
+                       hermit_cards.secondary_move, hermit_cards.secondary_ability, hermit_cards.secondary_dmg,
+                       effect_cards.effect_description,
+					   expansions.expansion_color,
+					   types.type_color
+                       FROM cards
+                LEFT JOIN hermit_cards ON (cards.card_name, cards.rarity) = (hermit_cards.card_name, hermit_cards.rarity)
+                LEFT JOIN effect_cards ON (cards.card_name, cards.rarity) = (effect_cards.card_name, effect_cards.rarity)
+				LEFT JOIN expansions ON (expansions.expansion_name) = (cards.expansion)
+				LEFT JOIN types ON (types.type_name) = (cards.sub_type);
+            `
+		)
+		const ability_costs = await pool.query(
+			sql`
+                SELECT * FROM ability_cost;
+            `
+		)
+
+		if (!result.rowCount || !ability_costs.rowCount) {
+			return []
+		}
+
+		const output: Array<Card> = []
+		result.rows.map((row: any) => {
+			if (row.main_type === 'hermit') {
+				output.push(
+					new HermitCard({
+						name: row.card_name,
+						rarity: row.rarity,
+						expansion: {
+							name: row.expansion,
+							color: row.expansion_color,
+						},
+						update: row.card_update,
+						hermitType: {
+							name: row.sub_type,
+							color: row.type_color,
+						},
+						picture: row.picture,
+						tokens: row.tokens,
+						health: row.health,
+						primaryAttack: {
+							name: row.primary_move,
+							damage: row.primary_dmg,
+							ability: row.primary_ability,
+							cost: getAbilityCost(row.card_name, row.rarity, false, ability_costs.rows),
+						},
+						secondaryAttack: {
+							name: row.secondary_move,
+							damage: row.secondary_dmg,
+							ability: row.secondary_ability,
+							cost: getAbilityCost(row.card_name, row.rarity, true, ability_costs.rows),
+						},
+					})
+				)
+			} else if (row[4] === 'effect') {
+				new EffectCard({
+					name: row.card_name,
+					rarity: row.rarity,
+					expansion: {
+						name: row.expansion,
+						color: row.expansion_color,
+					},
+					update: row.card_update,
+					picture: row.picture,
+					tokens: row.tokens,
+					category: row.sub_type,
+					description: row.effect_description,
+				})
+			} else if (row[4] === 'item') {
+				new ItemCard({
+					name: row.card_name,
+					rarity: row.rarity,
+					expansion: {
+						name: 'Item Card',
+						color: 'FFFFFF',
+					},
+					update: row.card_update,
+					picture: row.picture,
+					hermitType: row.sub_type,
+					tokens: row.tokens,
+				})
+			}
+		})
+
+		return output
+	} catch (err) {
+		console.log(err)
+		return []
 	}
 }

@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import {useState} from 'react'
 import {InputField} from 'components/input-field'
 import {getAwaitingCode, getEmail, getMessage} from 'logic/session/session-selectors'
-import {OtpEntry} from 'components/otp-entry'
+import OtpEntry from 'components/otp-entry'
 
 export function Login() {
 	const dispatch = useDispatch()
