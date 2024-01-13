@@ -3,12 +3,6 @@ import {CONFIG} from '../../common/config'
 import store from './stores'
 import version from './version'
 
-const isValidName = (name: string) => {
-	if (name.length < 1) return false
-	if (name.length > 25) return false
-	return true
-}
-
 const env = process.env.NODE_ENV || 'development'
 const isValidVersion = (clientVersion: string) => {
 	if (env === 'development') {
@@ -41,7 +35,7 @@ function startSocketIO(server: any) {
 
 		store.dispatch({
 			type: 'CLIENT_CONNECTED',
-			payload: {socket, ...socket.handshake.auth},
+			payload: {socket},
 		})
 		socket.onAny((event, message) => {
 			if (!message?.type) return
