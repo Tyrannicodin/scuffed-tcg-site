@@ -1,10 +1,10 @@
-import express from 'express'
+import express, {response} from 'express'
 import path from 'path'
 import {fileURLToPath} from 'url'
 import {createServer} from 'http'
 import cors from 'cors'
 import {CONFIG} from '../../common/config'
-import {createTables, createUser, selectUserUUID} from 'db/db'
+import {createTables, addCardsToDatabase} from 'db/db'
 import startSocketIO from 'sockets'
 
 const port = process.env.PORT || CONFIG.port || 9000
@@ -16,11 +16,15 @@ const __dirname = path.dirname(__filename)
 
 const server = createServer(app)
 
+process.argv.forEach(function (val) {
+	if (val === 'buildDatabase') {
+		createTables()
+		addCardsToDatabase()
+	}
+})
+
 app.use(express.json())
 app.use(cors({origin: CONFIG.cors}))
-
-// Database
-createTables()
 
 // Sockets
 startSocketIO(server)
@@ -38,6 +42,3 @@ app.get('/', (req, res) => {
 server.listen(port, () => {
 	console.log(`Server listening on port ${port}`)
 })
-
-console.log(await createUser('user_3', 'email', 'password'))
-console.log(await selectUserUUID('user_3', 'password'))
