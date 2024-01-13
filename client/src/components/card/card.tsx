@@ -48,8 +48,8 @@ export function CardInfo({card}: Props) {
 
     return <div className={css.outer}>
         <b className={css.cardName}>{card.name}</b>
-        <b> {getType(card)}</b>
-        <p className={css.pack}>■ {card.expansion} (Update {card.update}) ■</p>
+        <b> {getType(card) as string}</b>
+        <p className={css.pack}>■ {card.expansion.name} (Update {card.update}) ■</p>
         <p className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>★ {card.tokens ? card.tokens : 0} Tokens ★</p>
         <p className={css.description}>{getDescription(card)}</p>
     </div>

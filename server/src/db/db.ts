@@ -1,9 +1,9 @@
 import pg from 'pg'
 import {signupResultT, Uuid} from '../../../common/types/user'
-import {Card} from '../../../common/classes/card'
-import {HermitCard} from '../../../common/classes/hermit-card'
-import {EffectCard} from '../../../common/classes/effect-card'
-import {ItemCard} from '../../../common/classes/item-card'
+import {Card} from '../../../common/models/card'
+import {HermitCard} from '../../../common/models/hermit-card'
+import {EffectCard} from '../../../common/models/effect-card'
+import {ItemCard} from '../../../common/models/item-card'
 
 import {grabCardsFromGoogleSheets} from './sheets'
 

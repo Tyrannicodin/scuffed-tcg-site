@@ -26,7 +26,7 @@ type Props = {
 	authorised: Array<string>
 }
 
-export default function NavBar({
+export function NavBar({
 	default_elements: defaultElements,
 	unauthorised,
 	authorised,
