@@ -107,6 +107,16 @@ export function generateItemCards(types: Set<string>) {
 	return itemCardMap
 }
 
+function toHex(dict: any): string {
+	if (!dict.rgbColor) return '000000'
+	const colors = dict.rgbColor
+	if (!colors.red && !colors.green && !colors.blue) return 'ffffff'
+	const red = colors.red ? Math.floor(colors.red * 255).toString(16) : '00'
+	const green = colors.green ? Math.floor(colors.green * 255).toString(16) : '00'
+	const blue = colors.blue ? Math.floor(colors.blue * 255).toString(16) : '00'
+	return `${red}${green}${blue}`
+}
+
 async function getCards(auth: any) {
 	const sheets = google.sheets({version: 'v4', auth})
 	const res = await sheets.spreadsheets.get({
@@ -159,6 +169,16 @@ async function getCards(auth: any) {
 		description: [],
 	}
 
+	const expansionMap: Record<string, any> = {
+		names: [],
+		colors: [],
+	}
+
+	const typeMap: Record<string, any> = {
+		names: [],
+		colors: [],
+	}
+
 	hermits.map((row) => {
 		const values = row.values
 		if (!values) return
@@ -201,6 +221,16 @@ async function getCards(auth: any) {
 				true
 			)
 		)
+
+		if (!expansionMap.names.includes(values[11].formattedValue)) {
+			expansionMap.names.push(values[11].formattedValue)
+			expansionMap.colors.push(toHex(values[11].effectiveFormat?.backgroundColorStyle))
+		}
+
+		if (!typeMap.names.includes(values[1].formattedValue)) {
+			typeMap.names.push(values[1].formattedValue)
+			typeMap.colors.push(toHex(values[1].effectiveFormat?.backgroundColorStyle))
+		}
 	})
 
 	const hermitCardCosts = [...hermitCardMap.primaryMoveCost, ...hermitCardMap.secondaryMoveCost]
@@ -220,12 +250,24 @@ async function getCards(auth: any) {
 		effectCardMap.subtypes.push(values[1].formattedValue)
 		effectCardMap.tokens.push(values[5].formattedValue !== 'N/A' ? values[5].formattedValue : null)
 		effectCardMap.description.push(values[1].note)
+
+		if (!expansionMap.names.includes(values[3].formattedValue)) {
+			expansionMap.names.push(values[3].formattedValue)
+			expansionMap.colors.push(toHex(values[3].effectiveFormat?.backgroundColorStyle))
+		}
+
+		if (!typeMap.names.includes(values[1].formattedValue)) {
+			typeMap.names.push(values[1].formattedValue)
+			typeMap.colors.push(toHex(values[1].effectiveFormat?.backgroundColorStyle))
+		}
 	})
 
 	return {
 		hermitCards: hermitCardMap,
 		effectCards: effectCardMap,
 		itemCards: generateItemCards(new Set(hermitCardMap.subtypes)),
+		expansions: expansionMap,
+		types: typeMap,
 	}
 }
 

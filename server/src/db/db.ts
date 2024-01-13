@@ -30,6 +30,8 @@ export const createTables = async () => {
 			DROP TABLE IF EXISTS  hermit_cards;
 			DROP TABLE IF EXISTS  effect_cards;
 			DROP TABLE IF EXISTS  cards;
+			DROP TABLE IF EXISTS  expansions;
+			DROP TABLE IF EXISTS  types;
             
             CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
             CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -42,13 +44,21 @@ export const createTables = async () => {
                 picture varchar(255),
                 is_admin boolean NOT NULL
             );
+			CREATE TABLE IF NOT EXISTS expansions(
+				expansion_name varchar(31) PRIMARY KEY,
+				expansion_color varchar(6) NOT NULL
+			);
+			CREATE TABLE IF NOT EXISTS types(
+				type_name varchar(31) PRIMARY KEY,
+				type_color varchar(6) NOT NULL
+			);
             CREATE TABLE IF NOT EXISTS cards(
                 card_name varchar(31) NOT NULL,
                 rarity varchar(31) NOT NULL,
-                expansion varchar(255) NOT NULL,
+                expansion varchar(255) REFERENCES expansions(expansion_name),
                 card_update integer NOT NULL,
                 main_type varchar(255) NOT NULL,
-                sub_type varchar(255) NOT NULL,
+                sub_type varchar(255) REFERENCES types(type_name),
                 picture varchar(1027),
                 tokens integer,
                 PRIMARY KEY (card_name, rarity)
@@ -174,9 +184,31 @@ export const addCardsToDatabase = async () => {
 	const effectCards = cards?.effectCards
 	const hermitCards = cards?.hermitCards
 	const itemCards = cards?.itemCards
-	if (!effectCards || !hermitCards || !itemCards) return
+	const expansions = cards?.expansions
+	const types = cards?.types
+	if (!effectCards || !hermitCards || !itemCards || !expansions || !types) return
 
 	try {
+		// Insert expansions
+		await pool.query(
+			sql`
+                INSERT INTO expansions (expansion_name,expansion_color) SELECT * FROM UNNEST (
+                    $1::text[],
+                    $2::text[]
+                );
+            `,
+			[expansions.names, expansions.colors]
+		)
+		// Insert types
+		await pool.query(
+			sql`
+                INSERT INTO types (type_name,type_color) SELECT * FROM UNNEST (
+                    $1::text[],
+                    $2::text[]
+                );
+            `,
+			[types.names, types.colors]
+		)
 		// Insert cards to main sheet
 		await pool.query(
 			sql`
@@ -303,10 +335,14 @@ export const createCardObjects = async (): Promise<Array<Card>> => {
                        cards.picture, cards.tokens ,
                        hermit_cards.health, hermit_cards.primary_move, hermit_cards.primary_dmg, hermit_cards.primary_ability,
                        hermit_cards.secondary_move, hermit_cards.secondary_ability, hermit_cards.secondary_dmg,
-                       effect_cards.effect_description
+                       effect_cards.effect_description,
+					   expansions.expansion_color,
+					   types.type_color
                        FROM cards
                 LEFT JOIN hermit_cards ON (cards.card_name, cards.rarity) = (hermit_cards.card_name, hermit_cards.rarity)
-                LEFT JOIN effect_cards ON (cards.card_name, cards.rarity) = (effect_cards.card_name, effect_cards.rarity);
+                LEFT JOIN effect_cards ON (cards.card_name, cards.rarity) = (effect_cards.card_name, effect_cards.rarity)
+				LEFT JOIN expansions ON (expansions.expansion_name) = (cards.expansion)
+				LEFT JOIN types ON (types.type_name) = (cards.sub_type);
             `
 		)
 		const ability_costs = await pool.query(
@@ -326,9 +362,15 @@ export const createCardObjects = async (): Promise<Array<Card>> => {
 					new HermitCard({
 						name: row.card_name,
 						rarity: row.rarity,
-						expansion: row.expansion,
+						expansion: {
+							name: row.expansion,
+							color: row.expansion_color,
+						},
 						update: row.card_update,
-						hermitType: row.sub_type,
+						hermitType: {
+							name: row.sub_type,
+							color: row.type_color,
+						},
 						picture: row.picture,
 						tokens: row.tokens,
 						health: row.health,
@@ -350,7 +392,10 @@ export const createCardObjects = async (): Promise<Array<Card>> => {
 				new EffectCard({
 					name: row.card_name,
 					rarity: row.rarity,
-					expansion: row.expansion,
+					expansion: {
+						name: row.expansion,
+						color: row.expansion_color,
+					},
 					update: row.card_update,
 					picture: row.picture,
 					tokens: row.tokens,
@@ -361,7 +406,10 @@ export const createCardObjects = async (): Promise<Array<Card>> => {
 				new ItemCard({
 					name: row.card_name,
 					rarity: row.rarity,
-					expansion: row.expansion,
+					expansion: {
+						name: 'Item Card',
+						color: 'FFFFFF',
+					},
 					update: row.card_update,
 					picture: row.picture,
 					hermitType: row.sub_type,
@@ -375,6 +423,4 @@ export const createCardObjects = async (): Promise<Array<Card>> => {
 		console.log(err)
 		return []
 	}
-
-	return []
 }

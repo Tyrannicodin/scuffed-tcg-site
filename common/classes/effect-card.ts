@@ -1,9 +1,10 @@
+import {ExpansionT} from '../types/cards'
 import {Card} from './card'
 
 type EffectDefs = {
 	name: string
 	rarity: string
-	expansion: string
+	expansion: ExpansionT
 	update: number
 	category: string
 	picture: string | null

@@ -1,15 +1,15 @@
-import {HermitAttackType} from '../types/cards'
+import {HermitAttackType, ExpansionT, HermitTypeT} from '../types/cards'
 import {Card} from './card'
 
 type HermitDefs = {
 	name: string
 	rarity: string
-	expansion: string
+	expansion: ExpansionT
 	update: number
 	picture: string | null
 	tokens: number | null
 	health: number
-	hermitType: string
+	hermitType: HermitTypeT
 	primaryAttack: HermitAttackType
 	secondaryAttack: HermitAttackType
 }
@@ -18,7 +18,7 @@ export class HermitCard extends Card {
 	public health: number
 	public primaryAttack: HermitAttackType
 	public secondaryAttack: HermitAttackType
-	public hermitType: string
+	public hermitType: HermitTypeT
 
 	constructor(defs: HermitDefs) {
 		super({

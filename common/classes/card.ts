@@ -1,7 +1,9 @@
+import {ExpansionT} from '../types/cards'
+
 type CardDefs = {
 	name: string
 	rarity: string
-	expansion: string
+	expansion: ExpansionT
 	update: number
 	type: string
 	picture: string | null
@@ -11,7 +13,7 @@ type CardDefs = {
 export class Card {
 	public name: string
 	public rarity: string
-	public expansion: string
+	public expansion: ExpansionT
 	public update: number
 	public type: string
 	public picture: string | null
