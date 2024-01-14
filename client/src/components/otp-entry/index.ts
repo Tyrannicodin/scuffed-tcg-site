@@ -1,3 +1,3 @@
-import { OtpEntry} from './otp-entry'
+import {OtpEntry} from './otp-entry'
 
 export default OtpEntry

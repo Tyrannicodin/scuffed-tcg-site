@@ -1,3 +1,3 @@
-import { MainMenu } from "./menu";
+import {MainMenu} from './menu'
 
 export default MainMenu

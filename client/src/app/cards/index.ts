@@ -1,3 +1,3 @@
-import { CardBrowser } from "./browser";
+import {CardBrowser} from './browser'
 
 export default CardBrowser

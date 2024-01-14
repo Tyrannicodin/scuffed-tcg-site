@@ -1,3 +1,3 @@
-import { CardList } from "./card-list";
+import {CardList} from './card-list'
 
 export default CardList

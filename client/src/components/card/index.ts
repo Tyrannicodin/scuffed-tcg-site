@@ -1,3 +1,3 @@
-import { CardInfo } from "./card";
+import {CardInfo} from './card'
 
 export default CardInfo

@@ -26,11 +26,7 @@ type Props = {
 	authorised: Array<string>
 }
 
-export function NavBar({
-	default_elements: defaultElements,
-	unauthorised,
-	authorised,
-}: Props) {
+export function NavBar({default_elements: defaultElements, unauthorised, authorised}: Props) {
 	const [isHovered, setListHovered] = useState(false)
 	const [hoveredItem, setHoveredItem] = useState('')
 
