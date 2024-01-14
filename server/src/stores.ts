@@ -6,6 +6,7 @@ const sagaMiddleware = createSagaMiddleware()
 
 const store = configureStore({
     reducer: {},
+    middleware: () => new Tuple(sagaMiddleware)
 })
 
 sagaMiddleware.run(rootSaga)
