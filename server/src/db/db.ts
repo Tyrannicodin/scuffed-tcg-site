@@ -97,6 +97,26 @@ export async function createTables() {
 	}
 }
 
+export async function destroyTables(): Promise<string> {
+	try {
+		await pool.query(
+			sql`
+				DROP TABLE ability_cost;
+				DROP TABLE libraries;
+				DROP TABLE hermit_cards;
+				DROP TABLE effect_cards;
+				DROP TABLE cards;
+				DROP TABLE expansions;
+				DROP TABLE types;
+				DROP TABLE users;
+			`
+		)
+		return 'success'
+	} catch (err) {
+		return 'failure'
+	}
+}
+
 export async function createUser(
 	username: string,
 	email: string,
