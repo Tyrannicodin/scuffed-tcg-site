@@ -1,9 +1,9 @@
-import {rarityT, ExpansionT, HermitTypeT} from '../types/cards'
+import {RarityT, ExpansionT, HermitTypeT} from '../types/cards'
 import {Card} from './card'
 
 type ItemDefs = {
 	name: string
-	rarity: rarityT
+	rarity: RarityT
 	expansion: ExpansionT
 	update: number
 	picture: string | null

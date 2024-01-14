@@ -57,6 +57,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 			return {
 				...state,
 				password: '',
+				awaiting_code: false,
 				...action.payload,
 			}
 		default:
