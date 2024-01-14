@@ -5,7 +5,7 @@ import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
-import {PartialCardT, rarityT} from '../../../common/types/cards'
+import {PartialCardT, RarityT} from '../../../common/types/cards'
 
 const {Pool} = pg
 
@@ -456,7 +456,7 @@ export async function createCardObjects(): Promise<cardObjectsResult> {
 export async function addCardsToPlayer(uuid: string, cards: Array<PartialCardT>): Promise<string> {
 	const flippedCards: {
 		names: Array<string>
-		rarities: Array<rarityT>
+		rarities: Array<RarityT>
 	} = {
 		names: [],
 		rarities: [],
@@ -497,7 +497,7 @@ export async function removeCardsFromPlayer(
 ): Promise<string> {
 	const flippedCards: {
 		names: Array<string>
-		rarities: Array<rarityT>
+		rarities: Array<RarityT>
 	} = {
 		names: [],
 		rarities: [],
