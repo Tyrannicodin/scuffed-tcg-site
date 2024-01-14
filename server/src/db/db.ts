@@ -20,7 +20,7 @@ export const pool = new Pool({
 	database: 'scuffed_tcg',
 })
 
-export const createTables = async () => {
+export async function createTables() {
 	try {
 		pool.query(sql`
              --Dropping ability_cost is a bandaid, will fix properly later
@@ -103,11 +103,11 @@ export const createTables = async () => {
 	}
 }
 
-export const createUser = async (
+export async function createUser(
 	username: string,
 	email: string,
 	hash: string
-): Promise<signupResultT> => {
+): Promise<signupResultT> {
 	try {
 		const unique_check = await pool.query(
 			sql`
@@ -142,7 +142,7 @@ export const createUser = async (
 	}
 }
 
-export const selectUserUUID = async (username: string, hash: string): Promise<Uuid | null> => {
+export async function selectUserUUID(username: string, hash: string): Promise<Uuid | null> {
 	try {
 		const uuid = await pool.query(
 			sql`
@@ -160,7 +160,7 @@ export const selectUserUUID = async (username: string, hash: string): Promise<Uu
 	return null
 }
 
-export const selectUserRowFromUuid = async (uuid: Uuid): Promise<Record<string, any> | null> => {
+export async function selectUserRowFromUuid(uuid: Uuid): Promise<Record<string, any> | null> {
 	try {
 		const result = await pool.query(
 			sql`
@@ -178,7 +178,7 @@ export const selectUserRowFromUuid = async (uuid: Uuid): Promise<Record<string, 
 	return null
 }
 
-export const addCardsToDatabase = async () => {
+export async function addCardsToDatabase() {
 	const cards = await grabCardsFromGoogleSheets()
 	const effectCards = cards?.effectCards
 	const hermitCards = cards?.hermitCards
@@ -293,7 +293,7 @@ export const addCardsToDatabase = async () => {
 	return null
 }
 
-export const deleteUser = async (username: string): Promise<signupResultT> => {
+export async function deleteUser(username: string) {
 	try {
 		await pool.query(
 			sql`
@@ -307,7 +307,7 @@ export const deleteUser = async (username: string): Promise<signupResultT> => {
 	}
 }
 
-export const createCardObjects = async (): Promise<Array<Card>> => {
+export async function createCardObjects(): Promise<Array<Card>> {
 	try {
 		const result = await pool.query(
 			sql`
