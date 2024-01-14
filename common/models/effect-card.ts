@@ -1,9 +1,9 @@
-import {rarityT, ExpansionT, EffectTypeT} from '../types/cards'
+import {RarityT, ExpansionT, EffectTypeT} from '../types/cards'
 import {Card} from './card'
 
 type EffectDefs = {
 	name: string
-	rarity: rarityT
+	rarity: RarityT
 	expansion: ExpansionT
 	update: number
 	category: EffectTypeT

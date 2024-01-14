@@ -4,6 +4,8 @@ import socket from 'socket'
 import {connect, disconnect, onboarding, setMsg} from './session-actions'
 import store from 'store'
 import {getOTPCode, getUserSecret} from './session-selectors'
+import { all, fork } from 'typed-redux-saga'
+import cardSaga from 'logic/cards/cards-saga'
 
 function* verifySaga() {
 	while (true) {
@@ -84,6 +86,7 @@ export function* loginSaga() {
 
 	if (login) {
 		yield put(connect(login.payload))
+		yield all([fork(cardSaga)]) //Init rest of client
 	} else if (onboard) {
 		yield put(onboarding(onboard.payload))
 		yield call(verifySaga)

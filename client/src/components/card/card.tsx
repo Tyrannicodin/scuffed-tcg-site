@@ -2,7 +2,7 @@ import {Card} from 'common/models/card'
 import {EffectCard} from 'common/models/effect-card'
 import {HermitCard} from 'common/models/hermit-card'
 import css from './card.module.scss'
-import { HermitAttackType } from 'common/types/cards'
+import { HermitAttackTypeT } from 'common/types/cards'
 
 const costColors = [
     "#525252",
@@ -27,7 +27,7 @@ export function CardInfo({card}: Props) {
         return ''
     }
 
-    const getAttackDescription = (attack: HermitAttackType) => {
+    const getAttackDescription = (attack: HermitAttackTypeT) => {
         if (attack.ability) {
             return <><b>{attack.name}</b><p>{attack.ability}</p></>
         }

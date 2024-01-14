@@ -1,13 +1,16 @@
 import {Tuple, configureStore} from '@reduxjs/toolkit'
 import createSagaMiddleware from 'redux-saga'
-import sessionReducer from 'logic/session/session-reducer'
 import rootSaga from './root-saga'
+
+import sessionReducer from 'logic/session/session-reducer'
+import cardsReducer from 'logic/cards/cards-reducer'
 
 const sagaMiddleware = createSagaMiddleware()
 
 const store = configureStore({
 	reducer: {
 		session: sessionReducer,
+		cards: cardsReducer,
 	},
 	middleware: () => new Tuple(sagaMiddleware),
 	devTools: true,
