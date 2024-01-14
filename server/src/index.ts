@@ -4,8 +4,9 @@ import {fileURLToPath} from 'url'
 import {createServer} from 'http'
 import cors from 'cors'
 import {CONFIG} from '../../common/config'
-import {createTables, addCardsToDatabase} from 'db/db'
+import {createTables, addCardsToDatabase, addCardsToPlayer, removeCardsFromPlayer} from 'db/db'
 import startSocketIO from 'sockets'
+import {PartialCardT} from '../../common/types/cards'
 
 const port = process.env.PORT || CONFIG.port || 9000
 
@@ -42,3 +43,8 @@ app.get('/', (req, res) => {
 server.listen(port, () => {
 	console.log(`Server listening on port ${port}`)
 })
+
+const card: PartialCardT = {
+	name: 'Aint',
+	rarity: 'Rare',
+}

@@ -5,6 +5,7 @@ import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
+import {PartialCardT, rarityT} from '../../../common/types/cards'
 
 const {Pool} = pg
 
@@ -23,6 +24,7 @@ export const pool = new Pool({
 export async function createTables() {
 	try {
 		pool.query(sql`
+			SET CLIENT_ENCODING TO 'UTF8';
              --Dropping ability_cost is a bandaid, will fix properly later
 			ALTER TABLE IF EXISTS libraries DROP CONSTRAINT card_constr;
             DROP TABLE IF EXISTS  ability_cost;
@@ -93,7 +95,8 @@ export async function createTables() {
                 user_id uuid REFERENCES users(user_id),
                 card_name varchar(255),
                 rarity varchar(255),
-                copies integer NOT NULL
+                copies integer NOT NULL,
+				PRIMARY KEY (user_id, card_name, rarity)
                 --CONSTRAINT card_constr FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
             );
 			ALTER TABLE libraries ADD CONSTRAINT card_constr FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity);
@@ -423,5 +426,79 @@ export async function createCardObjects(): Promise<Array<Card>> {
 	} catch (err) {
 		console.log(err)
 		return []
+	}
+}
+
+export async function addCardsToPlayer(uuid: string, cards: Array<PartialCardT>): Promise<string> {
+	const flippedCards: {
+		names: Array<string>
+		rarities: Array<rarityT>
+	} = {
+		names: [],
+		rarities: [],
+	}
+
+	cards.forEach((card) => {
+		flippedCards.names.push(card.name)
+		flippedCards.rarities.push(card.rarity)
+	})
+
+	try {
+		await pool.query(
+			sql`
+				INSERT INTO libraries (user_id,card_name,rarity,copies) SELECT * FROM UNNEST (
+					$1::uuid[],
+					$2::text[],
+					$3::text[],
+					$4::int[]
+				) ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + 1;
+			`,
+			[
+				Array(cards.length).fill(uuid),
+				flippedCards.names,
+				flippedCards.rarities,
+				Array(cards.length).fill(1),
+			]
+		)
+		return 'success'
+	} catch (err) {
+		console.log(err)
+		return 'failure'
+	}
+}
+
+export async function removeCardsFromPlayer(
+	uuid: string,
+	cards: Array<PartialCardT>
+): Promise<string> {
+	const flippedCards: {
+		names: Array<string>
+		rarities: Array<rarityT>
+	} = {
+		names: [],
+		rarities: [],
+	}
+
+	cards.forEach((card) => {
+		flippedCards.names.push(card.name)
+		flippedCards.rarities.push(card.rarity)
+	})
+
+	try {
+		await pool.query(
+			sql`
+				UPDATE libraries SET copies = copies - 1 FROM ( SELECT * FROM UNNEST (
+					$1::uuid[],
+					$2::text[],
+					$3::text[]
+				)) RETURN *;
+			`,
+			[Array(cards.length).fill(uuid), flippedCards.names, flippedCards.rarities]
+		)
+		await pool.query(sql`DELETE FROM libraries WHERE copies = 0;`)
+		return 'success'
+	} catch (err) {
+		console.log(err)
+		return 'failure'
 	}
 }

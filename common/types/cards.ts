@@ -17,3 +17,8 @@ export type HermitTypeT = {
 	name: string
 	color: string
 }
+
+export type PartialCardT = {
+	name: string
+	rarity: rarityT
+}
