@@ -4,7 +4,6 @@ import {Card} from '../../../common/models/card'
 import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
-
 import {grabCardsFromGoogleSheets} from './sheets'
 
 const {Pool} = pg
@@ -308,25 +307,6 @@ export const deleteUser = async (username: string): Promise<signupResultT> => {
 	}
 }
 
-function getAbilityCost(
-	name: string,
-	rarity: string,
-	includeSecondary: boolean,
-	rows: Array<Record<string, any>>
-) {
-	const filtered_rows = rows.filter((row) => {
-		if (row.card_name !== name || row.rarity !== rarity) return false
-		if (row.is_secondary !== includeSecondary) return false
-		return true
-	})
-
-	const mapped_rows = filtered_rows.map((row) => {
-		return row.item_type
-	})
-
-	return mapped_rows
-}
-
 export const createCardObjects = async (): Promise<Array<Card>> => {
 	try {
 		const result = await pool.query(
@@ -337,28 +317,29 @@ export const createCardObjects = async (): Promise<Array<Card>> => {
                        hermit_cards.secondary_move, hermit_cards.secondary_ability, hermit_cards.secondary_dmg,
                        effect_cards.effect_description,
 					   expansions.expansion_color,
-					   types.type_color
+					   types.type_color,
+					   ability_cost.is_secondary, ability_cost.item_type
                        FROM cards
                 LEFT JOIN hermit_cards ON (cards.card_name, cards.rarity) = (hermit_cards.card_name, hermit_cards.rarity)
                 LEFT JOIN effect_cards ON (cards.card_name, cards.rarity) = (effect_cards.card_name, effect_cards.rarity)
 				LEFT JOIN expansions ON (expansions.expansion_name) = (cards.expansion)
-				LEFT JOIN types ON (types.type_name) = (cards.sub_type);
-            `
-		)
-		const ability_costs = await pool.query(
-			sql`
-                SELECT * FROM ability_cost;
+				LEFT JOIN types ON (types.type_name) = (cards.sub_type)
+				LEFT JOIN ability_cost ON (cards.card_name, cards.rarity) = (ability_cost.card_name, ability_cost.rarity);
             `
 		)
 
-		if (!result.rowCount || !ability_costs.rowCount) {
-			return []
-		}
+		if (!result.rowCount) return []
 
-		const output: Array<Card> = []
-		result.rows.map((row: any) => {
-			if (row.main_type === 'hermit') {
-				output.push(
+		const hermitCards: Array<HermitCard> = []
+		const effectCards: Array<EffectCard> = []
+		const itemCards: Array<ItemCard> = []
+		result.rows.forEach((row: any) => {
+			if (
+				row.main_type === 'hermit' &&
+				(hermitCards.length === 0 ||
+					!hermitCards.some((card) => card.name === row.card_name && card.rarity === row.rarity))
+			) {
+				hermitCards.push(
 					new HermitCard({
 						name: row.card_name,
 						rarity: row.rarity,
@@ -378,47 +359,67 @@ export const createCardObjects = async (): Promise<Array<Card>> => {
 							name: row.primary_move,
 							damage: row.primary_dmg,
 							ability: row.primary_ability,
-							cost: getAbilityCost(row.card_name, row.rarity, false, ability_costs.rows),
+							cost: [],
 						},
 						secondaryAttack: {
 							name: row.secondary_move,
 							damage: row.secondary_dmg,
 							ability: row.secondary_ability,
-							cost: getAbilityCost(row.card_name, row.rarity, true, ability_costs.rows),
+							cost: [],
 						},
 					})
 				)
-			} else if (row[4] === 'effect') {
-				new EffectCard({
-					name: row.card_name,
-					rarity: row.rarity,
-					expansion: {
-						name: row.expansion,
-						color: row.expansion_color,
-					},
-					update: row.card_update,
-					picture: row.picture,
-					tokens: row.tokens,
-					category: row.sub_type,
-					description: row.effect_description,
-				})
-			} else if (row[4] === 'item') {
-				new ItemCard({
-					name: row.card_name,
-					rarity: row.rarity,
-					expansion: {
-						name: 'Item Card',
-						color: 'FFFFFF',
-					},
-					update: row.card_update,
-					picture: row.picture,
-					hermitType: row.sub_type,
-					tokens: row.tokens,
-				})
+
+				if (row.is_secondary) {
+					hermitCards[hermitCards.length - 1].secondaryAttack.cost.push(row.item_type)
+				} else {
+					hermitCards[hermitCards.length - 1].primaryAttack.cost.push(row.item_type)
+				}
+			} else if (row.main_type === 'hermit') {
+				const card = hermitCards.find(
+					(card) => card.name === row.card_name && card.rarity === row.rarity
+				)
+				if (!card) return
+				if (row.is_secondary) {
+					card.secondaryAttack.cost.push(row.item_type)
+				} else {
+					card.primaryAttack.cost.push(row.item_type)
+				}
+			} else if (row.main_type === 'effect') {
+				effectCards.push(
+					new EffectCard({
+						name: row.card_name,
+						rarity: row.rarity,
+						expansion: {
+							name: row.expansion,
+							color: row.expansion_color,
+						},
+						update: row.card_update,
+						picture: row.picture,
+						tokens: row.tokens,
+						category: row.sub_type,
+						description: row.effect_description,
+					})
+				)
+			} else if (row.main_type === 'item') {
+				itemCards.push(
+					new ItemCard({
+						name: row.card_name,
+						rarity: row.rarity,
+						expansion: {
+							name: 'Item Card',
+							color: 'FFFFFF',
+						},
+						update: row.card_update,
+						picture: row.picture,
+						hermitType: row.sub_type,
+						tokens: row.tokens,
+					})
+				)
 			}
 		})
 
-		return output
+		return [...hermitCards, ...effectCards, ...itemCards]
 	} catch (err) {
 		console.log(err)
 		return []
