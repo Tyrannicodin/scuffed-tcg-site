@@ -17,5 +17,5 @@ export const connect = (userInfo: userInfoT) => ({
 
 export const setMsg = (message: string) => ({
 	type: 'SET_MESSAGE' as const,
-	payload: message
+	payload: message,
 })

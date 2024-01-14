@@ -322,7 +322,19 @@ export async function deleteUser(username: string) {
 	}
 }
 
-export async function createCardObjects(): Promise<Array<Card>> {
+export type cardObjectsResult = {
+	hermitCards: HermitCard[]
+	effectCards: EffectCard[]
+	itemCards: ItemCard[]
+}
+
+export async function createCardObjects(): Promise<cardObjectsResult> {
+	const defaultReturn = {
+		hermitCards: [],
+		effectCards: [],
+		itemCards: [],
+	}
+
 	try {
 		const result = await pool.query(
 			sql`
@@ -343,7 +355,7 @@ export async function createCardObjects(): Promise<Array<Card>> {
             `
 		)
 
-		if (!result.rowCount) return []
+		if (!result.rowCount) return defaultReturn
 
 		const hermitCards: Array<HermitCard> = []
 		const effectCards: Array<EffectCard> = []
@@ -434,10 +446,10 @@ export async function createCardObjects(): Promise<Array<Card>> {
 			}
 		})
 
-		return [...hermitCards, ...effectCards, ...itemCards]
+		return {hermitCards, effectCards, itemCards}
 	} catch (err) {
 		console.log(err)
-		return []
+		return defaultReturn
 	}
 }
 

@@ -1,6 +1,6 @@
 import {useRef, useState, KeyboardEvent, MutableRefObject} from 'react'
 import css from './otp-entry.module.scss'
-import { useDispatch } from 'react-redux'
+import {useDispatch} from 'react-redux'
 
 type Props = {
 	children: string
@@ -21,8 +21,8 @@ export function OtpEntry({children}: Props) {
 			dispatch({
 				type: 'CODE_SUBMIT',
 				payload: {
-					otpCode: newArr.join('')
-				}
+					otpCode: newArr.join(''),
+				},
 			})
 		}
 
@@ -36,18 +36,10 @@ export function OtpEntry({children}: Props) {
 	function handleBackspaceAndEnter(e: KeyboardEvent<HTMLInputElement>, index: number) {
 		const nextTarget = otpBoxReference.current[index + 1]
 		const previousTarget = otpBoxReference.current[index - 1]
-		if (
-			e.key === 'Backspace' &&
-			!(e.target as HTMLInputElement).value &&
-			previousTarget
-		) {
+		if (e.key === 'Backspace' && !(e.target as HTMLInputElement).value && previousTarget) {
 			previousTarget.focus()
 		}
-		if (
-			e.key === 'Enter' &&
-			(e.target as HTMLInputElement).value &&
-			nextTarget
-		) {
+		if (e.key === 'Enter' && (e.target as HTMLInputElement).value && nextTarget) {
 			nextTarget.focus()
 		}
 	}

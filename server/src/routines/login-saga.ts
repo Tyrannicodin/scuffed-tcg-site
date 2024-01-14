@@ -92,7 +92,8 @@ function* signUpSaga(action: any) {
 
 	const endTime = Date.now() + 5 * 60 * 1000
 	var inputCode = ''
-	while (code !== inputCode) { //@FIXME remove second part to enable OTP check
+	while (code !== inputCode) {
+		//@FIXME remove second part to enable OTP check
 		const {verify, timeout} = yield race({
 			verify: verifyMessage(),
 			timeout: delay(endTime - Date.now()), //5 minutes
@@ -100,7 +101,7 @@ function* signUpSaga(action: any) {
 		if (verify && verify.payload.userSecret === userSecret) {
 			inputCode = verify.payload.code
 		} else if (timeout) {
-			 yield call(deleteUser, username)
+			yield call(deleteUser, username)
 			socket.emit('AUTH_FAIL', {
 				type: 'AUTH_FAIL',
 				payload: {

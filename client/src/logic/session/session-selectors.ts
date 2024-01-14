@@ -20,6 +20,6 @@ export const getAwaitingCode = (state: RootState): boolean => {
 	return getSession(state).awaiting_code
 }
 
-export const getEmail = (state:RootState): string => {
+export const getEmail = (state: RootState): string => {
 	return getSession(state).email
 }

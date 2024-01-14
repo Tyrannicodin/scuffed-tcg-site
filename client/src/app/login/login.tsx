@@ -39,11 +39,13 @@ export function Login() {
 
 	let htmlReturn: JSX.Element
 	if (getCode) {
-		htmlReturn = <div className={css.flexAlign}>
-			<h3>OTP sent to {email}</h3>
-			<OtpEntry>6</OtpEntry>
-			{messenger}
-		</div>
+		htmlReturn = (
+			<div className={css.flexAlign}>
+				<h3>OTP sent to {email}</h3>
+				<OtpEntry>6</OtpEntry>
+				{messenger}
+			</div>
+		)
 	} else {
 		htmlReturn = (
 			<div className={css.container}>

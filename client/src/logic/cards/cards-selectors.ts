@@ -1,4 +1,4 @@
-import { Card } from 'common/models/card'
+import {Card} from 'common/models/card'
 import {RootState} from 'store'
 
 export const getCardsState = (state: RootState) => {
