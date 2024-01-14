@@ -25,14 +25,6 @@ export async function createTables() {
 	try {
 		pool.query(sql`
 			SET CLIENT_ENCODING TO 'UTF8';
-             --Dropping ability_cost is a bandaid, will fix properly later
-			ALTER TABLE IF EXISTS libraries DROP CONSTRAINT card_constr;
-            DROP TABLE IF EXISTS  ability_cost;
-			DROP TABLE IF EXISTS  hermit_cards;
-			DROP TABLE IF EXISTS  effect_cards;
-			DROP TABLE IF EXISTS  cards;
-			DROP TABLE IF EXISTS  expansions;
-			DROP TABLE IF EXISTS  types;
             
             CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
             CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -96,10 +88,9 @@ export async function createTables() {
                 card_name varchar(255),
                 rarity varchar(255),
                 copies integer NOT NULL,
-				PRIMARY KEY (user_id, card_name, rarity)
-                --CONSTRAINT card_constr FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
+				PRIMARY KEY (user_id, card_name, rarity),
+                FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
             );
-			ALTER TABLE libraries ADD CONSTRAINT card_constr FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity);
         `)
 	} catch (err) {
 		console.log(err)
@@ -197,7 +188,7 @@ export async function addCardsToDatabase() {
                 INSERT INTO expansions (expansion_name,expansion_color) SELECT * FROM UNNEST (
                     $1::text[],
                     $2::text[]
-                );
+                ) ON CONFLICT DO NOTHING;
             `,
 			[expansions.names, expansions.colors]
 		)
@@ -207,7 +198,7 @@ export async function addCardsToDatabase() {
                 INSERT INTO types (type_name,type_color) SELECT * FROM UNNEST (
                     $1::text[],
                     $2::text[]
-                );
+                ) ON CONFLICT DO NOTHING;
             `,
 			[types.names, types.colors]
 		)
@@ -222,7 +213,7 @@ export async function addCardsToDatabase() {
                     $5::text[],
                     $6::text[],
                     $7::int[]
-                );
+                ) ON CONFLICT DO NOTHING;
             `,
 			[
 				[...hermitCards.names, ...effectCards.names, ...itemCards.names],
@@ -248,7 +239,7 @@ export async function addCardsToDatabase() {
                     $7::text[],
                     $8::int[],
                     $9::text[]
-                );
+                ) ON CONFLICT DO NOTHING;
             `,
 			[
 				hermitCards.names,
@@ -263,6 +254,7 @@ export async function addCardsToDatabase() {
 			]
 		)
 		// Insert hermit card ability costs
+		await pool.query(sql`DELETE FROM ability_cost;`)
 		await pool.query(
 			sql`
                 INSERT INTO ability_cost (card_name,rarity,is_secondary,item_type) SELECT * FROM UNNEST (
@@ -270,7 +262,7 @@ export async function addCardsToDatabase() {
                     $2::text[],
                     $3::boolean[],
                     $4::text[]
-                );
+                ) ON CONFLICT DO NOTHING;
             `,
 			[
 				hermitCards.moveCosts[0],
@@ -286,7 +278,7 @@ export async function addCardsToDatabase() {
                     $1::text[],
                     $2::text[],
                     $3::text[]
-                );
+                ) ON CONFLICT DO NOTHING;
             `,
 			[effectCards.names, effectCards.rarities, effectCards.description]
 		)
