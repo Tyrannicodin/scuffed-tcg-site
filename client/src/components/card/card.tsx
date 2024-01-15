@@ -41,16 +41,16 @@ export function CardInfo({card}: Props) {
 
 	const getDescription = (card: Card) => {
 		if (card.type === 'effect') {
-			return (card as EffectCard).description
+			return <p className={css.description}>(card as EffectCard).description</p>
 		} else if (card.type === 'hermit') {
 			return (
-				<div>
+				<div className={css.description}>
 					{getAttackDescription((card as HermitCard).primaryAttack)}
 					{getAttackDescription((card as HermitCard).secondaryAttack)}
 				</div>
 			)
 		}
-		return ''
+		return
 	}
 
 	return (
@@ -63,7 +63,7 @@ export function CardInfo({card}: Props) {
 			<p className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>
 				★ {card.tokens ? card.tokens : 0} Tokens ★
 			</p>
-			<p className={css.description}>{getDescription(card)}</p>
+			{getDescription(card)}
 		</div>
 	)
 }

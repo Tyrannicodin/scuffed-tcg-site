@@ -4,10 +4,10 @@ import {CardInfo} from 'components/card/card'
 import { SyntheticEvent, useEffect } from 'react'
 
 type Props = {
-	cards: Card[]
+	children: Card[]
 }
 
-export function CardList({cards}: Props) {
+export function CardList({children}: Props) {
 	const handleScroll = () => {
 		const scrollpos = window.scrollY
 		console.log(scrollpos)
@@ -24,7 +24,7 @@ export function CardList({cards}: Props) {
 	return (
 		<div className={css.outerContainer}>
 			<ul onScrollCapture={handleScroll} className={css.cardList}>
-				{cards.map((card, index) => (
+				{children.map((card, index) => (
 					<CardInfo key={index} card={card} />
 				))}
 			</ul>
