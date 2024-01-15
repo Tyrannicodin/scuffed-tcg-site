@@ -1,6 +1,5 @@
 import pg from 'pg'
 import {signupResultT, Uuid} from '../../../common/types/user'
-import {Card} from '../../../common/models/card'
 import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
@@ -10,7 +9,7 @@ import {PartialCardT, RarityT} from '../../../common/types/cards'
 const {Pool} = pg
 
 // This is just for syntax highlighting, it doesn't do anything.
-const sql = (strings: TemplateStringsArray, ...expr: any[]) =>
+export const sql = (strings: TemplateStringsArray, ...expr: any[]) =>
 	strings.map((str, index) => str + (expr.length > index ? String(expr[index]) : '')).join('')
 
 export const pool = new Pool({
@@ -91,6 +90,17 @@ export async function createTables() {
 				PRIMARY KEY (user_id, card_name, rarity),
                 FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
             );
+			CREATE TABLE IF NOT EXISTS decks(
+                deck_code varchar(7) PRIMARY KEY DEFAULT substr(digest(random()::text, 'sha1')::text, 3, 7),
+				user_id uuid REFERENCES users(user_id),
+				deck_name varchar(255)
+            );
+			CREATE TABLE IF NOT EXISTS deck_cards(
+                deck_code varchar(7) REFERENCES decks(deck_code),
+                card_name varchar(255),
+                rarity varchar(255),
+                FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
+            );
         `)
 	} catch (err) {
 		console.log(err)
@@ -103,6 +113,8 @@ export async function destroyTables(): Promise<string> {
 			sql`
 				DROP TABLE ability_cost;
 				DROP TABLE libraries;
+				DROP TABLE deck_cards;
+				DROP TABLE decks;
 				DROP TABLE hermit_cards;
 				DROP TABLE effect_cards;
 				DROP TABLE cards;
