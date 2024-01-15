@@ -5,6 +5,12 @@ import css from './card.module.scss'
 import {HermitAttackTypeT} from 'common/types/cards'
 
 const costColors = ['#525252', '#ece9e9', '#fefa4c', '#59e477', '#7ff6fa', '#c188d1']
+const effectColors = {
+	'Attach': '#ffaad4',
+	'Biome': '#16C100',
+	'Single Use': '#f6b26b',
+	'Attach/Single Use': '#ff6b6b'
+}
 
 type Props = {
 	card: Card
@@ -13,25 +19,24 @@ type Props = {
 export function CardInfo({card}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
-			return (card as EffectCard).category === 'Attachable'
+			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' = (card as EffectCard).category === 'Attachable'
 				? 'Attach'
-				: (card as EffectCard).category
+				: ((card as EffectCard).category as 'Biome' | 'Single Use' | 'Attach/Single Use')
+			return <b style={{color: effectColors[effectType]}}> {effectType}</b>
 		} else if (card.type === 'hermit') {
-			return (card as HermitCard).hermitType.name
+			const hermitType = (card as HermitCard).hermitType
+			return <b style={{color: '#' + hermitType.color}}> {hermitType.name}</b>
 		}
 		return ''
 	}
 
 	const getAttackDescription = (attack: HermitAttackTypeT) => {
-		if (attack.ability) {
-			return (
-				<>
-					<b>{attack.name}</b>
-					<p>{attack.ability}</p>
-				</>
-			)
-		}
-		return ''
+		return (
+			<>
+				<b>{attack.name} - {attack.damage}</b>
+				<p>{attack.ability}</p>
+			</>
+		)
 	}
 
 	const getDescription = (card: Card) => {
@@ -51,8 +56,8 @@ export function CardInfo({card}: Props) {
 	return (
 		<div className={css.outer}>
 			<b className={css.cardName}>{card.name}</b>
-			<b> {getType(card) as string}</b>
-			<p className={css.pack}>
+			{getType(card)}
+			<p style={{color: '#'+card.expansion.color}} className={css.pack}>
 				■ {card.expansion.name} (Update {card.update}) ■
 			</p>
 			<p className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>

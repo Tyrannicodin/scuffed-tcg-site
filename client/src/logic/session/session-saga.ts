@@ -6,6 +6,18 @@ import store from 'store'
 import {getOTPCode, getUserSecret} from './session-selectors'
 import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
+import { userInfoT } from 'common/types/user'
+
+function* onLogin(userInfo: userInfoT) {
+	yield put(connect(userInfo))
+	store.dispatch({
+		type: 'GET_CARDS',
+		payload: {
+			cardCount: 10000
+		}
+	})
+	yield all([fork(cardSaga)]) //Init rest of client
+}
 
 function* verifySaga() {
 	while (true) {
@@ -35,7 +47,7 @@ function* verifySaga() {
 		})
 
 		if (login) {
-			yield put(connect(login.payload))
+			yield onLogin(login.payload)
 		} else if (failOnSend) {
 			yield put(disconnect('Signup failure: One time password timed out'))
 		} else {
@@ -85,8 +97,7 @@ export function* loginSaga() {
 	})
 
 	if (login) {
-		yield put(connect(login.payload))
-		yield all([fork(cardSaga)]) //Init rest of client
+		yield onLogin(login.payload)
 	} else if (onboard) {
 		yield put(onboarding(onboard.payload))
 		yield call(verifySaga)
