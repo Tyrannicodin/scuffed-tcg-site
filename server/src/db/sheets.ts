@@ -108,7 +108,7 @@ export function generateItemCards(types: Set<string>) {
 }
 
 function toHex(dict: any): string {
-	if (!dict.rgbColor) return '000000'
+	if (!dict.rgbColor) return 'ffffff'
 	const colors = dict.rgbColor
 	if (!colors.red && !colors.green && !colors.blue) return 'ffffff'
 	const red = colors.red ? Math.floor(colors.red * 255).toString(16) : '00'

@@ -24,3 +24,23 @@ body {
 		user-select: none;
 	}
 }
+
+@font-face {
+	font-family: Minecraft;
+	src: url('/fonts/MinecraftRegular.otf');
+}
+
+@font-face {
+	font-family: MinecraftBold;
+	src: url('/fonts/MinecraftBold.otf');
+}
+
+@font-face {
+	font-family: MinecraftItalic;
+	src: url('/fonts/MinecraftItalic.otf');
+}
+
+@font-face {
+	font-family: MinecraftBoldItalic;
+	src: url('/fonts/MinecraftBoldItalic.otf');
+}
