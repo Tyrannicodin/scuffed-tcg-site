@@ -1,6 +1,7 @@
 import CardList from 'components/card-list'
 import {getCards} from 'logic/cards/cards-selectors'
 import {useDispatch, useSelector} from 'react-redux'
+import css from './browser.module.scss'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'browser') => void
@@ -12,20 +13,17 @@ export function CardBrowser({menuSetter}: Props) {
 
 	return (
 		<>
-			<button onClick={() => menuSetter('mainMenu')}>Back</button>
-			<CardList cards={cards}></CardList>
-			<button
-				onClick={() =>
-					dispatch({
-						type: 'GET_CARDS',
-						payload: {
-							cardCount: 50,
-						},
-					})
-				}
-			>
-				Load more cards
-			</button>
+			<div className={css.header}>
+				<button onClick={() => menuSetter('mainMenu')}>Back</button>
+			</div>
+			<main className={css.main}>
+				<div className={css.cardListContainer}>
+					<CardList>{cards}</CardList>
+				</div>
+				<div className={css.deckBrowser}>
+
+				</div>
+			</main>
 		</>
 	)
 }
