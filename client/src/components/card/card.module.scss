@@ -1,24 +1,22 @@
-$bg: rgb(3, 2, 40);
+$bg: rgba(255, 255, 255, 0.084);
+@import 'components/card-list/card-list.module';
 
 .outer {
 	width: 100%;
 	display: flex;
-	flex-direction: row;
-	align-items: center;
+	flex-direction: column;
+	align-items: left;
 }
 
-.copies {
+.infobox {
 	color: white;
 	font-family: Minecraft;
-	font-size: 25px;
-	letter-spacing: 5px;
-	padding: 5px;
-	margin: 5px;
+	background-color: $bg;
+	padding: 1vh;
+	margin-left: 10vh;
+	margin-top: $spacing;
 
 	background-color: $bg;
-
-	border-radius: 1vh;
-	border: 0.75vh solid lighten($bg, 10);
 }
 
 .card {
@@ -26,15 +24,18 @@ $bg: rgb(3, 2, 40);
 	background-color: $bg;
 	padding: 1vh;
 
-	border-radius: 1vh;
-	border: 0.75vh solid lighten($bg, 10);
-
 	color: whitesmoke;
 	font-family: Minecraft;
+	text-shadow: #252525 1px 2px 2px;
 
-	&.mythic {
-		border-color: rgb(158, 14, 158);
-	}
+	display: flex;
+	align-items: baseline;
+	box-sizing: border-box;
+	border: 2px solid transparent;
+}
+
+.card:hover {
+	border: 2px solid whitesmoke;
 }
 
 .cardName {
@@ -46,5 +47,10 @@ $bg: rgb(3, 2, 40);
 }
 
 .description {
-	color: rgb(158, 14, 158);
+	color: rgb(224, 224, 224);
+}
+
+.rightAligned {
+	text-align: right;
+	flex-grow: 1;
 }

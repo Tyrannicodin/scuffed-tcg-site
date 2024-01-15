@@ -70,19 +70,21 @@ export function CardInfo({card}: Props) {
 	return (
 		<div className={css.outer}>
 			<div className={classNames(css.card, card.rarity === 'Mythic' ? css.mythic : null)}>
-				<b className={css.cardName}>{card.name}</b>
-				{getType(card)}
-				<p style={{color: '#' + card.expansion.color}} className={css.pack}>
-					■ {card.expansion.name} (Update {card.update}) ■
-				</p>
-				<p className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>
-					★ {card.tokens ? card.tokens : 0} Tokens ★
-				</p>
-				{getDescription(card)}
+				<div>
+					<b className={css.cardName}>{card.name}</b>
+					{getType(card)}{' '}
+					<span style={{color: '#' + card.expansion.color}} className={css.pack}>
+						■ {card.expansion.name} (Update {card.update}) ■{' '}
+					</span>
+					<span className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>
+						★ {card.tokens ? card.tokens : 0} Tokens ★
+					</span>
+				</div>
+				<div className={css.rightAligned}>x2</div>
 			</div>
-			<div>
-				<p className={css.copies}>x2</p>
-			</div>
+			{(card.type === 'effect' || card.type === 'hermit') && (
+				<div className={css.infobox}>{getDescription(card)}</div>
+			)}
 		</div>
 	)
 }
