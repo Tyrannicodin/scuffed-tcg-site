@@ -6,7 +6,7 @@ import {Card} from '../../../common/models/card'
 import { Socket } from 'socket.io'
 
 function* sendCards(action: UnknownAction) {
-	const cardList = store.getState().cards.cards
+	const cardList = [...store.getState().cards.cards]
     const payload = action.payload as {start: number, cardCount:number}
 	console.log(`${payload.start}:${payload.start+payload.cardCount}`);
 
