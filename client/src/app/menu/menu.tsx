@@ -8,5 +8,18 @@ type Props = {
 }
 
 export function MainMenu({menuSetter}: Props) {
-	return <button onClick={() => menuSetter('browser')}>Card Browser</button>
+	return (
+		<div>
+			<div className={css.buttonMenu}>
+				<button onClick={() => menuSetter('browser')}>Card Browser</button>
+				<button>Get Cards</button>
+				<button>Trading Hub</button>
+				<div className={css.horizontalButtons}>
+					<button className={css.maxWidth}>Import Cards</button>
+					<button className={css.maxWidth}>User Settings</button>
+				</div>
+				<button>Log Out</button>
+			</div>
+		</div>
+	)
 }
