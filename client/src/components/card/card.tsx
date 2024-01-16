@@ -85,7 +85,7 @@ export function CardInfo({card, copies}: Props) {
 						■ {card.expansion.name} (Update {card.update}) ■{' '}
 					</span>
 					<span className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>
-						★ {card.tokens ? card.tokens : 0} Tokens ★
+						★ {card.tokens ? card.tokens : 0} Token{card.tokens === 1 ? '' : 's'} ★
 					</span>
 				</div>
 				<div className={css.rightAligned}>{getCopies(copies)}</div>
