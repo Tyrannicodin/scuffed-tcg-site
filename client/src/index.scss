@@ -1,3 +1,7 @@
+$windowBackground: #000000ac;
+$backgroundBlur: blur(4px);
+$mainBorder: solid 2px black;
+
 * {
 	box-sizing: border-box;
 	padding: 0;
@@ -18,11 +22,39 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-size: 1rem;
-	background: beige;
+	background-image: url('../images/backgrounds/jackground.png');
 
 	* {
 		user-select: none;
 	}
+}
+
+input {
+	background-color: rgb(69, 69, 69);
+	font-family: Minecraft;
+	color: white;
+	border: $mainBorder;
+	padding: 1vh;
+	border-radius: 0px;
+}
+
+button {
+	background: linear-gradient(#d7d7d7 85%, #494949 15%);
+	font-family: Minecraft;
+	color: black;
+	border: $mainBorder;
+	padding: 1vh;
+	border-radius: 0px;
+}
+
+button:focus {
+	background: linear-gradient(#474747 85%, #626262 15%);
+}
+
+input:focus {
+	border: 1px solid white;
+	border-radius: 0px;
+	outline-color: white;
 }
 
 @font-face {

@@ -3,6 +3,11 @@ export type PartialCardT = {
 	rarity: RarityT
 }
 
+export type PartialCardWithCopiesT = {
+	card: PartialCardT
+	copies: number
+}
+
 export type HermitAttackTypeT = {
 	name: string
 	damage: number

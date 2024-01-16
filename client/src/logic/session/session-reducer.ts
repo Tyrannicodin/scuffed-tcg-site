@@ -2,6 +2,7 @@ import {UnknownAction} from 'redux'
 
 type SessionState = {
 	username: string
+	uuid: string
 	password: string
 	email: string
 	userSecret: string
@@ -12,6 +13,7 @@ type SessionState = {
 
 const defaultState: SessionState = {
 	username: '',
+	uuid: '',
 	password: '',
 	email: '',
 	userSecret: '',
@@ -34,6 +36,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 			return {
 				...state,
 				username: '',
+				uuid: '',
 				password: '',
 				email: '',
 				userSecret: '',

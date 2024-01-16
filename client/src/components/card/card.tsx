@@ -15,9 +15,10 @@ const effectColors = {
 
 type Props = {
 	card: Card
+	copies: number | undefined
 }
 
-export function CardInfo({card}: Props) {
+export function CardInfo({card, copies}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
 			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' =
@@ -63,8 +64,15 @@ export function CardInfo({card}: Props) {
 					{getAttackDescription((card as HermitCard).secondaryAttack)}
 				</div>
 			)
+		} else if (card.type === 'item') {
+			return <p>Counts as 2 items.</p>
 		}
 		return
+	}
+
+	const getCopies = (copies: number | undefined) => {
+		if (copies) return 'x' + copies
+		return 'x0'
 	}
 
 	return (
@@ -80,11 +88,9 @@ export function CardInfo({card}: Props) {
 						★ {card.tokens ? card.tokens : 0} Tokens ★
 					</span>
 				</div>
-				<div className={css.rightAligned}>x2</div>
+				<div className={css.rightAligned}>{getCopies(copies)}</div>
 			</div>
-			{(card.type === 'effect' || card.type === 'hermit') && (
-				<div className={css.infobox}>{getDescription(card)}</div>
-			)}
+			<div className={css.infobox}>{getDescription(card)}</div>
 		</div>
 	)
 }

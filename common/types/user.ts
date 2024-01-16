@@ -1,5 +1,6 @@
 export type userInfoT = {
 	username: string
+	uuid: string
 	userSecret: string
 }
 

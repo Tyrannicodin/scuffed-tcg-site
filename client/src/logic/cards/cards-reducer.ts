@@ -1,10 +1,10 @@
 import {Card} from 'common/models/card'
-import {PartialCardT} from 'common/types/cards'
+import {PartialCardWithCopiesT} from 'common/types/cards'
 import {UnknownAction} from 'redux'
 
 type CardsState = {
 	cards: Card[]
-	library: PartialCardT[]
+	library: PartialCardWithCopiesT[]
 }
 
 const defaultState: CardsState = {
@@ -23,7 +23,7 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 		case 'UPDATE_LIBRARY':
 			return {
 				...state,
-				library: action.payload as PartialCardT[],
+				library: action.payload as PartialCardWithCopiesT[],
 			}
 		default:
 			return state

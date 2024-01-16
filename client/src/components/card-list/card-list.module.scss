@@ -1,3 +1,5 @@
+@import '../../index';
+
 $spacing: 0.6vh;
 
 .outerContainer {
@@ -6,9 +8,10 @@ $spacing: 0.6vh;
 	display: flex;
 	justify-content: center;
 	scroll-behavior: smooth;
-	scrollbar-color: white;
-	background-color: #000000d6;
-	border: 2px solid black;
+	scrollbar-color: #ffffff;
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
 	overflow-y: scroll;
 }
 

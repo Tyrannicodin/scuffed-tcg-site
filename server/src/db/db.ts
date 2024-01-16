@@ -4,7 +4,7 @@ import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
-import {PartialCardT, RarityT} from '../../../common/types/cards'
+import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 
 const {Pool} = pg
 
@@ -202,6 +202,33 @@ export async function selectUserRowFromUuid(uuid: Uuid): Promise<Record<string, 
 		console.log(err)
 	}
 	return null
+}
+
+export async function selectUserCards(uuid: Uuid): Promise<Array<PartialCardWithCopiesT>> {
+	try {
+		const result = await pool.query(
+			sql`
+                SELECT * FROM libraries WHERE user_id = $1;
+            `,
+			[uuid]
+		)
+
+		if (!result.rows) return []
+
+		return result.rows.map((row: any) => {
+			const partialCard: PartialCardWithCopiesT = {
+				card: {
+					name: row.card_name,
+					rarity: row.rarity,
+				},
+				copies: row.copies,
+			}
+			return partialCard
+		})
+	} catch (err) {
+		console.log(err)
+	}
+	return []
 }
 
 export async function addCardsToDatabase() {

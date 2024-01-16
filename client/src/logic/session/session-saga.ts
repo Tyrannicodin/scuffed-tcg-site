@@ -6,15 +6,19 @@ import store from 'store'
 import {getOTPCode, getUserSecret} from './session-selectors'
 import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
-import { userInfoT } from 'common/types/user'
+import {userInfoT} from 'common/types/user'
 
 function* onLogin(userInfo: userInfoT) {
 	yield put(connect(userInfo))
 	store.dispatch({
 		type: 'GET_CARDS',
 		payload: {
-			cardCount: 10000
-		}
+			cardCount: 10000,
+		},
+	})
+	store.dispatch({
+		type: 'GET_LIBRARY',
+		payload: {uuid: userInfo.uuid},
 	})
 	yield all([fork(cardSaga)]) //Init rest of client
 }

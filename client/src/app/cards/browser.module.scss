@@ -1,12 +1,38 @@
+@import '../../index';
 
 .main {
-    display: flex;
+	display: flex;
+	gap: 2vh;
+	margin: 2vh;
+}
+
+.backButton {
+	width: 100%;
+}
+
+.sidebar {
+	width: 15%;
+	background-color: $windowBackground;
+	border: $mainBorder;
+	backdrop-filter: $backgroundBlur;
+	padding: 1vh;
+	font-family: Minecraft;
+	color: whitesmoke;
+}
+
+.searchBar {
+	padding: 1vh;
 }
 
 .cardListContainer {
-    width: 65%;
+	width: 60%;
+	display: flex;
+	gap: 2vh;
+	flex-direction: column;
 }
 
 .deckBrowser {
-    width: 35%;
+	width: 25%;
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
 }

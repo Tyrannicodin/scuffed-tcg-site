@@ -37,6 +37,7 @@ async function loginSaga(action: any) {
 		payload: {
 			username,
 			userSecret,
+			uuid,
 		},
 	})
 }
@@ -67,12 +68,14 @@ function* signUpSaga(action: any) {
 	}
 
 	const userSecret = uuidv4()
+	const {uuid} = yield call(selectUserUUID, username, password)
 
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
 		payload: {
 			username,
 			userSecret,
+			uuid,
 		},
 	})
 
@@ -117,6 +120,7 @@ function* signUpSaga(action: any) {
 		payload: {
 			username,
 			userSecret,
+			uuid,
 		},
 	})
 }

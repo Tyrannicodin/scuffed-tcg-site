@@ -12,6 +12,10 @@ export const getUserSecret = (state: RootState): string => {
 	return getSession(state).userSecret
 }
 
+export const getUuid = (state: RootState): string => {
+	return getSession(state).uuid
+}
+
 export const getOTPCode = (state: RootState): string => {
 	return getSession(state).otpCode
 }

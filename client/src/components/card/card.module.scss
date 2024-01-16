@@ -1,4 +1,4 @@
-$bg: rgba(255, 255, 255, 0.084);
+$bg: rgba(255, 255, 255, 0.127);
 @import 'components/card-list/card-list.module';
 
 .outer {
@@ -30,7 +30,6 @@ $bg: rgba(255, 255, 255, 0.084);
 
 	display: flex;
 	align-items: baseline;
-	box-sizing: border-box;
 	border: 2px solid transparent;
 }
 
