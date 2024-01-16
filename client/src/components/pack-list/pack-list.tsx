@@ -1,17 +1,17 @@
-import {Card} from 'common/models/card'
-import css from './card-list.module.scss'
-import {CardInfo} from 'components/card/card'
+import css from './pack-list.module.scss'
 import {SyntheticEvent, useEffect} from 'react'
 import {PartialCardWithCopiesT} from 'common/types/cards'
+import {PackInfo} from 'components/pack/pack'
+import {Pack} from 'common/models/pack'
 
 type Props = {
-	children: Card[]
-	library: PartialCardWithCopiesT[]
+	children: Pack[]
+	discounted: PartialCardWithCopiesT[]
 	showDescription: boolean
 	purchasable: boolean
 }
 
-export function CardList({children, library, showDescription, purchasable}: Props) {
+export function PackList({children, discounted, showDescription, purchasable}: Props) {
 	const handleScroll = () => {
 		const scrollpos = window.scrollY
 		console.log(scrollpos)
@@ -28,16 +28,10 @@ export function CardList({children, library, showDescription, purchasable}: Prop
 	return (
 		<div className={css.outerContainer}>
 			<ul onScrollCapture={handleScroll} className={css.cardList}>
-				{children.map((card, index) => (
-					<CardInfo
+				{children.map((pack, index) => (
+					<PackInfo
 						key={index}
-						card={card}
-						copies={
-							library.find(
-								(thisCard) =>
-									thisCard.card.name === card.name && thisCard.card.rarity === card.rarity
-							)?.copies
-						}
+						pack={pack}
 						purchasable={purchasable}
 						showDescription={showDescription}
 					/>

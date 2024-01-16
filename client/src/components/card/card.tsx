@@ -16,9 +16,11 @@ const effectColors = {
 type Props = {
 	card: Card
 	copies: number | undefined
+	showDescription: boolean
+	purchasable: boolean
 }
 
-export function CardInfo({card, copies}: Props) {
+export function CardInfo({card, copies, showDescription, purchasable}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
 			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' =
@@ -82,15 +84,16 @@ export function CardInfo({card, copies}: Props) {
 					<b className={css.cardName}>{card.name}</b>
 					{getType(card)}{' '}
 					<span style={{color: '#' + card.expansion.color}} className={css.pack}>
-						■ {card.expansion.name} (Update {card.update}) ■{' '}
+						■ {card.expansion.name} ■{' '}
 					</span>
 					<span className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>
 						★ {card.tokens ? card.tokens : 0} Token{card.tokens === 1 ? '' : 's'} ★
 					</span>
 				</div>
 				<div className={css.rightAligned}>{getCopies(copies)}</div>
+				{purchasable && <button className={(css.rightAligned, css.purchaseButton)}>Buy</button>}
 			</div>
-			<div className={css.infobox}>{getDescription(card)}</div>
+			{showDescription && <div className={css.infobox}>{getDescription(card)}</div>}
 		</div>
 	)
 }
