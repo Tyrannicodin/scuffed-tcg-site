@@ -496,15 +496,23 @@ export async function addCardsToPlayer(uuid: string, cards: Array<PartialCardT>)
 	const flippedCards: {
 		names: Array<string>
 		rarities: Array<RarityT>
+		copies: Array<number>
 	} = {
 		names: [],
 		rarities: [],
+		copies: [],
 	}
 
-	cards.forEach((card) => {
+	cards.forEach((card, index) => {
+		if (cards.findIndex((v) => v.name === card.name && v.rarity === card.rarity) < index) return
 		flippedCards.names.push(card.name)
 		flippedCards.rarities.push(card.rarity)
+		flippedCards.copies.push(
+			cards.filter((v) => v.name === card.name && v.rarity === card.rarity).length
+		)
 	})
+
+	console.log(flippedCards)
 
 	try {
 		await pool.query(
@@ -517,10 +525,10 @@ export async function addCardsToPlayer(uuid: string, cards: Array<PartialCardT>)
 				) ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + 1;
 			`,
 			[
-				Array(cards.length).fill(uuid),
+				Array(flippedCards.names.length).fill(uuid),
 				flippedCards.names,
 				flippedCards.rarities,
-				Array(cards.length).fill(1),
+				flippedCards.copies,
 			]
 		)
 		return 'success'

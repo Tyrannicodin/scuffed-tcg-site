@@ -36,7 +36,7 @@ export class Pack {
 	private getWeight(rarity: RarityT): number {
 		if (rarity === 'Common') return 64
 		if (rarity === 'Rare') return 32
-		if (rarity === 'Ultra rare') return 8
+		if (rarity === 'Ultra Rare') return 8
 		return 1
 	}
 

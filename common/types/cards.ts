@@ -15,7 +15,7 @@ export type HermitAttackTypeT = {
 	ability: string | null
 }
 
-export type RarityT = 'Common' | 'Rare' | 'Ultra rare' | 'Mythic'
+export type RarityT = 'Common' | 'Rare' | 'Ultra Rare' | 'Mythic'
 
 export type EffectTypeT = 'Attachable' | 'Single Use' | 'Biome'
 
