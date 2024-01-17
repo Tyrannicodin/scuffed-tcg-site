@@ -40,9 +40,7 @@ type dailyshopDefs = {
 	effectCards: Array<Card>
 }
 
-function getDailyShop(): dailyshopDefs {
-	const cards = useSelector(getCards)
-
+function getDailyShop(cards: Array<Card>): dailyshopDefs {
 	const hermitCards = cards.filter((card) => card.type === 'hermit')
 	const effectCards = cards.filter((card) => card.type === 'effect')
 
@@ -67,8 +65,32 @@ function getDailyShop(): dailyshopDefs {
 
 export function Shop({menuSetter}: Props) {
 	const dispatch = useDispatch()
-	const {rolledPacks, hermitCards, effectCards} = getDailyShop()
+
+	const cards = useSelector(getCards)
+	const library = useSelector(getLibrary)
+	const {rolledPacks, hermitCards, effectCards} = getDailyShop(cards)
 	const [showPackModal, setShowPackModal] = useState<boolean>(false)
+
+	const onCardPurchase = (card: Card) => {
+		dispatch({
+			type: 'CARDS_ROLLED',
+			payload: {
+				cards: [card],
+			},
+		})
+		setShowPackModal(true)
+	}
+
+	const onPackPurchase = (pack: Pack) => {
+		const results = pack.roll(cards)
+		dispatch({
+			type: 'CARDS_ROLLED',
+			payload: {
+				cards: results,
+			},
+		})
+		setShowPackModal(true)
+	}
 
 	return (
 		<>
@@ -83,7 +105,12 @@ export function Shop({menuSetter}: Props) {
 					<div className={css.packs}>
 						<p>Buy packs!</p>
 					</div>
-					<PackList children={packs} showDescription={true} purchasable={true} discounted={[]} />
+					<PackList
+						children={packs}
+						showDescription={true}
+						onPurchase={onPackPurchase}
+						discounted={[]}
+					/>
 				</div>
 				<div className={css.right}>
 					<div className={css.availableHermits}>
@@ -92,18 +119,17 @@ export function Shop({menuSetter}: Props) {
 					<CardList
 						children={hermitCards}
 						showDescription={false}
-						purchasable={true}
-						library={[]}
+						onPurchase={onCardPurchase}
+						library={library}
 					/>
 					<div className={css.availableEffects}>
 						<p>Daily Effects!</p>
-						<button onClick={() => setShowPackModal(true)}></button>
 					</div>
 					<CardList
 						children={effectCards}
 						showDescription={false}
-						purchasable={true}
-						library={[]}
+						onPurchase={onCardPurchase}
+						library={library}
 					/>
 				</div>
 			</main>

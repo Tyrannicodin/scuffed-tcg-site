@@ -8,10 +8,10 @@ type Props = {
 	children: Pack[]
 	discounted: PartialCardWithCopiesT[]
 	showDescription: boolean
-	purchasable: boolean
+	onPurchase: ((pack: Pack) => void) | null
 }
 
-export function PackList({children, discounted, showDescription, purchasable}: Props) {
+export function PackList({children, discounted, showDescription, onPurchase}: Props) {
 	const handleScroll = () => {
 		const scrollpos = window.scrollY
 		console.log(scrollpos)
@@ -32,7 +32,7 @@ export function PackList({children, discounted, showDescription, purchasable}: P
 					<PackInfo
 						key={index}
 						pack={pack}
-						purchasable={purchasable}
+						onPurchase={onPurchase}
 						showDescription={showDescription}
 					/>
 				))}

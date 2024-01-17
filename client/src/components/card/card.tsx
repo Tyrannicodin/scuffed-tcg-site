@@ -4,6 +4,7 @@ import {HermitCard} from 'common/models/hermit-card'
 import css from './card.module.scss'
 import {HermitAttackTypeT} from 'common/types/cards'
 import classNames from 'classnames'
+import {useDispatch} from 'react-redux'
 
 const costColors = ['#525252', '#ece9e9', '#fefa4c', '#59e477', '#7ff6fa', '#c188d1']
 const effectColors = {
@@ -17,10 +18,10 @@ type Props = {
 	card: Card
 	copies: number | undefined
 	showDescription: boolean
-	purchasable: boolean
+	onPurchase: ((card: Card) => void) | null
 }
 
-export function CardInfo({card, copies, showDescription, purchasable}: Props) {
+export function CardInfo({card, copies, showDescription, onPurchase}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
 			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' =
@@ -77,6 +78,11 @@ export function CardInfo({card, copies, showDescription, purchasable}: Props) {
 		return 'x0'
 	}
 
+	const cardPurchased = () => {
+		if (onPurchase === null) return
+		onPurchase(card)
+	}
+
 	return (
 		<div className={css.outer}>
 			<div className={classNames(css.card, card.rarity === 'Mythic' ? css.mythic : null)}>
@@ -91,7 +97,14 @@ export function CardInfo({card, copies, showDescription, purchasable}: Props) {
 					</span>
 				</div>
 				<div className={css.rightAligned}>{getCopies(copies)}</div>
-				{purchasable && <button className={(css.rightAligned, css.purchaseButton)}>Buy</button>}
+				{onPurchase && (
+					<button
+						onClick={() => cardPurchased()}
+						className={(css.rightAligned, css.purchaseButton)}
+					>
+						Buy
+					</button>
+				)}
 			</div>
 			{showDescription && <div className={css.infobox}>{getDescription(card)}</div>}
 		</div>

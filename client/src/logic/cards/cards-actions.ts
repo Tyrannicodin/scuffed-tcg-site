@@ -10,3 +10,8 @@ export const updateLibrary = (library: PartialCardWithCopiesT[]) => ({
 	type: 'UPDATE_LIBRARY' as const,
 	payload: library,
 })
+
+export const updateRollResults = (cards: Card[]) => ({
+	type: 'ROLL_VERIFIED' as const,
+	payload: cards,
+})

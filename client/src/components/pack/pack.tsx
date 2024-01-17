@@ -5,10 +5,15 @@ import {Pack} from 'common/models/pack'
 type Props = {
 	pack: Pack
 	showDescription: boolean
-	purchasable: boolean
+	onPurchase: ((pack: Pack) => void) | null
 }
 
-export function PackInfo({pack, showDescription, purchasable}: Props) {
+export function PackInfo({pack, showDescription, onPurchase}: Props) {
+	const packPurchased = () => {
+		if (onPurchase === null) return
+		onPurchase(pack)
+	}
+
 	return (
 		<div className={css.outer}>
 			<div className={classNames(css.card)}>
@@ -20,7 +25,14 @@ export function PackInfo({pack, showDescription, purchasable}: Props) {
 					</span>
 				</div>
 				<div className={css.rightAligned}></div>
-				{purchasable && <button className={(css.rightAligned, css.purchaseButton)}>Buy</button>}
+				{onPurchase && (
+					<button
+						onClick={() => packPurchased()}
+						className={(css.rightAligned, css.purchaseButton)}
+					>
+						Buy
+					</button>
+				)}
 			</div>
 			{showDescription && <div className={css.infobox}>{pack.description}</div>}
 		</div>

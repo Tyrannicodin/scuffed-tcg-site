@@ -5,11 +5,13 @@ import {UnknownAction} from 'redux'
 type CardsState = {
 	cards: Card[]
 	library: PartialCardWithCopiesT[]
+	lastRollResult: Card[]
 }
 
 const defaultState: CardsState = {
 	cards: [],
 	library: [],
+	lastRollResult: [],
 }
 
 const cardsReducer = (state = defaultState, action: UnknownAction): CardsState => {
@@ -24,6 +26,11 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 			return {
 				...state,
 				library: action.payload as PartialCardWithCopiesT[],
+			}
+		case 'ROLL_VERIFIED':
+			return {
+				...state,
+				lastRollResult: action.payload as Card[],
 			}
 		default:
 			return state

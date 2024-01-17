@@ -1,4 +1,4 @@
-import {cardObjectsResult, createCardObjects, selectUserCards} from 'db/db'
+import {addCardsToPlayer, cardObjectsResult, createCardObjects, selectUserCards} from 'db/db'
 import {UnknownAction} from 'redux'
 import store from 'stores'
 import {call, takeEvery} from 'typed-redux-saga'
@@ -26,6 +26,17 @@ function* sendLibrary(action: UnknownAction) {
 	})
 }
 
+function* verifyCardRolls(action: UnknownAction) {
+	const payload = action.payload as {uuid: Uuid; cards: Array<Card>}
+	const result: string = yield call(addCardsToPlayer, payload.uuid, payload.cards)
+	if (result !== 'success') return
+	const library: Array<PartialCardWithCopiesT> = yield call(selectUserCards, payload.uuid)
+	;(action.socket as Socket).emit('ROLL_VERIFIED', {
+		type: 'ROLL_VERIFIED',
+		payload: payload.cards,
+	})
+}
+
 function* loadCardsSaga() {
 	const {hermitCards, effectCards, itemCards}: cardObjectsResult = yield createCardObjects()
 	const cards = ([] as Card[]).concat(hermitCards).concat(effectCards).concat(itemCards)
@@ -40,4 +51,5 @@ export function* cardsSaga() {
 	yield call(loadCardsSaga)
 	yield* takeEvery('GET_CARDS', sendCards)
 	yield* takeEvery('GET_LIBRARY', sendLibrary)
+	yield* takeEvery('CARDS_ROLLED', verifyCardRolls)
 }

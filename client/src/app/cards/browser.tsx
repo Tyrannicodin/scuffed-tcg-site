@@ -60,7 +60,7 @@ export function CardBrowser({menuSetter}: Props) {
 					<CardList
 						children={filteredCards}
 						showDescription={true}
-						purchasable={false}
+						onPurchase={null}
 						library={library}
 					/>
 				</div>
