@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@reduxjs/toolkit": "^2.0.1",
     "@types/gapi": "^0.0.47",
     "@types/uuid": "^9.0.7",
