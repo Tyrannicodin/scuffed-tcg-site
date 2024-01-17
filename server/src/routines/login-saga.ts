@@ -24,7 +24,7 @@ async function loginSaga(action: any) {
 		socket.emit('FAIL_LOGIN', {
 			type: 'FAIL_LOGIN',
 			payload: {
-				message: 'Login failed: Invalid username or password',
+				message: 'Login failed: Incorrect username or password',
 			},
 		})
 		return
@@ -108,7 +108,7 @@ function* signUpSaga(action: any) {
 			socket.emit('AUTH_FAIL', {
 				type: 'AUTH_FAIL',
 				payload: {
-					message: 'Signup failed: OTP timed out',
+					message: 'OTP timed out',
 				},
 			})
 			return

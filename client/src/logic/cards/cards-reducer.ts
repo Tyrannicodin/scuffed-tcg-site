@@ -13,7 +13,7 @@ const defaultState: CardsState = {
 }
 
 const cardsReducer = (state = defaultState, action: UnknownAction): CardsState => {
-	if (!action.payload) return state
+	if (action.payload === undefined) return state
 	switch (action.type) {
 		case 'NEW_CARDS':
 			return {
