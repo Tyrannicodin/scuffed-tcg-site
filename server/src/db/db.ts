@@ -522,7 +522,9 @@ export async function addCardsToPlayer(uuid: string, cards: Array<PartialCardT>)
 					$2::text[],
 					$3::text[],
 					$4::int[]
-				) ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + 1;
+				) ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + (SELECT * FROM UNNEST (
+					$4::int[]
+				));
 			`,
 			[
 				Array(flippedCards.names.length).fill(uuid),
