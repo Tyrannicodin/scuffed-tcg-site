@@ -8,20 +8,6 @@ import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {userInfoT} from 'common/types/user'
 
-function validPassword(password: string, retyped: string | null): boolean {
-	if (retyped !== null && password !== retyped) return false
-	
-	return true
-}
-
-function validEmail(email: string): boolean {
-	return true
-}
-
-function validUsername(username:string): boolean {
-	return true
-}
-
 function* onLogin(userInfo: userInfoT) {
 	yield put(connect(userInfo))
 	store.dispatch({
