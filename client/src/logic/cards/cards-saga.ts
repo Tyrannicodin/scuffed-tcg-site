@@ -31,6 +31,7 @@ function* newCardsSaga(action: UnknownAction) {
 
 import {getUuid} from 'logic/session/session-selectors'
 import {PartialCardWithCopiesT} from 'common/types/cards'
+import {PastPurchasesT} from 'common/types/user'
 
 function* updateLibrarySaga(action: UnknownAction) {
 	const state = store.getState()
@@ -53,11 +54,20 @@ function* updateLibrarySaga(action: UnknownAction) {
 function* lastRollResultSaga(action: UnknownAction) {
 	const state = store.getState()
 	const uuid = getUuid(state)
-	const initialPayload = action.payload as {cards: Array<Card>}
+	const initialPayload = action.payload as {
+		cards: Array<Card>
+		metadata: PastPurchasesT
+		cost: number
+	}
 
 	socket.emit('CARDS_ROLLED', {
 		type: 'CARDS_ROLLED',
-		payload: {cards: initialPayload.cards, uuid: uuid},
+		payload: {
+			cards: initialPayload.cards,
+			uuid: uuid,
+			metadata: initialPayload.metadata,
+			cost: initialPayload.cost,
+		},
 	})
 
 	const {payload}: {payload: Array<Card>} = yield receiveMsg('ROLL_VERIFIED')

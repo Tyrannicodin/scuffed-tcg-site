@@ -1,16 +1,16 @@
 import {Card} from 'common/models/card'
-import {PartialCardWithCopiesT} from 'common/types/cards'
+import {UserInfoT} from 'common/types/user'
 import {UnknownAction} from 'redux'
 
 type CardsState = {
 	cards: Card[]
-	library: PartialCardWithCopiesT[]
+	library: UserInfoT
 	lastRollResult: Card[]
 }
 
 const defaultState: CardsState = {
 	cards: [],
-	library: [],
+	library: {library: [], tokens: 0, pastPurchases: []},
 	lastRollResult: [],
 }
 
@@ -25,7 +25,7 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 		case 'UPDATE_LIBRARY':
 			return {
 				...state,
-				library: action.payload as PartialCardWithCopiesT[],
+				library: action.payload as UserInfoT,
 			}
 		case 'ROLL_VERIFIED':
 			return {

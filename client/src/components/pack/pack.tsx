@@ -2,16 +2,17 @@ import css from './pack.module.scss'
 import classNames from 'classnames'
 import {HermitCard} from 'common/models/hermit-card'
 import {Pack} from 'common/models/pack'
-import {ExpansionT, HermitTypeT, PackOptionsT} from 'common/types/cards'
+import {PackOptionsT} from 'common/types/cards'
 import Dropdown from 'components/dropdown'
-import {getCards} from 'logic/cards/cards-selectors'
+import {getCards, getPastPurchases} from 'logic/cards/cards-selectors'
 import {useState} from 'react'
 import {useSelector} from 'react-redux'
 
 type Props = {
 	pack: Pack
 	showDescription: boolean
-	onPurchase: ((pack: Pack, options: Array<PackOptionsT>) => void) | null
+	onPurchase: ((pack: Pack, options: Array<PackOptionsT>, discounted: boolean) => void) | null
+	discounted: boolean
 }
 
 type DropdownT = {
@@ -19,12 +20,18 @@ type DropdownT = {
 	option: PackOptionsT
 }
 
-export function PackInfo({pack, showDescription, onPurchase}: Props) {
+export function PackInfo({pack, showDescription, discounted, onPurchase}: Props) {
 	const [dropdownSettings, setDropdownSettings] = useState<Array<DropdownT>>([])
 	const cards = useSelector(getCards)
+	const pastPurchases = useSelector(getPastPurchases)
 
 	const expansions: Set<string> = new Set([])
 	const types: Set<string> = new Set([])
+
+	const actuallyDiscounted =
+		!pastPurchases.some((pur) => pur.purchase.name === pack.name) && discounted
+
+	const tokenCost = actuallyDiscounted ? Math.floor(pack.tokens / 2) : pack.tokens
 
 	cards.forEach((card) => {
 		expansions.add(card.expansion.name)
@@ -51,7 +58,8 @@ export function PackInfo({pack, showDescription, onPurchase}: Props) {
 
 		onPurchase(
 			pack,
-			settings.map((dropdown) => dropdown.option)
+			settings.map((dropdown) => dropdown.option),
+			actuallyDiscounted
 		)
 	}
 
@@ -62,44 +70,49 @@ export function PackInfo({pack, showDescription, onPurchase}: Props) {
 					<b className={css.cardName}>{pack.name}</b>
 					<span>
 						{' '}
-						- {pack.tokens ? pack.tokens : 0} Token{pack.tokens === 1 ? '' : 's'}
+						- {tokenCost} Token
+						{tokenCost === 1 ? '' : 's'}
 					</span>
 				</div>
 				<div className={css.rightAligned}></div>
-				{Array(pack.maxFilters)
-					.fill('')
-					.map((element, index) => (
-						<Dropdown
-							options={[
-								{group: 'Types', value: [...types]},
-								{group: 'Expansions', value: [...expansions]},
-							]}
-							id={'' + index}
-							action={(option, dropdownId) => {
-								const newElement: DropdownT = {
-									dropdownId: dropdownId,
-									option: {
-										value: option,
-										type: types.has(option) ? 'hermitType' : 'expansion',
-									},
-								}
-								const newSettings = dropdownSettings
-								newSettings.filter((e) => e.dropdownId === dropdownId)
-								newSettings.push(newElement)
-								setDropdownSettings(newSettings)
-							}}
-						/>
-					))}
 				{onPurchase && (
 					<button
 						onClick={() => packPurchased()}
 						className={(css.rightAligned, css.purchaseButton)}
 					>
-						Buy
+						{actuallyDiscounted ? <span className={css.discount}>Buy 50% Off!</span> : 'Buy'}
 					</button>
 				)}
 			</div>
-			{showDescription && <div className={css.infobox}>{pack.description}</div>}
+			{showDescription && (
+				<div className={css.infobox}>
+					<div>{pack.description}</div>
+					{Array(pack.maxFilters)
+						.fill('')
+						.map((element, index) => (
+							<Dropdown
+								options={[
+									{group: 'Types', value: [...types]},
+									{group: 'Expansions', value: [...expansions]},
+								]}
+								id={'' + index}
+								action={(option, dropdownId) => {
+									const newElement: DropdownT = {
+										dropdownId: dropdownId,
+										option: {
+											value: option,
+											type: types.has(option) ? 'hermitType' : 'expansion',
+										},
+									}
+									const newSettings = dropdownSettings
+									newSettings.filter((e) => e.dropdownId === dropdownId)
+									newSettings.push(newElement)
+									setDropdownSettings(newSettings)
+								}}
+							/>
+						))}
+				</div>
+			)}
 		</div>
 	)
 }

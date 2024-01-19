@@ -51,6 +51,11 @@ button:active {
 	background: linear-gradient(#494949 85%, #626262 15%);
 }
 
+button:disabled {
+	background: #494949;
+	color: gray;
+}
+
 input:focus {
 	border: 1px solid white;
 	border-radius: 0px;

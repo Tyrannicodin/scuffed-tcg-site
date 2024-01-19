@@ -3,6 +3,10 @@ export type PartialCardT = {
 	rarity: RarityT
 }
 
+export type PartialPackT = {
+	name: string
+}
+
 export type PartialCardWithCopiesT = {
 	card: PartialCardT
 	copies: number

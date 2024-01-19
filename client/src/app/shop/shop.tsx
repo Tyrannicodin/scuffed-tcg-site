@@ -1,5 +1,5 @@
 import CardList from 'components/card-list'
-import {getCards, getLibrary} from 'logic/cards/cards-selectors'
+import {getCards, getLibrary, getTokens} from 'logic/cards/cards-selectors'
 import {useDispatch, useSelector} from 'react-redux'
 import css from './shop.module.scss'
 import {useState} from 'react'
@@ -9,66 +9,20 @@ import {Pack} from 'common/models/pack'
 import PackList from 'components/pack-list'
 import PackModal from 'components/shop-modals'
 import {PackOptionsT} from 'common/types/cards'
+import {getFormattedDate, getDailyShop} from 'common/functions/daily-shop'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'shop') => void
 }
 
-const cyrb53 = (str: string, seed: number) => {
-	let h1 = 0xdeadbeef ^ seed,
-		h2 = 0x41c6ce57 ^ seed
-	for (let i = 0, ch; i < str.length; i++) {
-		ch = str.charCodeAt(i)
-		h1 = Math.imul(h1 ^ ch, 2654435761)
-		h2 = Math.imul(h2 ^ ch, 1597334677)
-	}
-	h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507)
-	h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909)
-	h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507)
-	h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909)
-
-	return 4294967296 * (2097151 & h2) + (h1 >>> 0)
-}
-
-const rand = (str: string, seed: number, max: number) => {
-	const hash = cyrb53(str, seed)
-	return Math.floor((hash / 9007199254740991) * max)
-}
-
-type dailyshopDefs = {
-	rolledPacks: Array<Pack>
-	hermitCards: Array<Card>
-	effectCards: Array<Card>
-}
-
-function getDailyShop(cards: Array<Card>): dailyshopDefs {
-	const hermitCards = cards.filter((card) => card.type === 'hermit')
-	const effectCards = cards.filter((card) => card.type === 'effect')
-
-	const chosenPacks: Array<Pack> = []
-	const chosenHermitCards: Array<Card> = []
-	const chosenEffectCards: Array<Card> = []
-
-	const date = new Date()
-	const timeSeed = date.getUTCFullYear() * 1000 + date.getUTCMonth() * 10 + date.getUTCDay()
-
-	for (var i = 0; i < 14; i++) {
-		if (i < 7) {
-			chosenPacks.push(packs[rand('packs' + i, timeSeed, packs.length)])
-		}
-
-		chosenHermitCards.push(hermitCards[rand('hermit' + i, timeSeed, hermitCards.length)])
-		chosenEffectCards.push(effectCards[rand('effect' + i, timeSeed, effectCards.length)])
-	}
-
-	return {rolledPacks: chosenPacks, hermitCards: chosenHermitCards, effectCards: chosenEffectCards}
-}
-
 export function Shop({menuSetter}: Props) {
+	const currentDate = getFormattedDate()
+
 	const dispatch = useDispatch()
 
 	const cards = useSelector(getCards)
 	const library = useSelector(getLibrary)
+	const tokens = useSelector(getTokens)
 	const {rolledPacks, hermitCards, effectCards} = getDailyShop(cards)
 	const [showPackModal, setShowPackModal] = useState<boolean>(false)
 
@@ -77,17 +31,29 @@ export function Shop({menuSetter}: Props) {
 			type: 'CARDS_ROLLED',
 			payload: {
 				cards: [card],
+				metadata: {
+					type: 'card',
+					purchase: card,
+					date: currentDate,
+				},
+				cost: card.tokens,
 			},
 		})
 		setShowPackModal(true)
 	}
 
-	const onPackPurchase = (pack: Pack, options: Array<PackOptionsT>) => {
+	const onPackPurchase = (pack: Pack, options: Array<PackOptionsT>, discounted: boolean) => {
 		const results = pack.roll(cards, options)
 		dispatch({
 			type: 'CARDS_ROLLED',
 			payload: {
 				cards: results,
+				metadata: {
+					type: 'pack',
+					purchase: {name: pack.name},
+					date: currentDate,
+				},
+				cost: discounted ? Math.floor(pack.tokens / 2) : pack.tokens,
 			},
 		})
 		setShowPackModal(true)
@@ -104,13 +70,15 @@ export function Shop({menuSetter}: Props) {
 						</button>
 					</div>
 					<div className={css.packs}>
-						<p>Buy packs!</p>
+						<p>
+							Buy packs! - Your tokens <b>{tokens}</b>
+						</p>
 					</div>
 					<PackList
 						children={packs}
 						showDescription={true}
 						onPurchase={onPackPurchase}
-						discounted={[]}
+						discounted={rolledPacks}
 					/>
 				</div>
 				<div className={css.right}>
