@@ -13,8 +13,6 @@ export const PackModal = ({setOpen, onClose}: Props) => {
 	const library = useSelector(getLibrary)
 	const lastRolledcards = useSelector(getLastRollResult)
 
-	console.log(lastRolledcards)
-
 	return (
 		<AlertDialog.Root open={setOpen} onOpenChange={(e) => onClose(e)}>
 			<AlertDialog.Portal container={document.getElementById('root')}>

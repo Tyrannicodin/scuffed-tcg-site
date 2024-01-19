@@ -1,0 +1,21 @@
+.dropdownBox {
+	background-color: #494949;
+	color: white;
+	font-family: Minecraft;
+	padding: 4px;
+	display: flex;
+	gap: 4px;
+	flex-direction: column;
+}
+
+.menuItem {
+	border: 1px black solid;
+	padding: 2px;
+}
+
+.trigger {
+	background: #494949;
+	color: white;
+	white-space: nowrap;
+	margin-left: 0.6vh;
+}

@@ -8,6 +8,7 @@ import {packs} from '../../../../common/packs'
 import {Pack} from 'common/models/pack'
 import PackList from 'components/pack-list'
 import PackModal from 'components/shop-modals'
+import {PackOptionsT} from 'common/types/cards'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'shop') => void
@@ -81,8 +82,8 @@ export function Shop({menuSetter}: Props) {
 		setShowPackModal(true)
 	}
 
-	const onPackPurchase = (pack: Pack) => {
-		const results = pack.roll(cards)
+	const onPackPurchase = (pack: Pack, options: Array<PackOptionsT>) => {
+		const results = pack.roll(cards, options)
 		dispatch({
 			type: 'CARDS_ROLLED',
 			payload: {

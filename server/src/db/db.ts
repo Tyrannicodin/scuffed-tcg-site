@@ -478,7 +478,10 @@ export async function createCardObjects(): Promise<cardObjectsResult> {
 						},
 						update: row.card_update,
 						picture: row.picture,
-						hermitType: row.sub_type,
+						hermitType: {
+							name: row.sub_type,
+							color: row.type_color,
+						},
 						tokens: row.tokens,
 					})
 				)
@@ -512,8 +515,6 @@ export async function addCardsToPlayer(uuid: string, cards: Array<PartialCardT>)
 		)
 	})
 
-	console.log(flippedCards)
-
 	try {
 		await pool.query(
 			sql`
@@ -524,7 +525,7 @@ export async function addCardsToPlayer(uuid: string, cards: Array<PartialCardT>)
 					$4::int[]
 				) ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + (SELECT * FROM UNNEST (
 					$4::int[]
-				));
+				) LIMIT 1);
 			`,
 			[
 				Array(flippedCards.names.length).fill(uuid),

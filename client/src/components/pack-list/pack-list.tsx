@@ -1,6 +1,6 @@
 import css from './pack-list.module.scss'
 import {SyntheticEvent, useEffect} from 'react'
-import {PartialCardWithCopiesT} from 'common/types/cards'
+import {PackOptionsT, PartialCardWithCopiesT} from 'common/types/cards'
 import {PackInfo} from 'components/pack/pack'
 import {Pack} from 'common/models/pack'
 
@@ -8,7 +8,7 @@ type Props = {
 	children: Pack[]
 	discounted: PartialCardWithCopiesT[]
 	showDescription: boolean
-	onPurchase: ((pack: Pack) => void) | null
+	onPurchase: ((pack: Pack, options: Array<PackOptionsT>) => void) | null
 }
 
 export function PackList({children, discounted, showDescription, onPurchase}: Props) {

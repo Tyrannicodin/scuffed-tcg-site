@@ -28,3 +28,8 @@ export type HermitTypeT = {
 	name: string
 	color: string
 }
+
+export type PackOptionsT = {
+	type: 'expansion' | 'hermitType'
+	value: string
+}
