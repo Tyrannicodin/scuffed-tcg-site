@@ -71,7 +71,7 @@ export function Shop({menuSetter}: Props) {
 					</div>
 					<div className={css.packs}>
 						<p>
-							Buy packs! - Your tokens <b>{tokens}</b>
+							Buy packs! - Your tokens: <b>{tokens}</b>
 						</p>
 					</div>
 					<PackList
