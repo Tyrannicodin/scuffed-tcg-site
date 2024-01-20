@@ -7,6 +7,7 @@ import {getOTPCode, getUserSecret} from './session-selectors'
 import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {userInfoT} from 'common/types/user'
+import {getEmailError, getPasswordError, getUsernameError, validateEmail, validatePassword, validateUsername} from 'common/util/validation'
 
 function* onLogin(userInfo: userInfoT) {
 	yield put(connect(userInfo))
@@ -69,11 +70,17 @@ export function* loginSaga() {
 	})
 
 	const authPayload = (clientLogin || clientSignup).payload
-	if (!authPayload.username) {
-		yield put(disconnect('Invalid username'))
+	const usernameValid = validateUsername(authPayload.username)
+	if (usernameValid !== 'success') {
+		yield put(disconnect(getUsernameError(usernameValid)))
 	}
-	if (clientSignup && !authPayload.email) {
-		yield put(disconnect('Invalid email'))
+	const passwordValid = validatePassword(authPayload.password, authPayload.confirmPassword)
+	if (clientSignup && passwordValid !== 'success') {
+		yield put(disconnect(getPasswordError(passwordValid)))
+	}
+	const emailValid = validateEmail(authPayload.email)
+	if (clientSignup && !emailValid) {
+		yield put(disconnect(getEmailError(emailValid)))
 	}
 
 	socket.connect()
