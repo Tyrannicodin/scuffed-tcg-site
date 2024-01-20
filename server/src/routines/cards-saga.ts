@@ -55,13 +55,6 @@ function* verifyCardRolls(action: UnknownAction) {
 		cost: number
 	}
 
-	if (payload.metadata.type === 'card') {
-		const {hermitCards} = getDailyShop(yield call(createCardObjects))
-		if (payload.cards.some((card) => hermitCards.find((search) => search === card) === undefined)) {
-			return
-		}
-	}
-
 	const cardResult: string = yield call(addCardsToUser, payload.uuid, payload.cards)
 
 	yield call(addPurchaseToUser, payload.uuid, payload.metadata)

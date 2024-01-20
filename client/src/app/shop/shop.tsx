@@ -10,6 +10,7 @@ import PackList from 'components/pack-list'
 import PackModal from 'components/shop-modals'
 import {PackOptionsT} from 'common/types/cards'
 import {getFormattedDate, getDailyShop} from 'common/functions/daily-shop'
+import ShopTimer from 'components/shop-timer'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'shop') => void
@@ -71,7 +72,7 @@ export function Shop({menuSetter}: Props) {
 					</div>
 					<div className={css.packs}>
 						<p>
-							Buy packs! - Your tokens: <b>{tokens}</b>
+							Buy packs! - Your tokens: <b>{tokens}</b> - <ShopTimer />
 						</p>
 					</div>
 					<PackList
@@ -86,7 +87,7 @@ export function Shop({menuSetter}: Props) {
 						<p>Daily Hermits!</p>
 					</div>
 					<CardList
-						children={hermitCards}
+						children={hermitCards.sort((a, b) => (a.tokens || 0) - (b.tokens || 0))}
 						showDescription={false}
 						onPurchase={onCardPurchase}
 						library={library}
@@ -95,7 +96,7 @@ export function Shop({menuSetter}: Props) {
 						<p>Daily Effects!</p>
 					</div>
 					<CardList
-						children={effectCards}
+						children={effectCards.sort((a, b) => (a.tokens || 0) - (b.tokens || 0))}
 						showDescription={false}
 						onPurchase={onCardPurchase}
 						library={library}

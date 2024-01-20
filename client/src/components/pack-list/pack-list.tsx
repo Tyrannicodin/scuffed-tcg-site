@@ -34,7 +34,10 @@ export function PackList({children, discounted, showDescription, onPurchase}: Pr
 						pack={pack}
 						onPurchase={onPurchase}
 						showDescription={showDescription}
-						discounted={discounted.some((disc) => disc.name === pack.name)}
+						discounted={
+							discounted.reduce((acc, curr) => (curr.name === pack.name ? (acc += 1) : acc), 0) +
+							(pack.name === 'All Cards Pack' ? 2 : 0)
+						}
 					/>
 				))}
 			</ul>
