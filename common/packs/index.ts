@@ -54,6 +54,15 @@ export const packs = [
 		},
 	}),
 	new Pack({
+		name: 'Item x2 Pack',
+		tokens: 3,
+		description: 'Contains nine item cards.',
+		maxFilters: 0,
+		filter: (card: Card) => {
+			return card.type === 'item'
+		},
+	}),
+	new Pack({
 		name: 'Biome Pack',
 		tokens: 5,
 		description: 'Contains nine biome cards.',
@@ -63,17 +72,8 @@ export const packs = [
 		},
 	}),
 	new Pack({
-		name: 'Item x2 Pack',
-		tokens: 6,
-		description: 'Contains nine item cards.',
-		maxFilters: 0,
-		filter: (card: Card) => {
-			return card.type === 'item'
-		},
-	}),
-	new Pack({
 		name: 'Specific Expansion Pack',
-		tokens: 6,
+		tokens: 8,
 		description: 'Contains nine cards from a specific expansion or type.',
 		maxFilters: 1,
 		filter: (card: Card, options: Array<PackOptionsT>) => {
@@ -82,7 +82,7 @@ export const packs = [
 	}),
 	new Pack({
 		name: 'Two Specific Expansions Pack',
-		tokens: 8,
+		tokens: 10,
 		description: 'Contains nine cards from a specific expansion or type.',
 		maxFilters: 2,
 		filter: (card: Card, options: Array<PackOptionsT>) => {
