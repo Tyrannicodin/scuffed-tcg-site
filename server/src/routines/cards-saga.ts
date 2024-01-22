@@ -19,7 +19,6 @@ import {getDailyShop, getFormattedDate} from '../../../common/functions/daily-sh
 function* sendCards(action: UnknownAction) {
 	const cardList = [...store.getState().cards.cards]
 	const payload = action.payload as {start: number; cardCount: number}
-	console.log(`${payload.start}:${payload.start + payload.cardCount}`)
 	;(action.socket as Socket).emit('NEW_CARDS', {
 		type: 'NEW_CARDS',
 		payload: cardList.splice(payload.start, payload.cardCount),

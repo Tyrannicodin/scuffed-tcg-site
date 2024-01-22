@@ -1,5 +1,4 @@
 import pg from 'pg'
-import {signupResultT} from '../../../common/types/user'
 import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'

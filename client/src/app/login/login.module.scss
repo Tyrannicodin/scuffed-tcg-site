@@ -1,56 +1,30 @@
 .container {
+	width: 30%;
 	position: absolute;
 	inset: 0;
-	display: grid;
+	display: flex;
 	place-content: flex-start center;
+	flex-wrap: wrap;
 	padding-top: 10vh;
-	gap: 1vh;
+	row-gap: 1vh;
 	margin-inline: auto;
-	grid-template-areas: 'username username' 'email email' 'password password' 'login signup' 'message message';
 }
 
-.navItem {
-	display: grid;
+.uiItem {
 	text-align: center;
-}
-
-#textInput {
-	height: 30px;
-	margin: 5px;
-	padding-left: 2px;
-}
-
-#username {
-	@extend .navItem;
-	@extend #textInput;
-	grid-area: username;
-}
-
-#email {
-	@extend .navItem;
-	@extend #textInput;
-	grid-area: email;
-}
-
-#password {
-	@extend .navItem;
-	@extend #textInput;
-	grid-area: password;
-}
-
-#login {
-	@extend .navItem;
-	grid-area: login;
-}
-
-#signup {
-	@extend .navItem;
-	grid-area: signup;
+	width: 100%;
 }
 
 #message {
-	@extend .navItem;
+	@extend .uiItem;
 	grid-area: message;
+	color: white;
+}
+
+#message a {
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
 .flexAlign {
@@ -60,4 +34,5 @@
 	flex-direction: column;
 	flex-wrap: wrap;
 	text-align: center;
+	color: white;
 }

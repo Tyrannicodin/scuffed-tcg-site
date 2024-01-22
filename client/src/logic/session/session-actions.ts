@@ -15,7 +15,7 @@ export const connect = (userInfo: userInfoT) => ({
 	payload: userInfo,
 })
 
-export const setMsg = (message: string) => ({
+export const setMessage = (message: string) => ({
 	type: 'SET_MESSAGE' as const,
 	payload: message,
 })

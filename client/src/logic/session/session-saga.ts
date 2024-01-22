@@ -1,12 +1,20 @@
 import {receiveMsg} from 'logic/socket/socket-saga'
-import {call, delay, put, race, take} from 'redux-saga/effects'
+import {call, delay, put, race, take, takeLatest} from 'redux-saga/effects'
 import socket from 'socket'
-import {connect, disconnect, onboarding, setMsg} from './session-actions'
+import {connect, disconnect, onboarding, setMessage} from './session-actions'
 import store from 'store'
 import {getOTPCode, getUserSecret} from './session-selectors'
 import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {userInfoT} from 'common/types/user'
+import {
+	getEmailError,
+	getPasswordError,
+	getUsernameError,
+	validateEmail,
+	validatePassword,
+	validateUsername,
+} from 'common/util/validation'
 
 function* onLogin(userInfo: userInfoT) {
 	yield put(connect(userInfo))
@@ -53,9 +61,9 @@ function* verifySaga() {
 		if (login) {
 			yield onLogin(login.payload)
 		} else if (failOnSend) {
-			yield put(disconnect('Signup failure: One time password timed out'))
+			yield put(disconnect('One time password timed out'))
 		} else {
-			yield put(setMsg('Incorrect one time password, please double check it'))
+			yield put(setMessage('Incorrect one time password, please double check it'))
 			continue
 		}
 		return
@@ -69,11 +77,17 @@ export function* loginSaga() {
 	})
 
 	const authPayload = (clientLogin || clientSignup).payload
-	if (!authPayload.username || !authPayload.password) {
-		yield put(disconnect('Invalid login credentials'))
+	const usernameValid = validateUsername(authPayload.username)
+	if (usernameValid !== 'success') {
+		yield put(disconnect(getUsernameError(usernameValid)))
 	}
-	if (clientSignup && !authPayload.email) {
-		yield put(disconnect('Invalid login credentials'))
+	const passwordValid = validatePassword(authPayload.password, authPayload.confirmPassword)
+	if (clientSignup && passwordValid !== 'success') {
+		yield put(disconnect(getPasswordError(passwordValid)))
+	}
+	const emailValid = validateEmail(authPayload.email)
+	if (clientSignup && !emailValid) {
+		yield put(disconnect(getEmailError(emailValid)))
 	}
 
 	socket.connect()
@@ -97,7 +111,7 @@ export function* loginSaga() {
 		login_fail: call(receiveMsg, 'FAIL_LOGIN'),
 		onboard: call(receiveMsg, 'ONBOARDING'),
 		signup_fail: call(receiveMsg, 'FAIL_SIGNUP'),
-		timeout: delay(10e3), //10 seconds
+		timeout: delay(10000), //10 seconds
 	})
 
 	if (login) {
