@@ -1,4 +1,5 @@
 import {PastPurchasesT, Uuid, userCreateResultT} from '../../../common/types/user'
+import {User, userDefs} from '../../../common/models/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 import {pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
@@ -61,36 +62,34 @@ export async function selectUserUUID(username: string, hash: string): Promise<Uu
 	return null
 }
 
-export async function selectUserRowFromUuid(uuid: Uuid): Promise<Record<string, any> | null> {
+export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 	try {
 		const result = await pool.query(
 			sql`
-                SELECT user_id,username,tokens,picture,is_admin FROM users WHERE user_id = $1;
+				SELECT users.user_id,users.username,users.tokens,users.picture,users.is_admin,
+				libraries.card_name,libraries.rarity,libraries.copies
+				FROM users
+				LEFT JOIN libraries ON (libraries.user_id = users.user_id)
+				WHERE users.user_id = $1;
             `,
 			[uuid]
 		)
 
-		if (result.rowCount && result.rowCount > 0) {
-			return result.rows[0]
+		const purchasesQuery = await pool.query(
+			sql`
+				SELECT * FROM purchases WHERE user_id = $1;
+			`,
+			[uuid]
+		)
+
+		if (!result.rowCount) {
+			return null
 		}
-	} catch (err) {
-		console.log(err)
-	}
-	return null
-}
 
-export async function selectUserCards(uuid: Uuid): Promise<Array<PartialCardWithCopiesT>> {
-	try {
-		const result = await pool.query(
-			sql`
-                SELECT * FROM libraries WHERE user_id = $1;
-            `,
-			[uuid]
-		)
+		const library: Array<PartialCardWithCopiesT> = []
+		const purchases: Array<PastPurchasesT> = []
 
-		if (!result.rows) return []
-
-		return result.rows.map((row: any) => {
+		result.rows.forEach((row: any) => {
 			const partialCard: PartialCardWithCopiesT = {
 				card: {
 					name: row.card_name,
@@ -98,26 +97,11 @@ export async function selectUserCards(uuid: Uuid): Promise<Array<PartialCardWith
 				},
 				copies: row.copies,
 			}
-			return partialCard
+
+			library.push(partialCard)
 		})
-	} catch (err) {
-		console.log(err)
-	}
-	return []
-}
 
-export async function selectUserPurchases(uuid: Uuid): Promise<Array<PastPurchasesT>> {
-	try {
-		const result = await pool.query(
-			sql`
-                SELECT * FROM purchases WHERE user_id = $1;
-            `,
-			[uuid]
-		)
-
-		if (!result.rows) return []
-
-		return result.rows.map((row: any) => {
+		purchasesQuery.rows.forEach((row: any) => {
 			const purchase: PastPurchasesT = {
 				purchase: {
 					name: row.purchase_name,
@@ -126,12 +110,25 @@ export async function selectUserPurchases(uuid: Uuid): Promise<Array<PastPurchas
 				type: row.is_pack_purchase ? 'pack' : 'card',
 				date: row.purchase_time,
 			}
-			return purchase
+
+			purchases.push(purchase)
 		})
+
+		const userDef: userDefs = {
+			uuid: result.rows[0].uuid,
+			username: result.rows[0].username,
+			tokens: result.rows[0].tokens,
+			picture: result.rows[0].picture,
+			is_admin: result.rows[0].is_admin,
+			library: library,
+			purchases: purchases,
+		}
+
+		return new User(userDef)
 	} catch (err) {
 		console.log(err)
 	}
-	return []
+	return null
 }
 
 export async function deleteUser(username: string) {

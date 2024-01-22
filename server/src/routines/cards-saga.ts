@@ -1,12 +1,5 @@
 import {cardObjectsResult, createCardObjects} from 'db/db'
-import {
-	selectUserCards,
-	addCardsToUser,
-	addPurchaseToUser,
-	selectUserPurchases,
-	selectUserRowFromUuid,
-	updateUserTokens,
-} from 'db/user'
+import {addCardsToUser, addPurchaseToUser, selectUserInfoFromUuid, updateUserTokens} from 'db/user'
 import {UnknownAction} from 'redux'
 import store from 'stores'
 import {call, takeEvery} from 'typed-redux-saga'
@@ -15,6 +8,7 @@ import {Socket} from 'socket.io'
 import {PastPurchasesT, UserInfoT, Uuid} from '../../../common/types/user'
 import {PartialCardWithCopiesT} from '../../../common/types/cards'
 import {getDailyShop, getFormattedDate} from '../../../common/functions/daily-shop'
+import {User} from '../../../common/models/user'
 
 function* sendCards(action: UnknownAction) {
 	const cardList = [...store.getState().cards.cards]
@@ -29,15 +23,13 @@ function* sendLibrary(action: UnknownAction) {
 	const purchaseDate = getFormattedDate()
 
 	const payload = action.payload as {uuid: Uuid}
-	const user: Record<string, any> = yield call(selectUserRowFromUuid, payload.uuid)
-	const library: Array<PartialCardWithCopiesT> = yield call(selectUserCards, payload.uuid)
-	const purchases: Array<PastPurchasesT> = yield call(selectUserPurchases, payload.uuid)
+	const user: User = yield call(selectUserInfoFromUuid, payload.uuid)
 
 	const information: UserInfoT = {
-		library: library,
+		library: user.library,
 		tokens: user.tokens,
 		// Double equals instead of triple equals here is intentional
-		pastPurchases: purchases.filter((p) => p.date == purchaseDate),
+		pastPurchases: user.purchases.filter((p) => p.date == purchaseDate),
 	}
 
 	;(action.socket as Socket).emit('UPDATE_LIBRARY', {
