@@ -1,4 +1,4 @@
-import {PastPurchasesT, Uuid, signupResultT} from '../../../common/types/user'
+import {PastPurchasesT, Uuid, userCreateResultT} from '../../../common/types/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 import {pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
@@ -7,7 +7,7 @@ export async function createUser(
 	username: string,
 	email: string,
 	hash: string
-): Promise<signupResultT> {
+): Promise<userCreateResultT> {
 	try {
 		const unique_check = await pool.query(
 			sql`
@@ -22,13 +22,13 @@ export async function createUser(
 			return {result: 'email_taken'}
 		}
 
-		const result = await pool.query(
+		await pool.query(
 			sql`
                 INSERT INTO users (salted_hash, username, email, tokens, is_admin) VALUES (
                     crypt($1, gen_salt('bf', 15)),
                     $2,
                     $3,
-                    50,
+                    0,
                     'false'
                 );
             `,
@@ -37,7 +37,8 @@ export async function createUser(
 
 		return {result: 'success'}
 	} catch (err) {
-		console.log(err)
+		if (!(err instanceof Error)) return {result: 'failure'}
+		if (err.message.includes('ECONNREFUSED')) return {result: 'db_connection'}
 		return {result: 'failure'}
 	}
 }
