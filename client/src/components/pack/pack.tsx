@@ -1,7 +1,7 @@
 import css from './pack.module.scss'
 import classNames from 'classnames'
-import {HermitCard} from 'common/models/hermit-card'
 import {Pack} from 'common/models/pack'
+import {getFilters} from 'common/functions/get-filters'
 import {PackOptionsT} from 'common/types/cards'
 import Dropdown from 'components/dropdown'
 import {getCards, getPastPurchases} from 'logic/cards/cards-selectors'
@@ -25,9 +25,6 @@ export function PackInfo({pack, showDescription, discounted, onPurchase}: Props)
 	const cards = useSelector(getCards)
 	const pastPurchases = useSelector(getPastPurchases)
 
-	const expansions: Set<string> = new Set([])
-	const types: Set<string> = new Set([])
-
 	const amountPurchased = pastPurchases.reduce(
 		(acc, curr) => (curr.purchase.name === pack.name ? (acc += 1) : acc),
 		0
@@ -36,18 +33,7 @@ export function PackInfo({pack, showDescription, discounted, onPurchase}: Props)
 	const tokenCost = actuallyDiscounted ? Math.floor(pack.tokens / 2) : pack.tokens
 	const discountedPercent = Math.floor(((pack.tokens - tokenCost) / pack.tokens) * 100)
 
-	cards.forEach((card) => {
-		expansions.add(card.expansion.name)
-		if (card.type === 'hermit') {
-			types.add((card as HermitCard).hermitType.name)
-		}
-	})
-
-	//disable some options (maybe this code should be changed later)
-	types.delete('Everything')
-	types.delete('BDubs')
-	types.delete('Miner/Farm')
-	expansions.delete('Item Card')
+	const {expansions, types} = getFilters(cards)
 
 	const packPurchased = () => {
 		if (onPurchase === null) return
@@ -107,16 +93,17 @@ export function PackInfo({pack, showDescription, discounted, onPurchase}: Props)
 						.map((element, index) => (
 							<Dropdown
 								options={[
-									{group: 'Types', value: [...types]},
-									{group: 'Expansions', value: [...expansions]},
+									{group: 'Types', value: types},
+									{group: 'Expansions', value: expansions},
 								]}
 								id={'' + index}
+								defaultValue={'Select...'}
 								action={(option, dropdownId) => {
 									const newElement: DropdownT = {
 										dropdownId: dropdownId,
 										option: {
 											value: option,
-											type: types.has(option) ? 'hermitType' : 'expansion',
+											type: types.includes(option) ? 'hermitType' : 'expansion',
 										},
 									}
 									const newSettings = dropdownSettings
