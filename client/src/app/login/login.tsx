@@ -11,6 +11,8 @@ export function Login() {
 	const [usernameField, setUsernameField] = useState('')
 	const [emailField, setEmailField] = useState('')
 	const [passwordField, setPasswordField] = useState('')
+	const [confirmPasswordField, setConfirmPasswordField] = useState('')
+	const [page, setPage] = useState<'login' | 'signup' | 'forgot'>('login')
 	const message = useSelector(getMessage)
 	const getCode = useSelector(getAwaitingCode)
 	const email = useSelector(getEmail)
@@ -31,6 +33,7 @@ export function Login() {
 				username: usernameField,
 				email: emailField,
 				password: passwordField,
+				confirmPassword: confirmPasswordField,
 			},
 		})
 	}
@@ -46,24 +49,85 @@ export function Login() {
 				{messenger}
 			</div>
 		)
+	} else if (page === 'login') {
+		htmlReturn = (
+			<div className={css.container}>
+				<InputField type="username" setField={setUsernameField}>
+					Username
+				</InputField>
+				<InputField type="password" setField={setPasswordField}>
+					Password
+				</InputField>
+				<button className={css.uiItem} onClick={loginAccount}>
+					Login
+				</button>
+				<button className={css.uiItem} onClick={() => setPage('signup')}>
+					Sign up
+				</button>
+				{message === '' ? (
+					<div id={css.message}>
+						<a onClick={() => setPage('forgot')}>Forgot your password?</a>
+					</div>
+				) : (
+					messenger
+				)}
+			</div>
+		)
+	} else if (page === 'signup') {
+		htmlReturn = (
+			<div className={css.container}>
+				<InputField type="username" setField={setUsernameField}>
+					Username
+				</InputField>
+				<InputField type="email" setField={setEmailField}>
+					Email
+				</InputField>
+				<InputField type="password" setField={setPasswordField}>
+					Password
+				</InputField>
+				<InputField type="password" setField={setConfirmPasswordField}>
+					Re-Type password
+				</InputField>
+				<button className={css.uiItem} onClick={createAccount}>
+					Sign up
+				</button>
+				{message === '' ? (
+					<p id={css.message}>
+						Returning user? <a onClick={() => setPage('login')}>Log in</a>
+					</p>
+				) : (
+					messenger
+				)}
+			</div>
+		)
+	} else if (page === 'forgot') {
+		htmlReturn = (
+			<div className={css.container}>
+				<InputField type="username" setField={setUsernameField}>
+					Username
+				</InputField>
+				<button className={css.uiItem} onClick={loginAccount}>
+					Send password reset request
+				</button>
+				{message === '' ? (
+					<div id={css.message}>
+						<p>
+							Remembered your password? <a onClick={() => setPage('login')}>Log in</a>
+						</p>
+						<p>
+							New? <a onClick={() => setPage('signup')}>Sign up</a>
+						</p>
+					</div>
+				) : (
+					messenger
+				)}
+			</div>
+		)
 	} else {
 		htmlReturn = (
 			<div className={css.container}>
-				<InputField id={css.username} type="username" setField={setUsernameField}>
-					Username
-				</InputField>
-				<InputField id={css.email} type="email" setField={setEmailField}>
-					Email
-				</InputField>
-				<InputField id={css.password} type="password" setField={setPasswordField}>
-					Password
-				</InputField>
-				<button id={css.login} onClick={loginAccount}>
-					Login
-				</button>
-				<button id={css.signup} onClick={createAccount}>
-					Sign up
-				</button>
+				<p>I have no idea how we got here...</p>
+				<button onClick={() => setPage('login')}>Go to Login</button>
 				{messenger}
 			</div>
 		)
