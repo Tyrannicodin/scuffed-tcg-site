@@ -33,7 +33,7 @@ export function Login() {
 				username: usernameField,
 				email: emailField,
 				password: passwordField,
-				confirmPassword: confirmPasswordField
+				confirmPassword: confirmPasswordField,
 			},
 		})
 	}
@@ -66,7 +66,7 @@ export function Login() {
 				</button>
 				{message === '' ? (
 					<div id={css.message}>
-						<a  onClick={() => setPage('forgot')}>Forgot your password?</a>
+						<a onClick={() => setPage('forgot')}>Forgot your password?</a>
 					</div>
 				) : (
 					messenger
@@ -85,7 +85,7 @@ export function Login() {
 				<InputField type="password" setField={setPasswordField}>
 					Password
 				</InputField>
-				<InputField type='password' setField={setConfirmPasswordField}>
+				<InputField type="password" setField={setConfirmPasswordField}>
 					Re-Type password
 				</InputField>
 				<button className={css.uiItem} onClick={createAccount}>

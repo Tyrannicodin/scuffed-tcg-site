@@ -8,6 +8,11 @@ type Props = {
 
 export function InputField({children, type, setField}: Props) {
 	return (
-		<input className={css.inputBox} type={type} placeholder={children} onChange={(e) => setField(e.target.value)} />
+		<input
+			className={css.inputBox}
+			type={type}
+			placeholder={children}
+			onChange={(e) => setField(e.target.value)}
+		/>
 	)
 }

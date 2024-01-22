@@ -7,7 +7,14 @@ import {getOTPCode, getUserSecret} from './session-selectors'
 import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {userInfoT} from 'common/types/user'
-import {getEmailError, getPasswordError, getUsernameError, validateEmail, validatePassword, validateUsername} from 'common/util/validation'
+import {
+	getEmailError,
+	getPasswordError,
+	getUsernameError,
+	validateEmail,
+	validatePassword,
+	validateUsername,
+} from 'common/util/validation'
 
 function* onLogin(userInfo: userInfoT) {
 	yield put(connect(userInfo))
