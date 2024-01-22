@@ -1,0 +1,63 @@
+@import '../../index';
+
+.main {
+	display: flex;
+	gap: 2vh;
+	margin: 2vh;
+}
+
+.backButton {
+	width: 100%;
+}
+
+.returnArea {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+}
+
+.left {
+	display: flex;
+	flex-direction: column;
+	width: 40%;
+	gap: 2vh;
+}
+
+.right {
+	display: flex;
+	flex-direction: column;
+	width: 60%;
+	gap: 2vh;
+}
+
+.packs {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+	flex-grow: 1;
+
+	color: white;
+	font-family: Minecraft;
+}
+
+.availableHermits {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+
+	color: white;
+	font-family: Minecraft;
+}
+
+.availableEffects {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+
+	color: white;
+	font-family: Minecraft;
+}

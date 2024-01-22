@@ -57,7 +57,12 @@ export function CardBrowser({menuSetter}: Props) {
 						placeholder="Search cards..."
 						onChange={(e) => setFilter(e.target.value)}
 					></input>
-					<CardList children={filteredCards} library={library} />
+					<CardList
+						children={filteredCards}
+						showDescription={true}
+						onPurchase={null}
+						library={library}
+					/>
 				</div>
 				<div className={css.deckBrowser}>
 					<div>Future place of the deck builder</div>

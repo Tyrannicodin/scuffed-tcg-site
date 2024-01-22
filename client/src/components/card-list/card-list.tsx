@@ -7,9 +7,11 @@ import {PartialCardWithCopiesT} from 'common/types/cards'
 type Props = {
 	children: Card[]
 	library: PartialCardWithCopiesT[]
+	showDescription: boolean
+	onPurchase: ((card: Card) => void) | null
 }
 
-export function CardList({children, library}: Props) {
+export function CardList({children, library, showDescription, onPurchase}: Props) {
 	const handleScroll = () => {
 		const scrollpos = window.scrollY
 		console.log(scrollpos)
@@ -36,6 +38,8 @@ export function CardList({children, library}: Props) {
 									thisCard.card.name === card.name && thisCard.card.rarity === card.rarity
 							)?.copies
 						}
+						onPurchase={onPurchase}
+						showDescription={showDescription}
 					/>
 				))}
 			</ul>

@@ -1,4 +1,5 @@
-import {createUser, deleteUser, selectUserUUID} from 'db/db'
+import {createUser, deleteUser, selectUserUUID} from 'db/user'
+
 import {call, delay, race, take, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
 import {Action} from 'redux'

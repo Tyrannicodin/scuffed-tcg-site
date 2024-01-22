@@ -1,10 +1,8 @@
 import pg from 'pg'
-import {userCreateResultT, Uuid} from '../../../common/types/user'
 import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
-import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 
 const {Pool} = pg
 
@@ -101,6 +99,13 @@ export async function createTables() {
                 rarity varchar(255),
                 FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
             );
+			CREATE TABLE IF NOT EXISTS purchases(
+                user_id uuid REFERENCES users(user_id),
+                purchase_name varchar(255) NOT NULL,
+				purchase_rarity varchar(255),
+				purchase_time varchar(255) NOT NULL,
+				is_pack_purchase boolean NOT NULL
+            );
         `)
 	} catch (err) {
 		console.log(err)
@@ -127,109 +132,6 @@ export async function destroyTables(): Promise<string> {
 	} catch (err) {
 		return 'failure'
 	}
-}
-
-export async function createUser(
-	username: string,
-	email: string,
-	hash: string
-): Promise<userCreateResultT> {
-	try {
-		const unique_check = await pool.query(
-			sql`
-                SELECT * FROM users WHERE username = $1 OR email = $2;
-            `,
-			[username, email]
-		)
-
-		if (unique_check.rows.length > 0 && unique_check.rows[0].username === username) {
-			return {result: 'username_taken'}
-		} else if (unique_check.rows.length > 0 && unique_check.rows[0].email === email) {
-			return {result: 'email_taken'}
-		}
-
-		await pool.query(
-			sql`
-                INSERT INTO users (salted_hash, username, email, tokens, is_admin) VALUES (
-                    crypt($1, gen_salt('bf', 15)),
-                    $2,
-                    $3,
-                    0,
-                    'false'
-                );
-            `,
-			[hash, username, email]
-		)
-
-		return {result: 'success'}
-	} catch (err) {
-		if (!(err instanceof Error)) return {result: 'failure'}
-		if (err.message.includes('ECONNREFUSED')) return {result: 'db_connection'}
-		return {result: 'failure'}
-	}
-}
-
-export async function selectUserUUID(username: string, hash: string): Promise<Uuid | null> {
-	try {
-		const uuid = await pool.query(
-			sql`
-                SELECT user_id FROM users WHERE username = $1 and salted_hash = crypt($2, salted_hash);
-            `,
-			[username, hash]
-		)
-
-		if (uuid.rowCount && uuid.rowCount > 0) {
-			return uuid.rows[0].user_id
-		}
-	} catch (err) {
-		console.log(err)
-	}
-	return null
-}
-
-export async function selectUserRowFromUuid(uuid: Uuid): Promise<Record<string, any> | null> {
-	try {
-		const result = await pool.query(
-			sql`
-                SELECT uuid,username,tokens,picture,is_admin FROM users WHERE uuid = $1;
-            `,
-			[uuid]
-		)
-
-		if (result.rowCount && result.rowCount > 0) {
-			return result.rows[0]
-		}
-	} catch (err) {
-		console.log(err)
-	}
-	return null
-}
-
-export async function selectUserCards(uuid: Uuid): Promise<Array<PartialCardWithCopiesT>> {
-	try {
-		const result = await pool.query(
-			sql`
-                SELECT * FROM libraries WHERE user_id = $1;
-            `,
-			[uuid]
-		)
-
-		if (!result.rows) return []
-
-		return result.rows.map((row: any) => {
-			const partialCard: PartialCardWithCopiesT = {
-				card: {
-					name: row.card_name,
-					rarity: row.rarity,
-				},
-				copies: row.copies,
-			}
-			return partialCard
-		})
-	} catch (err) {
-		console.log(err)
-	}
-	return []
 }
 
 export async function addCardsToDatabase() {
@@ -346,20 +248,6 @@ export async function addCardsToDatabase() {
 		console.log(err)
 	}
 	return null
-}
-
-export async function deleteUser(username: string) {
-	try {
-		await pool.query(
-			sql`
-                DELETE FROM users WHERE username = $1;
-            `,
-			[username]
-		)
-		return {result: 'success'}
-	} catch (err) {
-		return {result: 'failure'}
-	}
 }
 
 export type cardObjectsResult = {
@@ -479,7 +367,10 @@ export async function createCardObjects(): Promise<cardObjectsResult> {
 						},
 						update: row.card_update,
 						picture: row.picture,
-						hermitType: row.sub_type,
+						hermitType: {
+							name: row.sub_type,
+							color: row.type_color,
+						},
 						tokens: row.tokens,
 					})
 				)
@@ -490,79 +381,5 @@ export async function createCardObjects(): Promise<cardObjectsResult> {
 	} catch (err) {
 		console.log(err)
 		return defaultReturn
-	}
-}
-
-export async function addCardsToPlayer(uuid: string, cards: Array<PartialCardT>): Promise<string> {
-	const flippedCards: {
-		names: Array<string>
-		rarities: Array<RarityT>
-	} = {
-		names: [],
-		rarities: [],
-	}
-
-	cards.forEach((card) => {
-		flippedCards.names.push(card.name)
-		flippedCards.rarities.push(card.rarity)
-	})
-
-	try {
-		await pool.query(
-			sql`
-				INSERT INTO libraries (user_id,card_name,rarity,copies) SELECT * FROM UNNEST (
-					$1::uuid[],
-					$2::text[],
-					$3::text[],
-					$4::int[]
-				) ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + 1;
-			`,
-			[
-				Array(cards.length).fill(uuid),
-				flippedCards.names,
-				flippedCards.rarities,
-				Array(cards.length).fill(1),
-			]
-		)
-		return 'success'
-	} catch (err) {
-		console.log(err)
-		return 'failure'
-	}
-}
-
-export async function removeCardsFromPlayer(
-	uuid: string,
-	cards: Array<PartialCardT>
-): Promise<string> {
-	const flippedCards: {
-		names: Array<string>
-		rarities: Array<RarityT>
-	} = {
-		names: [],
-		rarities: [],
-	}
-
-	cards.forEach((card) => {
-		flippedCards.names.push(card.name)
-		flippedCards.rarities.push(card.rarity)
-	})
-
-	try {
-		await pool.query(
-			sql`
-				UPDATE libraries SET copies = copies - 1 FROM ( SELECT * FROM UNNEST (
-					$1::uuid[],
-					$2::text[],
-					$3::text[]
-				)) RETURN *;
-			`,
-			[Array(cards.length).fill(uuid), flippedCards.names, flippedCards.rarities]
-		)
-		await pool.query(sql`DELETE FROM libraries WHERE copies = 0;`)
-		return 'success'
-	} catch (err) {
-		console.log(err)
-		return 'failure'
 	}
 }

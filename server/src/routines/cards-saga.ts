@@ -1,11 +1,14 @@
-import {cardObjectsResult, createCardObjects, selectUserCards} from 'db/db'
+import {cardObjectsResult, createCardObjects} from 'db/db'
+import {addCardsToUser, addPurchaseToUser, selectUserInfoFromUuid, updateUserTokens} from 'db/user'
 import {UnknownAction} from 'redux'
 import store from 'stores'
 import {call, takeEvery} from 'typed-redux-saga'
 import {Card} from '../../../common/models/card'
 import {Socket} from 'socket.io'
-import {Uuid} from '../../../common/types/user'
+import {PastPurchasesT, UserInfoT, Uuid} from '../../../common/types/user'
 import {PartialCardWithCopiesT} from '../../../common/types/cards'
+import {getDailyShop, getFormattedDate} from '../../../common/functions/daily-shop'
+import {User} from '../../../common/models/user'
 
 function* sendCards(action: UnknownAction) {
 	const cardList = [...store.getState().cards.cards]
@@ -17,11 +20,40 @@ function* sendCards(action: UnknownAction) {
 }
 
 function* sendLibrary(action: UnknownAction) {
+	const purchaseDate = getFormattedDate()
+
 	const payload = action.payload as {uuid: Uuid}
-	const library: Array<PartialCardWithCopiesT> = yield call(selectUserCards, payload.uuid)
+	const user: User = yield call(selectUserInfoFromUuid, payload.uuid)
+
+	const information: UserInfoT = {
+		library: user.library,
+		tokens: user.tokens,
+		// Double equals instead of triple equals here is intentional
+		pastPurchases: user.purchases.filter((p) => p.date == purchaseDate),
+	}
+
 	;(action.socket as Socket).emit('UPDATE_LIBRARY', {
 		type: 'UPDATE_LIBRARY',
-		payload: library,
+		payload: information,
+	})
+}
+
+function* verifyCardRolls(action: UnknownAction) {
+	const payload = action.payload as {
+		uuid: Uuid
+		cards: Array<Card>
+		metadata: PastPurchasesT
+		cost: number
+	}
+
+	const cardResult: string = yield call(addCardsToUser, payload.uuid, payload.cards)
+
+	yield call(addPurchaseToUser, payload.uuid, payload.metadata)
+	yield call(updateUserTokens, payload.uuid, payload.cost * -1)
+	if (cardResult !== 'success') return
+	;(action.socket as Socket).emit('ROLL_VERIFIED', {
+		type: 'ROLL_VERIFIED',
+		payload: payload.cards,
 	})
 }
 
@@ -39,4 +71,5 @@ export function* cardsSaga() {
 	yield call(loadCardsSaga)
 	yield* takeEvery('GET_CARDS', sendCards)
 	yield* takeEvery('GET_LIBRARY', sendLibrary)
+	yield* takeEvery('CARDS_ROLLED', verifyCardRolls)
 }

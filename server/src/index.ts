@@ -4,13 +4,7 @@ import {fileURLToPath} from 'url'
 import {createServer} from 'http'
 import cors from 'cors'
 import {CONFIG} from '../../common/config'
-import {
-	createTables,
-	addCardsToDatabase,
-	addCardsToPlayer,
-	removeCardsFromPlayer,
-	destroyTables,
-} from 'db/db'
+import {createTables, addCardsToDatabase, destroyTables} from 'db/db'
 import startSocketIO from 'sockets'
 import {PartialCardT} from '../../common/types/cards'
 

@@ -1,0 +1,15 @@
+@import 'components/card-list/card-list.module';
+@import '../card/card.module';
+
+.discount {
+	color: rgb(94, 255, 94);
+	font-weight: bold;
+}
+
+.shadow {
+	text-shadow:
+		1px 1px 0 #000,
+		-1px 1px 0 #000,
+		-1px -1px 0 #000,
+		1px -1px 0 #000;
+}
