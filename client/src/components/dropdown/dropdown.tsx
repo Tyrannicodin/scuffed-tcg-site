@@ -10,15 +10,16 @@ type Options = Array<Group>
 type Props = {
 	options: Options
 	id: string
+	defaultValue: string
 	action: (option: string, dropdownId: string) => void
 }
 
-export function Dropdown({options, id, action}: Props) {
+export function Dropdown({options, id, defaultValue, action}: Props) {
 	return (
 		<Select.Root onValueChange={(value) => action(value, id)}>
 			<Select.Trigger className={css.trigger}>
 				<Select.Icon className="SelectIcon">☰ </Select.Icon>
-				<Select.Value placeholder="Select..." />
+				<Select.Value placeholder={defaultValue} />
 			</Select.Trigger>
 
 			<Select.Portal>
