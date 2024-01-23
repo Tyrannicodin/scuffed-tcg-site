@@ -4,7 +4,7 @@ import css from './menu.module.scss'
 import {CardList} from 'components/card-list/card-list'
 
 type Props = {
-	menuSetter: (arg0: 'mainMenu' | 'browser' | 'shop') => void
+	menuSetter: (arg0: 'mainMenu' | 'browser' | 'shop' | 'trading') => void
 }
 
 export function MainMenu({menuSetter}: Props) {
@@ -13,7 +13,7 @@ export function MainMenu({menuSetter}: Props) {
 			<div className={css.buttonMenu}>
 				<button onClick={() => menuSetter('browser')}>Card Browser</button>
 				<button onClick={() => menuSetter('shop')}>Shop</button>
-				<button>Trading Hub</button>
+				<button onClick={() => menuSetter('trading')}>Trading Hub</button>
 				<div className={css.horizontalButtons}>
 					<button className={css.maxWidth}>Import Cards</button>
 					<button className={css.maxWidth}>User Settings</button>
