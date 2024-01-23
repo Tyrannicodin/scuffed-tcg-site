@@ -24,7 +24,7 @@ export function Dropdown({options, id, defaultValue, action}: Props) {
 
 			<Select.Portal>
 				<Select.Content className={css.dropdownBox}>
-					<Select.ScrollUpButton>^</Select.ScrollUpButton>
+					<Select.ScrollUpButton className={css.top}>^</Select.ScrollUpButton>
 					<Select.Viewport>
 						{options.map((group) => {
 							return (
@@ -34,9 +34,6 @@ export function Dropdown({options, id, defaultValue, action}: Props) {
 										return (
 											<Select.Item className={css.menuItem} value={option}>
 												<Select.ItemText>{option}</Select.ItemText>
-												<Select.ItemIndicator className="SelectItemIndicator">
-													✅
-												</Select.ItemIndicator>
 											</Select.Item>
 										)
 									})}
@@ -44,7 +41,7 @@ export function Dropdown({options, id, defaultValue, action}: Props) {
 							)
 						})}
 					</Select.Viewport>
-					<Select.ScrollDownButton>v</Select.ScrollDownButton>
+					<Select.ScrollDownButton className={css.bottom}>^</Select.ScrollDownButton>
 				</Select.Content>
 			</Select.Portal>
 		</Select.Root>
