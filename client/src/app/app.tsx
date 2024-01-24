@@ -6,12 +6,15 @@ import MainMenu from './menu'
 import {useState} from 'react'
 import CardBrowser from './cards'
 import Shop from './shop'
+import Import from './import'
 
 export function App() {
 	const awaitingCode = useSelector(getAwaitingCode)
 	const userSecret = useSelector(getUserSecret)
 
-	const [menuSection, setMenuSection] = useState<'mainMenu' | 'browser' | 'shop'>('mainMenu')
+	const [menuSection, setMenuSection] = useState<'mainMenu' | 'browser' | 'shop' | 'import'>(
+		'mainMenu'
+	)
 
 	const router = () => {
 		if (!awaitingCode && userSecret) {
@@ -20,6 +23,9 @@ export function App() {
 			}
 			if (menuSection === 'shop') {
 				return <Shop menuSetter={setMenuSection} />
+			}
+			if (menuSection === 'import') {
+				return <Import menuSetter={setMenuSection} />
 			}
 			return <MainMenu menuSetter={setMenuSection} />
 		}

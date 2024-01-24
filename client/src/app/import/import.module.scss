@@ -1,0 +1,63 @@
+@import '../../index';
+
+.main {
+	display: flex;
+	flex-direction: column;
+	gap: 2vh;
+	margin: 2vh;
+	align-items: center;
+}
+
+.bottom {
+	display: flex;
+	gap: 2vh;
+	width: 80%;
+	height: 50%;
+	align-items: center;
+}
+
+.backButton {
+	width: 100%;
+}
+
+.returnArea {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+	width: 80%;
+}
+
+.importInstructions {
+	width: 80%;
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+
+	color: white;
+	font-family: Minecraft;
+}
+
+.code {
+	font-family: monospace;
+	color: lightgoldenrodyellow;
+}
+
+.cardListContainer {
+	width: 60%;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.leftArea {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+	width: 50%;
+	height: 100%;
+	color: white;
+	font-family: Minecraft;
+}
