@@ -1,0 +1,41 @@
+$bg: rgba(255, 255, 255, 0.127);
+@import 'components/card-list/card-list.module';
+
+.sale {
+	width: 100%;
+	background-color: $bg;
+	padding: 1vh;
+	color: whitesmoke;
+	font-family: Minecraft;
+	text-shadow: #252525 1px 2px 2px;
+	align-items: baseline;
+	border: 2px solid transparent;
+}
+
+.purchase_button:hover {
+	border: 2px solid whitesmoke;
+}
+
+.purchase_button:active {
+	border: 2px solid transparent;
+}
+
+.sale_name {
+	text-decoration: underline;
+}
+
+.sale_row {
+	display: flex;
+	justify-content: space-between;
+}
+
+.cost {
+	font-family: MinecraftBold;
+	text-align: right;
+	flex-grow: 1;
+}
+
+.purchase_button {
+	width: 8vw;
+	margin-left: $spacing;
+}
