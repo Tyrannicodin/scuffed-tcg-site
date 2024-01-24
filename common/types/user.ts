@@ -12,7 +12,7 @@ export type userCreateResultT = {
 export type Uuid = string
 
 export type PastPurchasesT = {
-	type: 'card' | 'pack'
+	type: 'card' | 'pack' | 'import'
 	purchase: PartialCardT | PartialPackT
 	date: number
 }

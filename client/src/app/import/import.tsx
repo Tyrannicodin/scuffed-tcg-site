@@ -13,6 +13,7 @@ export function Import({menuSetter}: Props) {
 	const dispatch = useDispatch()
 	const cards = useSelector(getCards)
 	const [importedCards, setImportedCards] = useState<Array<PartialCardWithCopiesT>>([])
+	const [tokens, setTokens] = useState(0)
 
 	cards.sort((a, b) => {
 		return a.name.localeCompare(b.name)
@@ -65,11 +66,26 @@ export function Import({menuSetter}: Props) {
 			payload: {
 				cards: cardsFormatted,
 				metadata: {
-					type: 'pack',
+					type: 'import',
 					purchase: {name: Math.random.toString()},
 					date: 1,
 				},
 				cost: 0,
+			},
+		})
+	}
+
+	const onTokensAdded = (tokens: number) => {
+		dispatch({
+			type: 'CARDS_ROLLED',
+			payload: {
+				cards: [],
+				metadata: {
+					type: 'import',
+					purchase: {name: Math.random.toString()},
+					date: 1,
+				},
+				cost: tokens * -1,
 			},
 		})
 	}
@@ -108,21 +124,27 @@ export function Import({menuSetter}: Props) {
 					</p>
 				</div>
 				<div className={css.bottom}>
-					<div className={css.cardListContainer}>
-						<CardList
-							children={cards.filter((card) => {
-								return importedCards.some(
-									(row) => row.card.name === card.name && row.card.rarity === card.rarity
-								)
-							})}
-							library={importedCards}
-							showDescription={false}
-							onPurchase={null}
-						/>
+					<div className={css.cardListContainerContainer}>
+						<div className={css.cardListContainer}>
+							<CardList
+								children={cards.filter((card) => {
+									return importedCards.some(
+										(row) => row.card.name === card.name && row.card.rarity === card.rarity
+									)
+								})}
+								library={importedCards}
+								showDescription={false}
+								onPurchase={null}
+							/>
+						</div>
 					</div>
 					<div className={css.leftArea}>
 						If the imported cards look correct, click this button to import your library into your
 						account. <button onClick={(e) => onCardsImported(importedCards)}>Import!</button>
+						<div>
+							<input onChange={(e) => setTokens(Number(e.target.value))}></input>
+							<button onClick={(e) => onTokensAdded(tokens)}>Add tokens!</button>
+						</div>
 					</div>
 				</div>
 			</main>
