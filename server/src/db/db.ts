@@ -3,6 +3,7 @@ import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
+import {userInfoT} from '../../../common/types/user'
 
 const {Pool} = pg
 

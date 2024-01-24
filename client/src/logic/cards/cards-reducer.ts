@@ -1,17 +1,22 @@
 import {Card} from 'common/models/card'
 import {userInventoryT} from 'common/types/user'
 import {UnknownAction} from 'redux'
+import {Sale, Trade} from 'common/models/trade'
 
 type CardsState = {
 	cards: Card[]
 	library: userInventoryT
 	lastRollResult: Card[]
+	sales: Sale[]
+	trades: Trade[]
 }
 
 const defaultState: CardsState = {
 	cards: [],
 	library: {library: [], tokens: 0, pastPurchases: []},
 	lastRollResult: [],
+	sales: [],
+	trades: [],
 }
 
 const cardsReducer = (state = defaultState, action: UnknownAction): CardsState => {
@@ -35,7 +40,7 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 		case 'UPDATE_TRADES':
 			return {
 				...state,
-				
+				...action.payload,
 			}
 		default:
 			return state

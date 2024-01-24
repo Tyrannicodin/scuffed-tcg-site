@@ -1,5 +1,8 @@
-import Offer from "components/offer"
-import { useDispatch } from "react-redux"
+import Offer from 'components/offer'
+import {getSales} from 'logic/cards/cards-selectors'
+import {useDispatch, useSelector} from 'react-redux'
+import socket from 'socket'
+import store from 'store'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'trading') => void
@@ -7,10 +10,20 @@ type Props = {
 
 export function Trading({menuSetter}: Props) {
 	const dispatch = useDispatch()
+	const sales = useSelector(getSales)
 
-	dispatch({
-		type: 'GET_TRADES',
-		payload: {}
-	})
-	return <div><Offer>username: card offering 1 token</Offer><button onClick={()=>menuSetter('mainMenu')}>back</button></div>
+	const log = () => {
+		dispatch({
+			type: 'GET_TRADES',
+			payload: {},
+		})
+	}
+
+	return (
+		<div>
+			<Offer>username: card offering 1 token</Offer>
+			<button onClick={log}>Do something</button>
+			<button onClick={() => menuSetter('mainMenu')}>back</button>
+		</div>
+	)
 }
