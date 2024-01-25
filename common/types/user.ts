@@ -17,11 +17,12 @@ export type PastPurchasesT = {
 	date: number
 }
 
-export type UserInfoT = {
+export type userInventoryT = {
 	library: Array<PartialCardWithCopiesT>
 	tokens: number
 	pastPurchases: Array<PastPurchasesT>
 }
+
 export type passwordResultT =
 	| 'success'
 	| 'no_match'

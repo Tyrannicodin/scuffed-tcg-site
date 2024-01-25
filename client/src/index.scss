@@ -10,10 +10,16 @@ $mainBorder: solid 2px black;
 
 html,
 body,
-#root,
-main {
+#root {
 	height: 100%;
 	overflow: hidden;
+}
+
+main {
+	@extend html;
+	display: flex;
+	gap: 2vh;
+	margin: 2vh;
 }
 
 body {

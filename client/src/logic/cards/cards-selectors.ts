@@ -1,4 +1,5 @@
 import {Card} from 'common/models/card'
+import {Sale, Trade} from 'common/models/trade'
 import {PartialCardWithCopiesT} from 'common/types/cards'
 import {PastPurchasesT} from 'common/types/user'
 import {RootState} from 'store'
@@ -33,4 +34,12 @@ export const getPastPurchases = (state: RootState): Array<PastPurchasesT> => {
 
 export const getLastRollResult = (state: RootState): Card[] => {
 	return getLastRollResultState(state).lastRollResult
+}
+
+export const getSales = (state: RootState): Sale[] => {
+	return getCardsState(state).sales
+}
+
+export const getTrades = (state: RootState): Trade[] => {
+	return getCardsState(state).trades
 }
