@@ -9,7 +9,7 @@ type Props = {
 	timestamp: number
 }
 
-export function Sale({username, card, price, timestamp}: Props) {
+export function SaleComponent({username, card, price, timestamp}: Props) {
 	return (
 		<div className={css.sale}>
 			<div className={css.sale_row}>
@@ -22,7 +22,7 @@ export function Sale({username, card, price, timestamp}: Props) {
 				<div>
 					Seller: {username}
 					<br />
-					Listed <ReactTimeago date={timestamp*1000}/>
+					Listed <ReactTimeago date={timestamp * 1000} />
 				</div>
 				<button className={css.purchase_button}>Purchase</button>
 			</div>

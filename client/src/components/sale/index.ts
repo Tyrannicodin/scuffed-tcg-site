@@ -1,3 +1,3 @@
-import {Sale} from './sale'
+import {SaleComponent} from './sale'
 
-export default Sale
+export default SaleComponent
