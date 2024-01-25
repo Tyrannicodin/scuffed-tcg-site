@@ -54,7 +54,7 @@ export function Sale({username, card, price, timestamp}: Props) {
 				<div>
 					Seller: {username}
 					<br />
-					Listed {relativeTime(timestamp)}
+					Listed {relativeTime(timestamp * 1000)}
 				</div>
 				<button className={css.purchase_button}>Purchase</button>
 			</div>

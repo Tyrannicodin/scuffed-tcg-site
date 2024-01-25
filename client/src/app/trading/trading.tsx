@@ -13,7 +13,7 @@ export function Trading({menuSetter}: Props) {
 	const dispatch = useDispatch()
 	const sales = useSelector(getSales)
 
-	const log = () => {
+	const loadSales = () => {
 		dispatch({
 			type: 'GET_TRADES',
 			payload: {},
@@ -23,14 +23,19 @@ export function Trading({menuSetter}: Props) {
 	return (
 		<main>
 			<Section width={15}>
-				<button onClick={() => menuSetter('mainMenu')}>back</button>
+				<button onClick={() => menuSetter('mainMenu')}>Back</button>{' '}
+				<button onClick={loadSales}>Reload sales</button>
 			</Section>
 			<Section width={85}>
 				{sales.map((sale) => (
-					<Sale username={sale.seller} card={sale.card} price={sale.price} timestamp={0}></Sale>
+					<Sale
+						username={sale.seller}
+						card={sale.card}
+						price={sale.price}
+						timestamp={sale.timestamp}
+					></Sale>
 				))}
 			</Section>
-			<button onClick={log}>Do something</button>
 		</main>
 	)
 }

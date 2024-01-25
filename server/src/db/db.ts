@@ -108,12 +108,13 @@ export async function createTables() {
 				is_pack_purchase boolean NOT NULL
             );
 			CREATE TABLE IF NOT EXISTS sales(
+				sale_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
 				user_id uuid REFERENCES users(user_id),
-                card_name varchar(255),
-                rarity varchar(255),
-                cost integer NOT NULL,
-				PRIMARY KEY (user_id, card_name, rarity),
-                FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
+				card_name varchar(255),
+				card_rarity varchar(255),
+				price integer NOT NULL,
+				list_time integer NOT NULL,
+				FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
 			);
         `)
 	} catch (err) {
@@ -125,6 +126,8 @@ export async function destroyTables(): Promise<string> {
 	try {
 		await pool.query(
 			sql`
+				DROP TABLE purchases CASCADE;
+				DROP TABLE sales CASCADE;
 				DROP TABLE ability_cost CASCADE;
 				DROP TABLE libraries CASCADE;
 				DROP TABLE deck_cards CASCADE;

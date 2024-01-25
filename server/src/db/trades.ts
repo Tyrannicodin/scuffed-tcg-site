@@ -27,16 +27,19 @@ export async function getSales(): Promise<getSaleResultT> {
 	try {
 		const sales = await pool.query(
 			sql`
-                SELECT sales.user_id, sales.card_name, sales.card_rarity, sales.price FROM sales
+                SELECT sales.sale_id, sales.card_name, sales.card_rarity, sales.price, sales.list_time, users.username FROM sales
+				LEFT JOIN users ON (sales.user_id) = (users.user_id);
             `
 		)
 		const saleObjects: Sale[] = []
 		sales.rows.forEach(async (row) => {
 			saleObjects.push(
 				new Sale({
-					seller: row.user_id,
+					id: row.sale_id,
+					seller: row.username,
 					card: {name: row.card_name, rarity: row.card_rarity},
 					price: row.price,
+					timestamp: row.list_time,
 				})
 			)
 		})
