@@ -33,7 +33,7 @@ export function Trading({menuSetter}: Props) {
 						card={sale.card}
 						price={sale.price}
 						timestamp={sale.timestamp}
-					></Sale>
+					/>
 				))}
 			</Section>
 		</main>
