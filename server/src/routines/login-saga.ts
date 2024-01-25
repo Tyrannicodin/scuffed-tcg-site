@@ -13,7 +13,7 @@ import {
 } from '../../../common/util/validation'
 import {userCreateResultT} from '../../../common/types/user'
 
-function getDatabaseError(result: userCreateResultT["result"]): string {
+function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
 		case 'email_taken':
 			return 'That email is already in use'

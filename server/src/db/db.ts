@@ -3,6 +3,7 @@ import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
+import {userInfoT} from '../../../common/types/user'
 
 const {Pool} = pg
 
@@ -106,6 +107,15 @@ export async function createTables() {
 				purchase_time varchar(255) NOT NULL,
 				is_pack_purchase boolean NOT NULL
             );
+			CREATE TABLE IF NOT EXISTS sales(
+				sale_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+				user_id uuid REFERENCES users(user_id),
+				card_name varchar(255),
+				card_rarity varchar(255),
+				price integer NOT NULL,
+				list_time integer NOT NULL,
+				FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
+			);
         `)
 	} catch (err) {
 		console.log(err)
@@ -116,16 +126,18 @@ export async function destroyTables(): Promise<string> {
 	try {
 		await pool.query(
 			sql`
-				DROP TABLE ability_cost;
-				DROP TABLE libraries;
-				DROP TABLE deck_cards;
-				DROP TABLE decks;
-				DROP TABLE hermit_cards;
-				DROP TABLE effect_cards;
-				DROP TABLE cards;
-				DROP TABLE expansions;
-				DROP TABLE types;
-				DROP TABLE users;
+				DROP TABLE purchases CASCADE;
+				DROP TABLE sales CASCADE;
+				DROP TABLE ability_cost CASCADE;
+				DROP TABLE libraries CASCADE;
+				DROP TABLE deck_cards CASCADE;
+				DROP TABLE decks CASCADE;
+				DROP TABLE hermit_cards CASCADE;
+				DROP TABLE effect_cards CASCADE;
+				DROP TABLE cards CASCADE;
+				DROP TABLE expansions CASCADE;
+				DROP TABLE types CASCADE;
+				DROP TABLE users CASCADE;
 			`
 		)
 		return 'success'

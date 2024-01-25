@@ -82,8 +82,23 @@ function* lastRollResultSaga(action: UnknownAction) {
 	})
 }
 
+function* getTradesSaga() {
+	socket.emit('GET_TRADES', {
+		type: 'GET_TRADES',
+		payload: {},
+	})
+
+	const {payload} = yield receiveMsg('UPDATE_TRADES')
+
+	store.dispatch({
+		type: 'UPDATE_TRADES',
+		payload: payload,
+	})
+}
+
 export default function* cardSaga() {
 	yield* takeEvery('GET_CARDS', newCardsSaga)
 	yield* takeEvery('GET_LIBRARY', updateLibrarySaga)
 	yield* takeEvery('CARDS_ROLLED', lastRollResultSaga)
+	yield* takeEvery('GET_TRADES', getTradesSaga)
 }
