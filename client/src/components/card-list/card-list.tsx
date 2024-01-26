@@ -9,11 +9,10 @@ type Props = {
 	library: PartialCardWithCopiesT[]
 	showDescription: boolean
 	scroll?: boolean
-	actionButton?: JSX.Element
-	onPurchase: ((card: Card) => void) | null
+	actionButtonCreator?: (card: Card) => JSX.Element
 }
 
-export function CardList({children, library, showDescription, actionButton, scroll=true, onPurchase}: Props) {
+export function CardList({children, library, showDescription, actionButtonCreator, scroll=true}: Props) {
 
 	return (
 		<div className={css.outerContainer} style={{overflowY: scroll ? 'scroll' : 'hidden'}}>
@@ -28,7 +27,7 @@ export function CardList({children, library, showDescription, actionButton, scro
 									thisCard.card.name === card.name && thisCard.card.rarity === card.rarity
 							)?.copies
 						}
-						onPurchase={onPurchase}
+						actionButtonCreator={actionButtonCreator}
 						showDescription={showDescription}
 					/>
 				))}

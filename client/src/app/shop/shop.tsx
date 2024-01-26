@@ -1,5 +1,5 @@
 import CardList from 'components/card-list'
-import {getCards, getLibrary, getTokens} from 'logic/cards/cards-selectors'
+import {getCards, getLibrary, getPastPurchases, getTokens} from 'logic/cards/cards-selectors'
 import {useDispatch, useSelector} from 'react-redux'
 import css from './shop.module.scss'
 import {useState} from 'react'
@@ -8,7 +8,7 @@ import {packs} from '../../../../common/packs'
 import {Pack} from 'common/models/pack'
 import PackList from 'components/pack-list'
 import PackModal from 'components/shop-modals'
-import {PackOptionsT} from 'common/types/cards'
+import {PackOptionsT, PartialCardT} from 'common/types/cards'
 import {getFormattedDate, getDailyShop} from 'common/functions/daily-shop'
 import ShopTimer from 'components/shop-timer'
 
@@ -24,6 +24,7 @@ export function Shop({menuSetter}: Props) {
 	const cards = useSelector(getCards)
 	const library = useSelector(getLibrary)
 	const tokens = useSelector(getTokens)
+	const pastPurchases = useSelector(getPastPurchases)
 	const {rolledPacks, hermitCards, effectCards} = getDailyShop(cards)
 	const [showPackModal, setShowPackModal] = useState<boolean>(false)
 
@@ -60,6 +61,21 @@ export function Shop({menuSetter}: Props) {
 		setShowPackModal(true)
 	}
 
+	const purchaseButtonCreator = (card: Card) => (
+		<button
+			onClick={() => onCardPurchase(card)}
+			disabled={pastPurchases.some(
+				(pur) =>
+					pur.type === 'card' &&
+					pur.purchase.name === card.name &&
+					(pur.purchase as PartialCardT).rarity === card.rarity
+			)}
+			className={(css.rightAligned, css.purchaseButton)}
+		>
+			Buy
+		</button>
+	)
+
 	return (
 		<>
 			<PackModal setOpen={showPackModal} onClose={() => setShowPackModal(!showPackModal)} />
@@ -89,7 +105,7 @@ export function Shop({menuSetter}: Props) {
 					<CardList
 						children={hermitCards.sort((a, b) => (a.tokens || 0) - (b.tokens || 0))}
 						showDescription={false}
-						onPurchase={onCardPurchase}
+						actionButtonCreator={purchaseButtonCreator}
 						library={library}
 					/>
 					<div className={css.availableEffects}>
@@ -98,7 +114,7 @@ export function Shop({menuSetter}: Props) {
 					<CardList
 						children={effectCards.sort((a, b) => (a.tokens || 0) - (b.tokens || 0))}
 						showDescription={false}
-						onPurchase={onCardPurchase}
+						actionButtonCreator={purchaseButtonCreator}
 						library={library}
 					/>
 				</div>

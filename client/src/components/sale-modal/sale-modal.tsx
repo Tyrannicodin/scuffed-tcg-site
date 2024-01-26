@@ -29,7 +29,7 @@ export function SaleModal({isOpen, setOpen}: Props) {
 					<AlertDialog.Title className={css.title}>List a card</AlertDialog.Title>
 					<AlertDialog.Description asChild className={css.description}>
 						<div className={css.cardListBox}>
-							<CardList library={library} showDescription={false} onPurchase={null} scroll={false}>{cards}</CardList>
+							<CardList library={library} showDescription={false} scroll={false}>{cards}</CardList>
 						</div>
 					</AlertDialog.Description>
 					<div className={css.buttons}>

@@ -20,12 +20,9 @@ type Props = {
 	copies: number | undefined
 	showDescription: boolean
 	actionButtonCreator?: (card: Card) => JSX.Element
-	onPurchase: ((card: Card) => void) | null
 }
 
-export function CardInfo({card, copies, showDescription, actionButtonCreator, onPurchase}: Props) {
-	const pastPurchases = useSelector(getPastPurchases)
-
+export function CardInfo({card, copies, showDescription, actionButtonCreator}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
 			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' =
@@ -82,11 +79,6 @@ export function CardInfo({card, copies, showDescription, actionButtonCreator, on
 		return 'x0'
 	}
 
-	const cardPurchased = () => {
-		if (onPurchase === null) return
-		onPurchase(card)
-	}
-
 	return (
 		<div className={css.outer}>
 			<div className={classNames(css.card, card.rarity === 'Mythic' ? css.mythic : null)}>
@@ -102,20 +94,6 @@ export function CardInfo({card, copies, showDescription, actionButtonCreator, on
 				</div>
 				<div className={css.rightAligned}>{getCopies(copies)}</div>
 				{actionButtonCreator && actionButtonCreator(card)}
-				{onPurchase && (
-					<button
-						onClick={() => cardPurchased()}
-						disabled={pastPurchases.some(
-							(pur) =>
-								pur.type === 'card' &&
-								pur.purchase.name === card.name &&
-								(pur.purchase as PartialCardT).rarity === card.rarity
-						)}
-						className={(css.rightAligned, css.purchaseButton)}
-					>
-						Buy
-					</button>
-				)}
 			</div>
 			{showDescription && <div className={css.infobox}>{getDescription(card)}</div>}
 		</div>
