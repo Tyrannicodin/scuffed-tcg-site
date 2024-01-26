@@ -2,10 +2,13 @@ import {Sale} from 'common/models/trade'
 import {RarityT} from 'common/types/cards'
 import Section from 'components/flex-section'
 import SaleComponent from 'components/sale'
-import {getSales} from 'logic/cards/cards-selectors'
+import {getCards, getSales} from 'logic/cards/cards-selectors'
 import {useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import css from './trading.module.scss'
+import TextFilter from 'components/text-filter'
+import {getFilters} from 'common/functions/get-filters'
+import NumberFilter from 'components/number-filter'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'trading') => void
@@ -14,9 +17,11 @@ type Props = {
 export function Trading({menuSetter}: Props) {
 	const dispatch = useDispatch()
 	const sales = useSelector(getSales)
+	const cards = useSelector(getCards)
+	const filterOptions = getFilters(cards)
 
 	const [search, setSearch] = useState('')
-	const [rarity, setRarity] = useState<RarityT | 'All'>('All')
+	const [rarity, setRarity] = useState<string>('All')
 	const [minCost, setMinCost] = useState<number | ''>('')
 	const [maxCost, setMaxCost] = useState<number | ''>('')
 
@@ -31,8 +36,8 @@ export function Trading({menuSetter}: Props) {
 		)
 			return false
 		if (rarity !== 'All' && sale.card.rarity !== rarity) return false
-		if (minCost && sale.price < minCost) return false
-		if (maxCost && sale.price > maxCost) return false
+		if (minCost !== '' && sale.price < minCost) return false
+		if (maxCost !== '' && sale.price > maxCost) return false
 		return true
 	}
 
@@ -48,6 +53,14 @@ export function Trading({menuSetter}: Props) {
 			<Section width={15}>
 				<button onClick={() => menuSetter('mainMenu')}>Back</button>{' '}
 				<button onClick={loadSales}>Reload sales</button>
+				<TextFilter
+					name="Rarity"
+					filterOptions={filterOptions.rarities}
+					defaultFilter="All"
+					setFilter={setRarity}
+				/>
+				<NumberFilter name='Minimum cost' filterValue={minCost} setFilter={setMinCost}/>
+				<NumberFilter name='Maximum cost' filterValue={maxCost} setFilter={setMaxCost}/>
 			</Section>
 			<Section width={85} gap={'2vh'}>
 				<input

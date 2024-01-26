@@ -7,7 +7,7 @@ import Dropdown from 'components/dropdown'
 import {HermitCard} from 'common/models/hermit-card'
 import {getFilters} from 'common/functions/get-filters'
 import Section from 'components/flex-section'
-import Filter from 'components/filter'
+import TextFilter from 'components/text-filter'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'browser') => void
@@ -61,11 +61,36 @@ export function CardBrowser({menuSetter}: Props) {
 					Back
 				</button>
 				<div>Filters</div>
-				<Filter name='Expansion' filterOptions={filterOptions.expansions} defaultFilter='' setFilter={setExpansionFilter} />
-				<Filter name='Type' filterOptions={filterOptions.types} defaultFilter='' setFilter={setTypeFilter} />
-				<Filter name='Rarity' filterOptions={filterOptions.rarities} defaultFilter='' setFilter={setRarityFilter} />
-				<Filter name='Token' filterOptions={filterOptions.tokens} defaultFilter='' setFilter={setTokenFilter} />
-				<Filter name='Update' filterOptions={filterOptions.updates} defaultFilter='' setFilter={setUpdateFilter} />
+				<TextFilter
+					name="Expansion"
+					filterOptions={filterOptions.expansions}
+					defaultFilter=""
+					setFilter={setExpansionFilter}
+				/>
+				<TextFilter
+					name="Type"
+					filterOptions={filterOptions.types}
+					defaultFilter=""
+					setFilter={setTypeFilter}
+				/>
+				<TextFilter
+					name="Rarity"
+					filterOptions={filterOptions.rarities}
+					defaultFilter=""
+					setFilter={setRarityFilter}
+				/>
+				<TextFilter
+					name="Token"
+					filterOptions={filterOptions.tokens}
+					defaultFilter=""
+					setFilter={setTokenFilter}
+				/>
+				<TextFilter
+					name="Update"
+					filterOptions={filterOptions.updates}
+					defaultFilter=""
+					setFilter={setUpdateFilter}
+				/>
 				<div>
 					Show only my cards{' '}
 					<input type="checkbox" onChange={(e) => setShowOnlyOwned(e.target.checked)}></input>
