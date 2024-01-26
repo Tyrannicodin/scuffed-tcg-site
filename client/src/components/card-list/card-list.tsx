@@ -8,26 +8,16 @@ type Props = {
 	children: Card[]
 	library: PartialCardWithCopiesT[]
 	showDescription: boolean
+	scroll?: boolean
+	actionButton?: JSX.Element
 	onPurchase: ((card: Card) => void) | null
 }
 
-export function CardList({children, library, showDescription, onPurchase}: Props) {
-	const handleScroll = () => {
-		const scrollpos = window.scrollY
-		console.log(scrollpos)
-	}
-
-	useEffect(() => {
-		window.addEventListener('scroll', handleScroll, {passive: true})
-
-		return () => {
-			window.removeEventListener('scroll', handleScroll)
-		}
-	}, [])
+export function CardList({children, library, showDescription, actionButton, scroll=true, onPurchase}: Props) {
 
 	return (
-		<div className={css.outerContainer}>
-			<ul onScrollCapture={handleScroll} className={css.cardList}>
+		<div className={css.outerContainer} style={{overflowY: scroll ? 'scroll' : 'hidden'}}>
+			<ul className={css.cardList}>
 				{children.map((card, index) => (
 					<CardInfo
 						key={index}

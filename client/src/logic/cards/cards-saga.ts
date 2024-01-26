@@ -88,10 +88,10 @@ function* getTradesSaga() {
 		payload: {},
 	})
 
-	const {payload} = yield receiveMsg('UPDATE_TRADES')
+	const {payload} = yield receiveMsg('LOAD_TRADES')
 
 	store.dispatch({
-		type: 'UPDATE_TRADES',
+		type: 'LOAD_TRADES',
 		payload: payload,
 	})
 }

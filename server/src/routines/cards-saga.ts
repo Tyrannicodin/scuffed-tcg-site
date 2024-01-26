@@ -70,8 +70,8 @@ function* loadCardsSaga() {
 
 function* getTradesSaga(action: any) {
 	const {sales} = yield getSales()
-	action.socket.emit('UPDATE_TRADES', {
-		type: 'UPDATE_TRADES',
+	action.socket.emit('LOAD_TRADES', {
+		type: 'LOAD_TRADES',
 		payload: {
 			sales,
 			trades: [],

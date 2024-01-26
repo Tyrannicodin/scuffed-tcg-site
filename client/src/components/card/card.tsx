@@ -19,10 +19,11 @@ type Props = {
 	card: Card
 	copies: number | undefined
 	showDescription: boolean
+	actionButtonCreator?: (card: Card) => JSX.Element
 	onPurchase: ((card: Card) => void) | null
 }
 
-export function CardInfo({card, copies, showDescription, onPurchase}: Props) {
+export function CardInfo({card, copies, showDescription, actionButtonCreator, onPurchase}: Props) {
 	const pastPurchases = useSelector(getPastPurchases)
 
 	const getType = (card: Card) => {
@@ -100,6 +101,7 @@ export function CardInfo({card, copies, showDescription, onPurchase}: Props) {
 					</span>
 				</div>
 				<div className={css.rightAligned}>{getCopies(copies)}</div>
+				{actionButtonCreator && actionButtonCreator(card)}
 				{onPurchase && (
 					<button
 						onClick={() => cardPurchased()}

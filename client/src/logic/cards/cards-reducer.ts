@@ -37,10 +37,15 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 				...state,
 				lastRollResult: action.payload as Card[],
 			}
-		case 'UPDATE_TRADES':
+		case 'LOAD_TRADES':
 			return {
 				...state,
 				...action.payload,
+			}
+		case 'NEW_SALE':
+			state.sales.push(action.payload as Sale)
+			return {
+				...state
 			}
 		default:
 			return state

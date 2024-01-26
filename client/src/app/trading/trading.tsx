@@ -9,6 +9,7 @@ import css from './trading.module.scss'
 import TextFilter from 'components/text-filter'
 import {getFilters} from 'common/functions/get-filters'
 import NumberFilter from 'components/number-filter'
+import { SaleModal } from 'components/sale-modal/sale-modal'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'trading') => void
@@ -24,6 +25,7 @@ export function Trading({menuSetter}: Props) {
 	const [rarity, setRarity] = useState<string>('All')
 	const [minCost, setMinCost] = useState<number | ''>('')
 	const [maxCost, setMaxCost] = useState<number | ''>('')
+	const [listModalOpen, setListModalOpen] = useState(false)
 
 	const caseInsensitiveIncludes = (name: string, search: string) =>
 		name.toLowerCase().includes(search.toLowerCase())
@@ -50,8 +52,10 @@ export function Trading({menuSetter}: Props) {
 
 	return (
 		<main>
+			<SaleModal setOpen={setListModalOpen} isOpen={listModalOpen} />
 			<Section width={15}>
 				<button onClick={() => menuSetter('mainMenu')}>Back</button>{' '}
+				<button onClick={() => setListModalOpen(true)}>List card</button>
 				<button onClick={loadSales}>Reload sales</button>
 				<TextFilter
 					name="Rarity"
