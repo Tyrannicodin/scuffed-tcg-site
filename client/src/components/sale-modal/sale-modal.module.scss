@@ -1,4 +1,5 @@
 @import '../../index';
+@import 'components/card-list/card-list.module';
 
 .overlay {
 	background-color: rgba(0, 0, 0, 80%);
@@ -88,6 +89,15 @@
 
 .column {
 	flex-direction: column;
+}
+
+.list_button {
+	width: 5vw;
+	margin-left: $spacing;
+}
+
+.cancel_button {
+	background: linear-gradient(red 85%, #470000 15%);
 }
 
 @keyframes overlayShow {

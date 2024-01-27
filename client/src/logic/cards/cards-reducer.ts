@@ -42,11 +42,6 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 				...state,
 				...action.payload,
 			}
-		case 'NEW_SALE':
-			state.sales.push(action.payload as Sale)
-			return {
-				...state
-			}
 		default:
 			return state
 	}

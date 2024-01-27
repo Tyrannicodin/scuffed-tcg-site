@@ -9,7 +9,6 @@ import {PastPurchasesT, userInventoryT, Uuid} from '../../../common/types/user'
 import {PartialCardWithCopiesT} from '../../../common/types/cards'
 import {getDailyShop, getFormattedDate} from '../../../common/functions/daily-shop'
 import {User} from '../../../common/models/user'
-import {getSales} from 'db/trades'
 
 function* sendCards(action: UnknownAction) {
 	const cardList = [...store.getState().cards.cards]
@@ -68,21 +67,9 @@ function* loadCardsSaga() {
 	})
 }
 
-function* getTradesSaga(action: any) {
-	const {sales} = yield getSales()
-	action.socket.emit('LOAD_TRADES', {
-		type: 'LOAD_TRADES',
-		payload: {
-			sales,
-			trades: [],
-		},
-	})
-}
-
 export function* cardsSaga() {
 	yield call(loadCardsSaga)
 	yield* takeEvery('GET_CARDS', sendCards)
 	yield* takeEvery('GET_LIBRARY', sendLibrary)
 	yield* takeEvery('CARDS_ROLLED', verifyCardRolls)
-	yield* takeEvery('GET_TRADES', getTradesSaga)
 }

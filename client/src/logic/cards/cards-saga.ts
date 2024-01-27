@@ -96,9 +96,14 @@ function* getTradesSaga() {
 	})
 }
 
+function* createSaleSaga(action:any) {
+	socket.emit(action.type, action)
+}
+
 export default function* cardSaga() {
 	yield* takeEvery('GET_CARDS', newCardsSaga)
 	yield* takeEvery('GET_LIBRARY', updateLibrarySaga)
 	yield* takeEvery('CARDS_ROLLED', lastRollResultSaga)
 	yield* takeEvery('GET_TRADES', getTradesSaga)
+	yield* takeEvery('CREATE_SALE', createSaleSaga)
 }

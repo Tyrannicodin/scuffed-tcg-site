@@ -12,8 +12,13 @@ type Props = {
 	actionButtonCreator?: (card: Card) => JSX.Element
 }
 
-export function CardList({children, library, showDescription, actionButtonCreator, scroll=true}: Props) {
-
+export function CardList({
+	children,
+	library,
+	showDescription,
+	actionButtonCreator,
+	scroll = true,
+}: Props) {
 	return (
 		<div className={css.outerContainer} style={{overflowY: scroll ? 'scroll' : 'hidden'}}>
 			<ul className={css.cardList}>

@@ -1,3 +1,3 @@
-import { SaleModal } from "./sale-modal";
+import {SaleModal} from './sale-modal'
 
 export default SaleModal

@@ -1,4 +1,4 @@
-import {createUser, deleteUser, selectUserUUID} from 'db/user'
+import {createUser, deleteUser, selectUserInfoFromUuid, selectUserUUID} from 'db/user'
 
 import {call, delay, race, take, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
@@ -12,6 +12,8 @@ import {
 	validateUsername,
 } from '../../../common/util/validation'
 import {userCreateResultT} from '../../../common/types/user'
+import store from 'stores'
+import { User } from '../../../common/models/user'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -100,6 +102,9 @@ function* signUpSaga(action: any) {
 	const userSecret = uuidv4()
 	const {uuid} = yield call(selectUserUUID, username, password)
 
+	const user: User = yield call(selectUserInfoFromUuid, uuid)
+
+	
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
 		payload: {
@@ -144,6 +149,8 @@ function* signUpSaga(action: any) {
 			return
 		}
 	}
+
+	
 
 	socket.emit('LOGGED_IN', {
 		type: 'LOGGED_IN',
