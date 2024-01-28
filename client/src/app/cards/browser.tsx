@@ -14,7 +14,6 @@ type Props = {
 }
 
 export function CardBrowser({menuSetter}: Props) {
-	const dispatch = useDispatch()
 	const cards = useSelector(getCards)
 	const library = useSelector(getLibrary)
 	const [expansionFilter, setExpansionFilter] = useState('')
@@ -103,12 +102,7 @@ export function CardBrowser({menuSetter}: Props) {
 					placeholder="Search cards..."
 					onChange={(e) => setFilter(e.target.value)}
 				></input>
-				<CardList
-					children={filteredCards}
-					showDescription={true}
-					onPurchase={null}
-					library={library}
-				/>
+				<CardList children={filteredCards} showDescription={true} library={library} />
 			</Section>
 			<Section width={25}>
 				<div>Future place of the deck builder</div>

@@ -1,5 +1,6 @@
 import {Server} from 'socket.io'
 import {CONFIG} from '../../common/config'
+import {getUsers} from './login/login-selectors'
 import store from './stores'
 import version from './version'
 
@@ -30,16 +31,25 @@ function startSocketIO(server: any) {
 	})
 
 	io.on('connection', (socket) => {
-		// TODO - use playerSecret to verify requests
-		// TODO - Validate json of all requests
+		const unauthorisedHandler = (message: any) => {
+			if (!message.type) return
+			store.dispatch({...message, socket})
+		}
 
 		store.dispatch({
 			type: 'CLIENT_CONNECTED',
 			payload: {socket},
 		})
+		socket.on('LOGIN', unauthorisedHandler)
+		socket.on('SIGNUP', unauthorisedHandler)
 		socket.onAny((event, message) => {
 			if (!message?.type) return
-			store.dispatch({...message, socket})
+			if (!message?.auth || !message.auth.uuid || !message.auth.secret) return
+			const user = getUsers(store.getState()).find((user) => {
+				return user.uuid === message.auth.uuid && user.secret === message.auth.secret
+			})
+			if (!user) return
+			store.dispatch({...message, user, socket})
 		})
 		socket.on('disconnect', () => {
 			store.dispatch({

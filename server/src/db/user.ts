@@ -115,7 +115,7 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 		})
 
 		const userDef: userDefs = {
-			uuid: result.rows[0].uuid,
+			uuid: result.rows[0].user_id,
 			username: result.rows[0].username,
 			tokens: result.rows[0].tokens,
 			picture: result.rows[0].picture,
@@ -129,6 +129,78 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 		console.log(err)
 	}
 	return null
+}
+
+export async function updateUserInfo(user: User) {
+	try {
+		const result = await pool.query(
+			sql`
+				SELECT users.user_id,users.username,users.tokens,users.picture,users.is_admin,
+				libraries.card_name,libraries.rarity,libraries.copies
+				FROM users
+				LEFT JOIN libraries ON (libraries.user_id = users.user_id)
+				WHERE users.user_id = $1;
+            `,
+			[user.uuid]
+		)
+
+		const purchasesQuery = await pool.query(
+			sql`
+				SELECT * FROM purchases WHERE user_id = $1;
+			`,
+			[user.uuid]
+		)
+
+		if (!result.rowCount) {
+			return user
+		}
+
+		const library: Array<PartialCardWithCopiesT> = []
+		const purchases: Array<PastPurchasesT> = []
+
+		result.rows.forEach((row: any) => {
+			const partialCard: PartialCardWithCopiesT = {
+				card: {
+					name: row.card_name,
+					rarity: row.rarity,
+				},
+				copies: row.copies,
+			}
+
+			library.push(partialCard)
+		})
+
+		purchasesQuery.rows.forEach((row: any) => {
+			const purchase: PastPurchasesT = {
+				purchase: {
+					name: row.purchase_name,
+					rarity: row.purchase_rarity,
+				},
+				type: row.is_pack_purchase ? 'pack' : 'card',
+				date: row.purchase_time,
+			}
+
+			purchases.push(purchase)
+		})
+
+		const userDef: userDefs = {
+			uuid: result.rows[0].uuid,
+			username: result.rows[0].username,
+			tokens: result.rows[0].tokens,
+			picture: result.rows[0].picture,
+			is_admin: result.rows[0].is_admin,
+			library: library,
+			purchases: purchases,
+		}
+
+		const updatedUser = new User(userDef)
+		updatedUser.authed = user.authed
+		updatedUser.secret = user.secret
+		return updatedUser
+	} catch (err) {
+		console.log(err)
+	}
+	return user
 }
 
 export async function deleteUser(username: string) {

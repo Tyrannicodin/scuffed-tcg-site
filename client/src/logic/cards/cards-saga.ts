@@ -3,16 +3,17 @@ import store from 'store'
 import {put, take, takeEvery} from 'typed-redux-saga'
 import {getCards} from './cards-selectors'
 import {Card} from 'common/models/card'
-import {newCard as addNewCards, updateLibrary, updateRollResults} from './cards-actions'
-import socket from 'socket'
-import {receiveMsg} from 'logic/socket/socket-saga'
+import {newCard as addNewCards, updateRollResults} from './cards-actions'
+import {receiveMsg, sendMsg} from 'logic/socket/socket-saga'
+import {getUuid} from 'logic/session/session-selectors'
+import {PastPurchasesT} from 'common/types/user'
 
 function* newCardsSaga(action: UnknownAction) {
 	const state = store.getState()
 	const cards = getCards(state)
 	const initialPayload = action.payload as {cardCount: number}
 
-	socket.emit('GET_CARDS', {
+	sendMsg({
 		type: 'GET_CARDS',
 		payload: {
 			start: cards.length,
@@ -29,28 +30,6 @@ function* newCardsSaga(action: UnknownAction) {
 	yield put(addNewCards(newCards))
 }
 
-import {getUuid} from 'logic/session/session-selectors'
-import {PartialCardWithCopiesT} from 'common/types/cards'
-import {PastPurchasesT} from 'common/types/user'
-
-function* updateLibrarySaga(action: UnknownAction) {
-	const state = store.getState()
-	const uuid = getUuid(state)
-
-	socket.emit('GET_LIBRARY', {
-		type: 'GET_LIBRARY',
-		payload: {
-			uuid: uuid,
-		},
-	})
-
-	const {payload}: {payload: PartialCardWithCopiesT[]} = yield receiveMsg('UPDATE_LIBRARY')
-
-	const newCards = payload
-
-	yield put(updateLibrary(newCards))
-}
-
 function* lastRollResultSaga(action: UnknownAction) {
 	const state = store.getState()
 	const uuid = getUuid(state)
@@ -60,7 +39,7 @@ function* lastRollResultSaga(action: UnknownAction) {
 		cost: number
 	}
 
-	socket.emit('CARDS_ROLLED', {
+	sendMsg({
 		type: 'CARDS_ROLLED',
 		payload: {
 			cards: initialPayload.cards,
@@ -75,15 +54,10 @@ function* lastRollResultSaga(action: UnknownAction) {
 	const newCards = payload
 
 	yield put(updateRollResults(newCards))
-
-	store.dispatch({
-		type: 'GET_LIBRARY',
-		payload: {uuid: uuid},
-	})
 }
 
 function* getTradesSaga() {
-	socket.emit('GET_TRADES', {
+	sendMsg({
 		type: 'GET_TRADES',
 		payload: {},
 	})
@@ -96,13 +70,12 @@ function* getTradesSaga() {
 	})
 }
 
-function* createSaleSaga(action:any) {
-	socket.emit(action.type, action)
+function* createSaleSaga(action: any) {
+	sendMsg(action) //@TODO: Make better somehow
 }
 
 export default function* cardSaga() {
 	yield* takeEvery('GET_CARDS', newCardsSaga)
-	yield* takeEvery('GET_LIBRARY', updateLibrarySaga)
 	yield* takeEvery('CARDS_ROLLED', lastRollResultSaga)
 	yield* takeEvery('GET_TRADES', getTradesSaga)
 	yield* takeEvery('CREATE_SALE', createSaleSaga)

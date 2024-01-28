@@ -5,7 +5,6 @@ import {Sale, Trade} from 'common/models/trade'
 
 type CardsState = {
 	cards: Card[]
-	library: userInventoryT
 	lastRollResult: Card[]
 	sales: Sale[]
 	trades: Trade[]
@@ -13,7 +12,6 @@ type CardsState = {
 
 const defaultState: CardsState = {
 	cards: [],
-	library: {library: [], tokens: 0, pastPurchases: []},
 	lastRollResult: [],
 	sales: [],
 	trades: [],
@@ -26,11 +24,6 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 			return {
 				...state,
 				cards: state.cards.concat(action.payload as Card[]),
-			}
-		case 'UPDATE_LIBRARY':
-			return {
-				...state,
-				library: action.payload as userInventoryT,
 			}
 		case 'ROLL_VERIFIED':
 			return {

@@ -2,7 +2,7 @@ import {takeEvery} from 'typed-redux-saga'
 import {getSales} from '../db/trades'
 
 function* createSaleSaga(action: any) {
-    console.log(action)
+	console.log(action)
 }
 
 function* getTradesSaga(action: any) {
@@ -18,5 +18,5 @@ function* getTradesSaga(action: any) {
 
 export function* tradeSaga() {
 	yield* takeEvery('GET_TRADES', getTradesSaga)
-    yield* takeEvery('CREATE_SALE', createSaleSaga)
+	yield* takeEvery('CREATE_SALE', createSaleSaga)
 }

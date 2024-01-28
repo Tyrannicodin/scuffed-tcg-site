@@ -21,6 +21,9 @@ export class User {
 	public library: Array<PartialCardWithCopiesT>
 	public purchases: Array<PastPurchasesT>
 
+	public secret: string = ''
+	public authed: boolean = true
+
 	constructor(defs: userDefs) {
 		this.uuid = defs.uuid
 		this.username = defs.username

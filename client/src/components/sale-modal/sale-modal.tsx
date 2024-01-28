@@ -60,7 +60,13 @@ export function SaleModal({isOpen, setOpen}: Props) {
 									copies={getCardCount(currentCard)}
 									showDescription={true}
 								/>
-								<NumberFilter name="Price" filterValue={listPrice} setFilter={setListPrice} minValue={-tokens} hideX />
+								<NumberFilter
+									name="Price"
+									filterValue={listPrice}
+									setFilter={setListPrice}
+									minValue={-tokens}
+									hideX
+								/>
 								<NumberFilter
 									name="Copies"
 									filterValue={listCopies}
@@ -86,21 +92,27 @@ export function SaleModal({isOpen, setOpen}: Props) {
 					<div className={css.buttons}>
 						{currentCard ? (
 							<>
-								<button onClick={() => {
-									setCurrentCard(undefined)
-									setListCopies(0)
-									setListPrice(1)
-								}}>Back</button>
-								<AlertDialog.Action onClick={() => {
+								<button
+									onClick={() => {
+										setCurrentCard(undefined)
+										setListCopies(0)
+										setListPrice(1)
+									}}
+								>
+									Back
+								</button>
+								<AlertDialog.Action
+									onClick={() => {
 										dispatch({
 											type: 'CREATE_SALE',
 											payload: {
 												card: currentCard,
 												copies: listCopies,
 												price: listPrice,
-											}
+											},
 										})
-									}}>
+									}}
+								>
 									List
 								</AlertDialog.Action>
 							</>
