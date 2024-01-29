@@ -1,4 +1,10 @@
-import {createUser, deleteUser, selectUserInfoFromUuid, selectUserUUID, updateUserInfo} from 'db/user'
+import {
+	createUser,
+	deleteUser,
+	selectUserInfoFromUuid,
+	selectUserUUID,
+	updateUserInfo,
+} from 'db/user'
 import {call, delay, put, race, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
 import {Action} from 'redux'
@@ -12,8 +18,9 @@ import {
 } from '../../../common/util/validation'
 import {Uuid, userCreateResultT} from '../../../common/types/user'
 import store from 'stores'
-import { User } from '../../../common/models/user'
-import {addUser, updateUser} from './login-actions'
+import {User} from '../../../common/models/user'
+import {addUser, updateUserState} from './login-actions'
+import { getUsers } from './login-selectors'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -47,7 +54,8 @@ function* loginSaga(action: any) {
 	}
 
 	const user: User | null = yield selectUserInfoFromUuid(uuid)
-	if (user === null) { //This should never happen, as it's checked before but type checking lol
+	if (user === null) {
+		//This should never happen, as it's checked before but type checking lol
 		socket.emit('FAIL_LOGIN', {
 			type: 'FAIL_LOGIN',
 			payload: {
@@ -56,13 +64,14 @@ function* loginSaga(action: any) {
 		})
 		return
 	}
-	const storedUser = store.getState().users.users.find((storedUser) => storedUser.uuid === user.uuid && storedUser.secret === secret)
+	const storedUser = getUsers(store.getState())
+		.find((storedUser) => storedUser.uuid === user.uuid && storedUser.secret === secret)
 	if (storedUser) {
 		const updatedUser: User = yield updateUserInfo(user)
-		put(updateUser(updatedUser))
+		yield put(updateUserState(updatedUser))
 		socket.emit('LOGGED_IN', {
 			type: 'LOGGED_IN',
-			payload: updatedUser
+			payload: updatedUser,
 		})
 		return
 	}
@@ -125,12 +134,12 @@ function* signUpSaga(action: any) {
 
 	store.dispatch({
 		type: 'ADD_USER',
-		payload: user
+		payload: user,
 	})
-	
+
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
-		payload: user
+		payload: user,
 	})
 
 	const verifyMessage = () =>

@@ -60,7 +60,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 		case 'UPDATE_USER':
 			return {
 				...state,
-				user: action.payload as User
+				user: action.payload as User,
 			}
 		default:
 			return state

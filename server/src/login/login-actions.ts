@@ -5,7 +5,7 @@ export const addUser = (user: User) => ({
 	payload: user,
 })
 
-export const updateUser = (user: User) => ({
-    type: 'UPDATE_USER',
-    payload: user
+export const updateUserState = (user: User) => ({
+	type: 'UPDATE_USER',
+	payload: user,
 })

@@ -20,7 +20,7 @@ export const setMessage = (message: string) => ({
 	payload: message,
 })
 
-export const updateUser = (user: User) => ({
+export const updateUserState = (user: User) => ({
 	type: 'UPDATE_USER' as const,
-	payload: user
+	payload: user,
 })

@@ -298,7 +298,8 @@ export async function addCardsToUser(uuid: string, cards: Array<PartialCardT>): 
 
 export async function removeCardsFromUser(
 	uuid: string,
-	cards: Array<PartialCardT>
+	cards: Array<PartialCardT>,
+	copies: number = 1
 ): Promise<string> {
 	const flippedCards: {
 		names: Array<string>
@@ -316,13 +317,13 @@ export async function removeCardsFromUser(
 	try {
 		await pool.query(
 			sql`
-				UPDATE libraries SET copies = copies - 1 FROM ( SELECT * FROM UNNEST (
+				UPDATE libraries SET copies = copies - $4 FROM ( SELECT * FROM UNNEST (
 					$1::uuid[],
 					$2::text[],
 					$3::text[]
-				)) RETURN *;
+				));
 			`,
-			[Array(cards.length).fill(uuid), flippedCards.names, flippedCards.rarities]
+			[Array(cards.length).fill(uuid), flippedCards.names, flippedCards.rarities, copies]
 		)
 		await pool.query(sql`DELETE FROM libraries WHERE copies = 0;`)
 		return 'success'

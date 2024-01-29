@@ -1,5 +1,4 @@
 import {Sale} from 'common/models/trade'
-import {RarityT} from 'common/types/cards'
 import Section from 'components/flex-section'
 import SaleComponent from 'components/sale'
 import {getCards, getSales} from 'logic/cards/cards-selectors'
@@ -80,6 +79,7 @@ export function Trading({menuSetter}: Props) {
 							username={sale.seller}
 							card={sale.card}
 							price={sale.price}
+							copies={sale.copies}
 							timestamp={sale.timestamp}
 						/>
 					))}

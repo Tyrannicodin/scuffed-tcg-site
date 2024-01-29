@@ -113,6 +113,7 @@ export async function createTables() {
 				card_name varchar(255),
 				card_rarity varchar(255),
 				price integer NOT NULL,
+				copies integer NOT NULL,
 				list_time integer NOT NULL,
 				FOREIGN KEY (card_name, card_rarity) REFERENCES cards(card_name, rarity)
 			);

@@ -61,13 +61,6 @@ function* getTradesSaga() {
 		type: 'GET_TRADES',
 		payload: {},
 	})
-
-	const {payload} = yield receiveMsg('LOAD_TRADES')
-
-	store.dispatch({
-		type: 'LOAD_TRADES',
-		payload: payload,
-	})
 }
 
 function* createSaleSaga(action: any) {

@@ -1,8 +1,21 @@
-import {takeEvery} from 'typed-redux-saga'
-import {getSales} from '../db/trades'
+import {all, takeEvery} from 'typed-redux-saga'
+import {createSale, getSales} from '../db/trades'
+import {updateUser} from './root'
+import {removeCardsFromUser, updateUserTokens} from 'db/user'
+import {Socket} from 'socket.io'
+import store from 'stores'
+import {getSockets} from 'login/login-selectors'
 
 function* createSaleSaga(action: any) {
-	console.log(action)
+	const {card, price, copies} = action.payload
+	yield createSale(action.user, {card: card, copies: copies}, price)
+	if (price < 0) {
+		yield updateUserTokens(action.user.uuid, price)
+	}
+	yield removeCardsFromUser(action.user.uuid, [card], copies)
+
+	yield updateUser(action.user, action.socket as Socket)
+	yield all(getSockets(store.getState()).map(getTradesSaga))
 }
 
 function* getTradesSaga(action: any) {

@@ -1,5 +1,4 @@
 import {Card} from 'common/models/card'
-import {userInventoryT} from 'common/types/user'
 import {UnknownAction} from 'redux'
 import {Sale, Trade} from 'common/models/trade'
 

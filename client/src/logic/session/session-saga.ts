@@ -1,7 +1,7 @@
-import {receiveMsg, sendMsg} from 'logic/socket/socket-saga'
+import {ServerMessage, receiveMsg, sendMsg} from 'logic/socket/socket-saga'
 import {call, delay, put, race, take, takeLatest} from 'redux-saga/effects'
 import socket from 'socket'
-import {connect, disconnect, onboarding, setMessage, updateUser} from './session-actions'
+import {connect, disconnect, onboarding, setMessage, updateUserState} from './session-actions'
 import store from 'store'
 import {getOTPCode, getUserSecret} from './session-selectors'
 import {all, fork} from 'typed-redux-saga'
@@ -15,6 +15,7 @@ import {
 	validateUsername,
 } from 'common/util/validation'
 import {User} from 'common/models/user'
+import {loadTrades} from 'logic/cards/cards-actions'
 
 function* onLogin(user: User) {
 	yield put(connect(user))
@@ -24,14 +25,22 @@ function* onLogin(user: User) {
 			cardCount: 10000,
 		},
 	})
-	yield all([fork(cardSaga), fork(userStatusSaga)]) //Init rest of client
+	yield all([
+		fork(cardSaga),
+		fork(listen('UPDATE_USER', updateUserState)),
+		fork(listen('LOAD_TRADES', loadTrades)),
+	]) //Init rest of client
 }
 
-function* userStatusSaga() {
-	while (true) {
-		const result: {type: 'UPDATE_USER', payload: User} = yield receiveMsg('UPDATE_USER')
-		yield put(updateUser(result.payload))
+function listen(event: string, action: (payload: any) => any) {
+	function* inner() {
+		while (true) {
+			const result: ServerMessage = yield receiveMsg(event)
+			console.log(loadTrades(result.payload))
+			yield put(action(result.payload))
+		}
 	}
+	return inner
 }
 
 function* verifySaga() {

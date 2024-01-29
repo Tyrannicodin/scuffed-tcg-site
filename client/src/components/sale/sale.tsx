@@ -6,15 +6,16 @@ type Props = {
 	username: string
 	card: PartialCardT
 	price: number
+	copies: number
 	timestamp: number
 }
 
-export function SaleComponent({username, card, price, timestamp}: Props) {
+export function SaleComponent({username, card, price, copies, timestamp}: Props) {
 	return (
 		<div className={css.sale}>
 			<div className={css.sale_row}>
 				<div className={css.sale_name}>
-					{card.name} - {card.rarity}
+					{card.name} - {card.rarity} x{copies}
 				</div>
 				<div className={css.cost}>{price} tokens</div>
 			</div>

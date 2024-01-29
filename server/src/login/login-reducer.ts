@@ -1,12 +1,15 @@
 import {UnknownAction} from 'redux'
 import {User} from '../../../common/models/user'
+import {Socket} from 'socket.io'
 
 export type UsersState = {
 	users: User[]
+	sockets: Socket[]
 }
 
 const defaultState: UsersState = {
 	users: [],
+	sockets: [],
 }
 
 function userReducer(state = defaultState, action: UnknownAction): UsersState {
@@ -23,6 +26,16 @@ function userReducer(state = defaultState, action: UnknownAction): UsersState {
 			const userStateIndex = state.users.findIndex((userState) => userState.uuid === user.uuid)
 			if (userStateIndex === -1) return state
 			state.users[userStateIndex] = user
+			return {
+				...state,
+			}
+		case 'CLIENT_CONNECTED':
+			state.sockets.push(action.payload as Socket)
+			return {
+				...state,
+			}
+		case 'CLIENT_DISCONNECTED':
+			state.sockets.splice(state.sockets.indexOf(action.payload as Socket))
 			return {
 				...state,
 			}

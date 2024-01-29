@@ -6,7 +6,6 @@ import cors from 'cors'
 import {CONFIG} from '../../common/config'
 import {createTables, addCardsToDatabase, destroyTables} from 'db/db'
 import startSocketIO from 'sockets'
-import {getSales} from './db/trades'
 
 const port = process.env.PORT || CONFIG.port || 9000
 

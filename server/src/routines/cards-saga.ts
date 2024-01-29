@@ -5,10 +5,9 @@ import store from 'stores'
 import {call, put, takeEvery} from 'typed-redux-saga'
 import {Card} from '../../../common/models/card'
 import {Socket} from 'socket.io'
-import {PastPurchasesT, Uuid} from '../../../common/types/user'
+import {PastPurchasesT} from '../../../common/types/user'
 import {User} from '../../../common/models/user'
-import {sendUpdatedUser} from './root'
-import { updateUser } from 'login/login-actions'
+import {updateUser} from './root'
 
 function* sendCards(action: UnknownAction) {
 	const cardList = [...store.getState().cards.cards]
@@ -37,9 +36,7 @@ function* verifyCardRolls(action: UnknownAction) {
 		payload: payload.cards,
 	})
 
-	const updatedUser: User = yield updateUserInfo(user)
-	yield put(updateUser(updatedUser))
-	sendUpdatedUser(updatedUser, action.socket as Socket)
+	yield updateUser(user, action.socket as Socket)
 }
 
 function* loadCardsSaga() {

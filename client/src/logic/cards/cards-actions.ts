@@ -1,4 +1,5 @@
 import {Card} from 'common/models/card'
+import {Sale, Trade} from 'common/models/trade'
 import {PartialCardWithCopiesT} from 'common/types/cards'
 
 export const newCard = (cards: Card[]) => ({
@@ -14,4 +15,9 @@ export const updateLibrary = (library: PartialCardWithCopiesT[]) => ({
 export const updateRollResults = (cards: Card[]) => ({
 	type: 'ROLL_VERIFIED' as const,
 	payload: cards,
+})
+
+export const loadTrades = (trades: {trades: Trade[]; sales: Sale[]}) => ({
+	type: 'LOAD_TRADES' as const,
+	payload: trades,
 })
