@@ -1,4 +1,3 @@
-import {Socket} from 'socket.io'
 import {PastPurchasesT, Uuid} from '../types/user'
 import {PartialCardWithCopiesT} from '../types/cards'
 

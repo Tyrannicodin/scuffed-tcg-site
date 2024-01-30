@@ -24,7 +24,6 @@ export const PackModal = ({setOpen, onClose}: Props) => {
 							<CardList
 								children={lastRolledcards}
 								showDescription={false}
-								onPurchase={null}
 								library={library}
 							/>
 						</div>

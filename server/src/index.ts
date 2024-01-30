@@ -1,4 +1,4 @@
-import express, {response} from 'express'
+import express from 'express'
 import path from 'path'
 import {fileURLToPath} from 'url'
 import {createServer} from 'http'
@@ -18,8 +18,9 @@ const server = createServer(app)
 
 process.argv.forEach(function (val) {
 	if (val === 'buildDatabase') {
-		createTables()
-		addCardsToDatabase()
+		createTables().then(
+			addCardsToDatabase
+		)
 	}
 	if (val === 'destroyDatabase') {
 		destroyTables()

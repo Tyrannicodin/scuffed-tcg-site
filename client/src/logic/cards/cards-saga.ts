@@ -1,6 +1,6 @@
 import {UnknownAction} from 'redux'
 import store from 'store'
-import {put, take, takeEvery} from 'typed-redux-saga'
+import {put, takeEvery} from 'typed-redux-saga'
 import {getCards} from './cards-selectors'
 import {Card} from 'common/models/card'
 import {newCard as addNewCards, updateRollResults} from './cards-actions'

@@ -2,10 +2,8 @@ import {Card} from 'common/models/card'
 import {EffectCard} from 'common/models/effect-card'
 import {HermitCard} from 'common/models/hermit-card'
 import css from './card.module.scss'
-import {HermitAttackTypeT, PartialCardT} from 'common/types/cards'
+import {HermitAttackTypeT} from 'common/types/cards'
 import classNames from 'classnames'
-import {useDispatch, useSelector} from 'react-redux'
-import {getPastPurchases} from 'logic/cards/cards-selectors'
 
 const costColors = ['#525252', '#ece9e9', '#fefa4c', '#59e477', '#7ff6fa', '#c188d1']
 const effectColors = {

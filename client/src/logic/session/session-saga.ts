@@ -1,5 +1,5 @@
 import {ServerMessage, receiveMsg, sendMsg} from 'logic/socket/socket-saga'
-import {call, delay, put, race, take, takeLatest} from 'redux-saga/effects'
+import {call, delay, put, race, take} from 'redux-saga/effects'
 import socket from 'socket'
 import {connect, disconnect, onboarding, setMessage, updateUserState} from './session-actions'
 import store from 'store'

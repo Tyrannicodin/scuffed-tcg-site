@@ -1,4 +1,4 @@
-import {ExpansionT, PackOptionsT, RarityT} from '../types/cards'
+import {PackOptionsT} from '../types/cards'
 import {Card} from './card'
 import {EffectCard} from './effect-card'
 import {HermitCard} from './hermit-card'

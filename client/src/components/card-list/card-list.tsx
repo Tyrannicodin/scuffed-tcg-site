@@ -1,7 +1,6 @@
 import {Card} from 'common/models/card'
 import css from './card-list.module.scss'
 import {CardInfo} from 'components/card/card'
-import {SyntheticEvent, useEffect} from 'react'
 import {PartialCardWithCopiesT} from 'common/types/cards'
 
 type Props = {

@@ -1,7 +1,6 @@
 import {Card} from '../models/card'
 import {EffectCard} from '../models/effect-card'
 import {HermitCard} from '../models/hermit-card'
-import {ItemCard} from '../models/item-card'
 import {Pack} from '../models/pack'
 import {PackOptionsT} from '../types/cards'
 
