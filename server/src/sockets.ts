@@ -3,6 +3,8 @@ import {CONFIG} from '../../common/config'
 import {getUsers} from './login/login-selectors'
 import store from './stores'
 import version from './version'
+import {Socket} from 'socket.io-client'
+import {DefaultEventsMap} from 'socket.io/dist/typed-events'
 
 const env = process.env.NODE_ENV || 'development'
 const isValidVersion = (clientVersion: string) => {
@@ -38,7 +40,7 @@ function startSocketIO(server: any) {
 
 		store.dispatch({
 			type: 'CLIENT_CONNECTED',
-			payload: {socket},
+			payload: socket,
 		})
 		socket.on('LOGIN', unauthorisedHandler)
 		socket.on('SIGNUP', unauthorisedHandler)
@@ -54,7 +56,7 @@ function startSocketIO(server: any) {
 		socket.on('disconnect', () => {
 			store.dispatch({
 				type: 'CLIENT_DISCONNECTED',
-				payload: {socket},
+				payload: socket,
 			})
 		})
 	})

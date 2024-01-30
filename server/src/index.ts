@@ -18,9 +18,7 @@ const server = createServer(app)
 
 process.argv.forEach(function (val) {
 	if (val === 'buildDatabase') {
-		createTables().then(
-			addCardsToDatabase
-		)
+		createTables().then(addCardsToDatabase)
 	}
 	if (val === 'destroyDatabase') {
 		destroyTables()

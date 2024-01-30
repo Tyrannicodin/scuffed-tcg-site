@@ -20,7 +20,7 @@ import {Uuid, userCreateResultT} from '../../../common/types/user'
 import store from 'stores'
 import {User} from '../../../common/models/user'
 import {addUser, updateUserState} from './login-actions'
-import { getUsers } from './login-selectors'
+import {getUsers} from './login-selectors'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -64,8 +64,9 @@ function* loginSaga(action: any) {
 		})
 		return
 	}
-	const storedUser = getUsers(store.getState())
-		.find((storedUser) => storedUser.uuid === user.uuid && storedUser.secret === secret)
+	const storedUser = getUsers(store.getState()).find(
+		(storedUser) => storedUser.uuid === user.uuid && storedUser.secret === secret
+	)
 	if (storedUser) {
 		const updatedUser: User = yield updateUserInfo(user)
 		yield put(updateUserState(updatedUser))

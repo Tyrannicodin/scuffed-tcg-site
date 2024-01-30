@@ -36,7 +36,6 @@ function listen(event: string, action: (payload: any) => any) {
 	function* inner() {
 		while (true) {
 			const result: ServerMessage = yield receiveMsg(event)
-			console.log(loadTrades(result.payload))
 			yield put(action(result.payload))
 		}
 	}

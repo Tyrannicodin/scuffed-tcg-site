@@ -5,6 +5,8 @@ import {removeCardsFromUser, updateUserTokens} from 'db/user'
 import {Socket} from 'socket.io'
 import store from 'stores'
 import {getSockets} from 'login/login-selectors'
+import {getSaleResultT} from '../../../common/types/trades'
+import {Sale} from '../../../common/models/trade'
 
 function* createSaleSaga(action: any) {
 	const {card, price, copies} = action.payload
@@ -15,15 +17,19 @@ function* createSaleSaga(action: any) {
 	yield removeCardsFromUser(action.user.uuid, [card], copies)
 
 	yield updateUser(action.user, action.socket as Socket)
-	yield all(getSockets(store.getState()).map(getTradesSaga))
+	const {sales} = yield getSales()
+	yield all(getSockets(store.getState()).map((socket) => getTradesSaga({socket}, sales)))
 }
 
-function* getTradesSaga(action: any) {
-	const {sales} = yield getSales()
+function* getTradesSaga(action: any, cachedSales: Sale[] | null = null) {
+	if (cachedSales === null) {
+		const {sales} = yield getSales()
+		cachedSales = sales
+	}
 	action.socket.emit('LOAD_TRADES', {
 		type: 'LOAD_TRADES',
 		payload: {
-			sales,
+			sales: cachedSales,
 			trades: [],
 		},
 	})
