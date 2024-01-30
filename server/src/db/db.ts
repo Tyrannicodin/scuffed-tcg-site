@@ -3,7 +3,6 @@ import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
-import {userInfoT} from '../../../common/types/user'
 
 const {Pool} = pg
 
@@ -113,8 +112,9 @@ export async function createTables() {
 				card_name varchar(255),
 				card_rarity varchar(255),
 				price integer NOT NULL,
+				copies integer NOT NULL,
 				list_time integer NOT NULL,
-				FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
+				FOREIGN KEY (card_name, card_rarity) REFERENCES cards(card_name, rarity)
 			);
         `)
 	} catch (err) {

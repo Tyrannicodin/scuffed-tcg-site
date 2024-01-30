@@ -1,7 +1,5 @@
 import * as Select from '@radix-ui/react-select'
 import css from './dropdown.module.scss'
-import {useState} from 'react'
-import {ExpansionT, HermitTypeT} from 'common/types/cards'
 
 type Group = {group: string; value: Array<string>}
 

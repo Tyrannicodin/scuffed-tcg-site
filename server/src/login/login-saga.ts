@@ -1,6 +1,11 @@
-import {createUser, deleteUser, selectUserUUID} from 'db/user'
-
-import {call, delay, race, take, takeEvery} from 'typed-redux-saga'
+import {
+	createUser,
+	deleteUser,
+	selectUserInfoFromUuid,
+	selectUserUUID,
+	updateUserInfo,
+} from 'db/user'
+import {call, delay, put, race, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
 import {Action} from 'redux'
 import {
@@ -11,7 +16,11 @@ import {
 	validatePassword,
 	validateUsername,
 } from '../../../common/util/validation'
-import {userCreateResultT} from '../../../common/types/user'
+import {Uuid, userCreateResultT} from '../../../common/types/user'
+import store from 'stores'
+import {User} from '../../../common/models/user'
+import {addUser, updateUserState} from './login-actions'
+import {getUsers} from './login-selectors'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -28,14 +37,13 @@ function getDatabaseError(result: userCreateResultT['result']): string {
 	}
 }
 
-async function loginSaga(action: any) {
-	const {username, password} = action.payload.payload
+function* loginSaga(action: any) {
+	const {username, password, secret} = action.payload.payload
 	const {socket} = action
 
-	const uuid = await selectUserUUID(username, password)
+	const uuid: Uuid = yield selectUserUUID(username, password)
 	console.log(`Login: ${uuid}`)
 	if (uuid === null) {
-		// Do code when login doesn't work here
 		socket.emit('FAIL_LOGIN', {
 			type: 'FAIL_LOGIN',
 			payload: {
@@ -45,15 +53,36 @@ async function loginSaga(action: any) {
 		return
 	}
 
-	const userSecret = uuidv4()
+	const user: User | null = yield selectUserInfoFromUuid(uuid)
+	if (user === null) {
+		//This should never happen, as it's checked before but type checking lol
+		socket.emit('FAIL_LOGIN', {
+			type: 'FAIL_LOGIN',
+			payload: {
+				message: 'Incorrect username or password',
+			},
+		})
+		return
+	}
+	const storedUser = getUsers(store.getState()).find(
+		(storedUser) => storedUser.uuid === user.uuid && storedUser.secret === secret
+	)
+	if (storedUser) {
+		const updatedUser: User = yield updateUserInfo(user)
+		yield put(updateUserState(updatedUser))
+		socket.emit('LOGGED_IN', {
+			type: 'LOGGED_IN',
+			payload: updatedUser,
+		})
+		return
+	}
+	user.secret = uuidv4()
+
+	yield put(addUser(user))
 
 	socket.emit('LOGGED_IN', {
 		type: 'LOGGED_IN',
-		payload: {
-			username,
-			userSecret,
-			uuid,
-		},
+		payload: user,
 	})
 }
 
@@ -100,13 +129,18 @@ function* signUpSaga(action: any) {
 	const userSecret = uuidv4()
 	const {uuid} = yield call(selectUserUUID, username, password)
 
+	const user: User = yield call(selectUserInfoFromUuid, uuid)
+	user.secret = userSecret
+	user.authed = false
+
+	store.dispatch({
+		type: 'ADD_USER',
+		payload: user,
+	})
+
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
-		payload: {
-			username,
-			userSecret,
-			uuid,
-		},
+		payload: user,
 	})
 
 	const verifyMessage = () =>
@@ -126,12 +160,11 @@ function* signUpSaga(action: any) {
 	const endTime = Date.now() + 5 * 60 * 1000
 	var inputCode = ''
 	while (code !== inputCode) {
-		//@FIXME remove second part to enable OTP check
 		const {verify, timeout} = yield race({
 			verify: verifyMessage(),
-			timeout: delay(endTime - Date.now()), //5 minutes
+			timeout: delay(endTime - Date.now()), //5 minutes that doesn't reset when a code is entered
 		})
-		if (verify && verify.payload.userSecret === userSecret) {
+		if (verify && verify.payload.userSecret === user.secret) {
 			inputCode = verify.payload.code
 		} else if (timeout) {
 			yield call(deleteUser, username)
@@ -145,13 +178,11 @@ function* signUpSaga(action: any) {
 		}
 	}
 
+	user.authed = true
+
 	socket.emit('LOGGED_IN', {
 		type: 'LOGGED_IN',
-		payload: {
-			username,
-			userSecret,
-			uuid,
-		},
+		payload: user,
 	})
 }
 

@@ -6,6 +6,7 @@ type SaleDefs = {
 	seller: Uuid
     card: PartialCardT
     price: number
+    copies: number
     timestamp: number
 }
 
@@ -14,6 +15,7 @@ export class Sale {
 	public seller: Uuid
     public card: PartialCardT
     public price: number
+    public copies: number
     public timestamp: number
 
 	constructor(defs: SaleDefs) {
@@ -21,6 +23,7 @@ export class Sale {
 		this.seller = defs.seller
         this.card = defs.card
         this.price = defs.price
+        this.copies = defs.copies
         this.timestamp = defs.timestamp
     }
 }

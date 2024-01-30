@@ -1,4 +1,3 @@
-import {Socket} from 'socket.io'
 import {PastPurchasesT, Uuid} from '../types/user'
 import {PartialCardWithCopiesT} from '../types/cards'
 
@@ -20,6 +19,9 @@ export class User {
 	public is_admin: boolean
 	public library: Array<PartialCardWithCopiesT>
 	public purchases: Array<PastPurchasesT>
+
+	public secret: string = ''
+	public authed: boolean = true
 
 	constructor(defs: userDefs) {
 		this.uuid = defs.uuid

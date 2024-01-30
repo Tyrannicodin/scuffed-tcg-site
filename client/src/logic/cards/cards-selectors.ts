@@ -2,13 +2,10 @@ import {Card} from 'common/models/card'
 import {Sale, Trade} from 'common/models/trade'
 import {PartialCardWithCopiesT} from 'common/types/cards'
 import {PastPurchasesT} from 'common/types/user'
+import {getUser} from 'logic/session/session-selectors'
 import {RootState} from 'store'
 
 export const getCardsState = (state: RootState) => {
-	return state.cards
-}
-
-export const getLibraryState = (state: RootState) => {
 	return state.cards
 }
 
@@ -21,15 +18,15 @@ export const getCards = (state: RootState): Card[] => {
 }
 
 export const getLibrary = (state: RootState): PartialCardWithCopiesT[] => {
-	return getLibraryState(state).library.library
+	return getUser(state)?.library || []
 }
 
 export const getTokens = (state: RootState): number => {
-	return getLibraryState(state).library.tokens
+	return getUser(state)?.tokens || 0
 }
 
 export const getPastPurchases = (state: RootState): Array<PastPurchasesT> => {
-	return getLibraryState(state).library.pastPurchases
+	return getUser(state)?.purchases || []
 }
 
 export const getLastRollResult = (state: RootState): Card[] => {

@@ -1,4 +1,5 @@
 @import '../../index';
+@import 'components/card-list/card-list.module';
 
 .main {
 	display: flex;
@@ -60,4 +61,14 @@
 
 	color: white;
 	font-family: Minecraft;
+}
+
+.rightAligned {
+	text-align: right;
+	flex-grow: 1;
+}
+
+.purchaseButton {
+	width: 8vw;
+	margin-left: $spacing;
 }

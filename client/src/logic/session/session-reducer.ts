@@ -1,22 +1,19 @@
 import {UnknownAction} from 'redux'
+import {User} from 'common/models/user'
 
 type SessionState = {
-	username: string
-	uuid: string
+	user: User | null
 	password: string
 	email: string
-	userSecret: string
 	message: string
-	awaiting_code: boolean
 	otpCode: string
+	awaiting_code: boolean
 }
 
 const defaultState: SessionState = {
-	username: '',
-	uuid: '',
+	user: null,
 	password: '',
 	email: '',
-	userSecret: '',
 	message: '',
 	otpCode: '',
 	awaiting_code: false,
@@ -35,11 +32,9 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 		case 'DISCONNECT':
 			return {
 				...state,
-				username: '',
-				uuid: '',
+				user: null,
 				password: '',
 				email: '',
-				userSecret: '',
 				otpCode: '',
 				awaiting_code: false,
 			}
@@ -60,7 +55,12 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 				...state,
 				password: '',
 				awaiting_code: false,
-				...action.payload,
+				user: action.payload as User,
+			}
+		case 'UPDATE_USER':
+			return {
+				...state,
+				user: action.payload as User,
 			}
 		default:
 			return state

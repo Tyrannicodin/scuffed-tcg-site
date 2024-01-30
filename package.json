@@ -5,6 +5,7 @@
   "type": "module",
   "main": "",
   "scripts": {
+    "start:dev": "start postgres -D db && start npm run server:dev && start npm run client:dev",
     "start": "npm run server",
     "docker-start": "npm run build && npm run server",
     "husky": "husky install",

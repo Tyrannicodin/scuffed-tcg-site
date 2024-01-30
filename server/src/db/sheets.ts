@@ -1,7 +1,6 @@
 import fs from 'fs'
 import {google} from 'googleapis'
 import path from 'path'
-import {authenticate} from '@google-cloud/local-auth'
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 const TOKEN_PATH = path.join(process.cwd(), 'server/token.json')

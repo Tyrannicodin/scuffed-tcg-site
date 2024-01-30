@@ -2,10 +2,8 @@ import {Card} from 'common/models/card'
 import {EffectCard} from 'common/models/effect-card'
 import {HermitCard} from 'common/models/hermit-card'
 import css from './card.module.scss'
-import {HermitAttackTypeT, PartialCardT} from 'common/types/cards'
+import {HermitAttackTypeT} from 'common/types/cards'
 import classNames from 'classnames'
-import {useDispatch, useSelector} from 'react-redux'
-import {getPastPurchases} from 'logic/cards/cards-selectors'
 
 const costColors = ['#525252', '#ece9e9', '#fefa4c', '#59e477', '#7ff6fa', '#c188d1']
 const effectColors = {
@@ -19,12 +17,10 @@ type Props = {
 	card: Card
 	copies: number | undefined
 	showDescription: boolean
-	onPurchase: ((card: Card) => void) | null
+	actionButtonCreator?: (card: Card) => JSX.Element
 }
 
-export function CardInfo({card, copies, showDescription, onPurchase}: Props) {
-	const pastPurchases = useSelector(getPastPurchases)
-
+export function CardInfo({card, copies, showDescription, actionButtonCreator}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
 			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' =
@@ -81,11 +77,6 @@ export function CardInfo({card, copies, showDescription, onPurchase}: Props) {
 		return 'x0'
 	}
 
-	const cardPurchased = () => {
-		if (onPurchase === null) return
-		onPurchase(card)
-	}
-
 	return (
 		<div className={css.outer}>
 			<div className={classNames(css.card, card.rarity === 'Mythic' ? css.mythic : null)}>
@@ -100,20 +91,7 @@ export function CardInfo({card, copies, showDescription, onPurchase}: Props) {
 					</span>
 				</div>
 				<div className={css.rightAligned}>{getCopies(copies)}</div>
-				{onPurchase && (
-					<button
-						onClick={() => cardPurchased()}
-						disabled={pastPurchases.some(
-							(pur) =>
-								pur.type === 'card' &&
-								pur.purchase.name === card.name &&
-								(pur.purchase as PartialCardT).rarity === card.rarity
-						)}
-						className={(css.rightAligned, css.purchaseButton)}
-					>
-						Buy
-					</button>
-				)}
+				{actionButtonCreator && actionButtonCreator(card)}
 			</div>
 			{showDescription && <div className={css.infobox}>{getDescription(card)}</div>}
 		</div>

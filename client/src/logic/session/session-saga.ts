@@ -1,12 +1,11 @@
-import {receiveMsg} from 'logic/socket/socket-saga'
-import {call, delay, put, race, take, takeLatest} from 'redux-saga/effects'
+import {ServerMessage, receiveMsg, sendMsg} from 'logic/socket/socket-saga'
+import {call, delay, put, race, take} from 'redux-saga/effects'
 import socket from 'socket'
-import {connect, disconnect, onboarding, setMessage} from './session-actions'
+import {connect, disconnect, onboarding, setMessage, updateUserState} from './session-actions'
 import store from 'store'
 import {getOTPCode, getUserSecret} from './session-selectors'
 import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
-import {userInfoT} from 'common/types/user'
 import {
 	getEmailError,
 	getPasswordError,
@@ -15,20 +14,32 @@ import {
 	validatePassword,
 	validateUsername,
 } from 'common/util/validation'
+import {User} from 'common/models/user'
+import {loadTrades} from 'logic/cards/cards-actions'
 
-function* onLogin(userInfo: userInfoT) {
-	yield put(connect(userInfo))
+function* onLogin(user: User) {
+	yield put(connect(user))
 	store.dispatch({
 		type: 'GET_CARDS',
 		payload: {
 			cardCount: 10000,
 		},
 	})
-	store.dispatch({
-		type: 'GET_LIBRARY',
-		payload: {uuid: userInfo.uuid},
-	})
-	yield all([fork(cardSaga)]) //Init rest of client
+	yield all([
+		fork(cardSaga),
+		fork(listen('UPDATE_USER', updateUserState)),
+		fork(listen('LOAD_TRADES', loadTrades)),
+	]) //Init rest of client
+}
+
+function listen(event: string, action: (payload: any) => any) {
+	function* inner() {
+		while (true) {
+			const result: ServerMessage = yield receiveMsg(event)
+			yield put(action(result.payload))
+		}
+	}
+	return inner
 }
 
 function* verifySaga() {
@@ -44,7 +55,7 @@ function* verifySaga() {
 
 		const state = store.getState()
 
-		socket.emit('VERIFY', {
+		sendMsg({
 			type: 'VERIFY',
 			payload: {
 				code: getOTPCode(state),

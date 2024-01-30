@@ -1,6 +1,6 @@
 import css from './pack-list.module.scss'
-import {SyntheticEvent, useEffect} from 'react'
-import {PackOptionsT, PartialCardWithCopiesT, PartialPackT} from 'common/types/cards'
+import {useEffect} from 'react'
+import {PackOptionsT} from 'common/types/cards'
 import {PackInfo} from 'components/pack/pack'
 import {Pack} from 'common/models/pack'
 

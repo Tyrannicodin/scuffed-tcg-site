@@ -1,4 +1,4 @@
-import express, {response} from 'express'
+import express from 'express'
 import path from 'path'
 import {fileURLToPath} from 'url'
 import {createServer} from 'http'
@@ -6,7 +6,6 @@ import cors from 'cors'
 import {CONFIG} from '../../common/config'
 import {createTables, addCardsToDatabase, destroyTables} from 'db/db'
 import startSocketIO from 'sockets'
-import {getSales} from './db/trades'
 
 const port = process.env.PORT || CONFIG.port || 9000
 
@@ -19,8 +18,7 @@ const server = createServer(app)
 
 process.argv.forEach(function (val) {
 	if (val === 'buildDatabase') {
-		createTables()
-		addCardsToDatabase()
+		createTables().then(addCardsToDatabase)
 	}
 	if (val === 'destroyDatabase') {
 		destroyTables()
