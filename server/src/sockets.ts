@@ -3,8 +3,6 @@ import {CONFIG} from '../../common/config'
 import {getUsers} from './login/login-selectors'
 import store from './stores'
 import version from './version'
-import {Socket} from 'socket.io-client'
-import {DefaultEventsMap} from 'socket.io/dist/typed-events'
 
 const env = process.env.NODE_ENV || 'development'
 const isValidVersion = (clientVersion: string) => {
@@ -23,7 +21,6 @@ function startSocketIO(server: any) {
 	})
 
 	io.use((socket, next) => {
-		const playerName = socket.handshake.auth?.playerName || ''
 		const clientVersion = socket.handshake.auth?.version || ''
 		if (!isValidVersion(clientVersion)) {
 			console.log('Invalid version: ', clientVersion)
@@ -47,10 +44,8 @@ function startSocketIO(server: any) {
 		socket.onAny((event, message) => {
 			if (!message?.type) return
 			if (!message?.auth || !message.auth.uuid || !message.auth.secret) return
-			const user = getUsers(store.getState()).find((user) => {
-				return user.uuid === message.auth.uuid && user.secret === message.auth.secret
-			})
-			if (!user) return
+			const user = getUsers(store.getState())[message.auth.secret]
+			if (!user || message.auth.uuid === user.uuid) return
 			store.dispatch({...message, user, socket})
 		})
 		socket.on('disconnect', () => {

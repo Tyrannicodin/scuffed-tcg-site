@@ -7,7 +7,7 @@ export function getUserState(state: RootState): UsersState {
 	return state.users as UsersState
 }
 
-export function getUsers(state: RootState): User[] {
+export function getUsers(state: RootState): Record<string, User> {
 	return getUserState(state).users
 }
 
