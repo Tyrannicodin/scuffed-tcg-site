@@ -3,7 +3,7 @@ import {call, delay, put, race, take} from 'redux-saga/effects'
 import socket from 'socket'
 import {connect, disconnect, onboarding, setMessage, updateUserState} from './session-actions'
 import store from 'store'
-import {getOTPCode, getUserSecret} from './session-selectors'
+import {getUserSecret} from './session-selectors'
 import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {
@@ -17,8 +17,8 @@ import {
 import {User} from 'common/models/user'
 import {loadTrades} from 'logic/cards/cards-actions'
 
-function* onLogin(user: User) {
-	if (user.secret) {
+function* onLogin(user: User, saveSecret: boolean) {
+	if (saveSecret && user.secret) {
 		localStorage.setItem('secret', user.secret)
 	}
 	yield* all([
@@ -33,8 +33,8 @@ function* onLogin(user: User) {
 		fork(listen('UPDATE_USER', updateUserState)),
 		fork(listen('LOAD_TRADES', loadTrades)),
 	]) //Init rest of client logic
-	
-	yield 
+
+	yield
 }
 
 function listen(event: string, action: (payload: any) => any) {
@@ -47,24 +47,23 @@ function listen(event: string, action: (payload: any) => any) {
 	return inner
 }
 
-function* verifySaga() {
+function* verifySaga(saveSecret: boolean) {
 	while (true) {
-		const {failure} = yield race({
+		const {code, failure} = yield race({
 			code: take('CODE_SUBMIT'),
 			failure: call(receiveMsg, 'AUTH_FAIL'),
 		})
 		if (failure) {
 			yield put(disconnect('Signup failure: One time password timed out'))
 			return
+		} else if (!code.payload) {
+			continue
 		}
-
-		const state = store.getState()
 
 		sendMsg({
 			type: 'VERIFY',
 			payload: {
-				code: getOTPCode(state),
-				userSecret: getUserSecret(state),
+				code: code.payload,
 			},
 		})
 
@@ -75,7 +74,7 @@ function* verifySaga() {
 		})
 
 		if (login) {
-			yield onLogin(login.payload)
+			yield onLogin(login.payload, saveSecret)
 		} else if (failOnSend) {
 			yield put(disconnect('One time password timed out'))
 		} else {
@@ -92,8 +91,8 @@ export function* loginSaga() {
 		socket.emit('LOGIN', {
 			type: 'LOGIN',
 			payload: {
-				secret: localStorage.getItem('secret')
-			}
+				secret: localStorage.getItem('secret'),
+			},
 		})
 
 		const {login} = yield race({
@@ -103,16 +102,18 @@ export function* loginSaga() {
 		})
 
 		if (login) {
-			yield onLogin(login.payload)
+			yield onLogin(login.payload, true)
 			return
 		}
 	}
+
 	const {login: clientLogin, signup: clientSignup} = yield race({
 		login: take('LOGIN'),
 		signup: take('SIGNUP'),
 	})
 
 	const authPayload = (clientLogin || clientSignup).payload
+	const {persistLogin} = authPayload
 	const usernameValid = validateUsername(authPayload.username)
 	if (usernameValid !== 'success') {
 		yield put(disconnect(getUsernameError(usernameValid)))
@@ -149,10 +150,10 @@ export function* loginSaga() {
 	})
 
 	if (login) {
-		yield onLogin(login.payload)
+		yield onLogin(login.payload, persistLogin)
 	} else if (onboard) {
 		yield put(onboarding(onboard.payload))
-		yield call(verifySaga)
+		yield call(verifySaga, persistLogin)
 	} else if (loginFail || signupFail) {
 		yield put(disconnect((loginFail || signupFail).payload.message))
 	} else if (timeout) {

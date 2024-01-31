@@ -3,19 +3,15 @@ import {User} from 'common/models/user'
 
 type SessionState = {
 	user: User | null
-	password: string
 	email: string
 	message: string
-	otpCode: string
 	awaiting_code: boolean
 }
 
 const defaultState: SessionState = {
 	user: null,
-	password: '',
 	email: '',
 	message: '',
-	otpCode: '',
 	awaiting_code: false,
 }
 
@@ -33,9 +29,6 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 			return {
 				...state,
 				user: null,
-				password: '',
-				email: '',
-				otpCode: '',
 				awaiting_code: false,
 			}
 		case 'SET_MESSAGE':
@@ -46,14 +39,12 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 		case 'ONBOARDING':
 			return {
 				...state,
-				password: '',
 				awaiting_code: true,
 				...action.payload,
 			}
 		case 'CONNECTED':
 			return {
 				...state,
-				password: '',
 				awaiting_code: false,
 				user: action.payload as User,
 			}

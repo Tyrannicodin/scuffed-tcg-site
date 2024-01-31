@@ -4,6 +4,7 @@ import {useState} from 'react'
 import InputField from 'components/input-field'
 import {getAwaitingCode, getEmail, getMessage} from 'logic/session/session-selectors'
 import OtpEntry from 'components/otp-entry'
+import * as Toggle from '@radix-ui/react-toggle'
 
 export function Login() {
 	const dispatch = useDispatch()
@@ -12,6 +13,7 @@ export function Login() {
 	const [emailField, setEmailField] = useState('')
 	const [passwordField, setPasswordField] = useState('')
 	const [confirmPasswordField, setConfirmPasswordField] = useState('')
+	const [persistLogin, setPersistLogin] = useState(false)
 	const [page, setPage] = useState<'login' | 'signup' | 'forgot'>('login')
 	const message = useSelector(getMessage)
 	const getCode = useSelector(getAwaitingCode)
@@ -23,6 +25,7 @@ export function Login() {
 			payload: {
 				username: usernameField,
 				password: passwordField,
+				persistLogin,
 			},
 		})
 	}
@@ -34,6 +37,7 @@ export function Login() {
 				email: emailField,
 				password: passwordField,
 				confirmPassword: confirmPasswordField,
+				persistLogin,
 			},
 		})
 	}
@@ -58,9 +62,18 @@ export function Login() {
 				<InputField type="password" setField={setPasswordField}>
 					Password
 				</InputField>
-				<button className={css.uiItem} onClick={loginAccount}>
-					Login
-				</button>
+				<div className={css.two_button_container}>
+					<button className={css.login_button} onClick={loginAccount}>
+						Login
+					</button>
+					<Toggle.Root
+						className={css.toggle_button}
+						pressed={persistLogin}
+						onPressedChange={setPersistLogin}
+					>
+						<p>Save login</p> <p className={css.google_symbol}>{persistLogin ? 'select_check_box' : 'check_box_outline_blank'}</p>
+					</Toggle.Root>
+				</div>
 				<button className={css.uiItem} onClick={() => setPage('signup')}>
 					Sign up
 				</button>

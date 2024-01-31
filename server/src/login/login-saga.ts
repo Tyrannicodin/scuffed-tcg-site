@@ -21,7 +21,7 @@ import store from 'stores'
 import {User} from '../../../common/models/user'
 import {addUser, updateUserState} from './login-actions'
 import {getUsers} from './login-selectors'
-import { Socket } from 'socket.io'
+import {Socket} from 'socket.io'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -49,8 +49,8 @@ function* loginSaga(action: any) {
 			socket.emit('FAIL_LOGIN', {
 				type: 'FAIL_LOGIN',
 				payload: {
-					message: 'Invalid secret'
-				}
+					message: 'Invalid secret',
+				},
 			})
 			return
 		}

@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Material Symbols';
+  font-style: normal;
+  font-weight: 100 700;
+  src: url(https://fonts.gstatic.com/s/materialsymbolsoutlined/v160/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2) format('woff2');
+}
+
 .container {
 	width: 30%;
 	position: absolute;
@@ -35,4 +42,30 @@
 	flex-wrap: wrap;
 	text-align: center;
 	color: white;
+}
+
+.two_button_container {
+	text-align: center;
+	width: 100%;
+	display: flex;
+}
+
+.toggle_button {
+	width: 40%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.toggle_button[data-state='on'] {
+	background: linear-gradient(#494949 85%, #626262 15%);
+}
+
+.login_button {
+	width: 60%;
+}
+
+.google_symbol {
+	font-family: "Material Symbols";
+	font-weight: 700;
 }
