@@ -184,7 +184,7 @@ export async function updateUserInfo(user: User) {
 		})
 
 		const userDef: userDefs = {
-			uuid: result.rows[0].uuid,
+			uuid: result.rows[0].user_id,
 			username: result.rows[0].username,
 			tokens: result.rows[0].tokens,
 			picture: result.rows[0].picture,
@@ -317,9 +317,11 @@ export async function removeCardsFromUser(
 	try {
 		await pool.query(
 			sql`
-				UPDATE libraries SET copies = copies - $4 FROM ( SELECT * FROM UNNEST (
-					$1::uuid[],
-					$2::text[],
+				UPDATE libraries SET copies = copies - $4 WHERE user_id = (SELECT * FROM UNNEST (
+					$1::uuid[]
+				)) AND card_name = (SELECT * FROM UNNEST (
+					$2::text[]
+				)) AND rarity = (SELECT * FROM UNNEST (
 					$3::text[]
 				));
 			`,

@@ -134,7 +134,6 @@ export function Import({menuSetter}: Props) {
 								})}
 								library={importedCards}
 								showDescription={false}
-								onPurchase={null}
 							/>
 						</div>
 					</div>

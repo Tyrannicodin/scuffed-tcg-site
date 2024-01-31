@@ -36,7 +36,7 @@ function* verifyCardRolls(action: UnknownAction) {
 		payload: payload.cards,
 	})
 
-	yield updateUser(user, action.socket as Socket)
+	yield call(updateUser, user, action.socket as Socket)
 }
 
 function* loadCardsSaga() {
