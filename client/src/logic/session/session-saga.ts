@@ -21,18 +21,20 @@ function* onLogin(user: User) {
 	if (user.secret) {
 		localStorage.setItem('secret', user.secret)
 	}
-	yield put(connect(user))
-	store.dispatch({
-		type: 'GET_CARDS',
-		payload: {
-			cardCount: 10000,
-		},
-	})
-	yield all([
+	yield* all([
+		put(connect(user)),
 		fork(cardSaga),
+		put({
+			type: 'GET_CARDS',
+			payload: {
+				cardCount: 10000,
+			},
+		}),
 		fork(listen('UPDATE_USER', updateUserState)),
 		fork(listen('LOAD_TRADES', loadTrades)),
-	]) //Init rest of client
+	]) //Init rest of client logic
+	
+	yield 
 }
 
 function listen(event: string, action: (payload: any) => any) {
