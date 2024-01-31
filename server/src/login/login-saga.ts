@@ -21,6 +21,7 @@ import store from 'stores'
 import {User} from '../../../common/models/user'
 import {addUser, updateUserState} from './login-actions'
 import {getUsers} from './login-selectors'
+import { Socket } from 'socket.io'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -38,8 +39,32 @@ function getDatabaseError(result: userCreateResultT['result']): string {
 }
 
 function* loginSaga(action: any) {
-	const {username, password, secret} = action.payload.payload
-	const {socket} = action
+	const {username, password, secret} = action.payload
+	const {socket}: {socket: Socket} = action
+	const state = store.getState()
+
+	console.log(secret)
+	if (secret) {
+		console.log(getUsers(state))
+		const storedUser = getUsers(state)[secret]
+		console.log(storedUser)
+		if (!storedUser) {
+			socket.emit('FAIL_LOGIN', {
+				type: 'FAIL_LOGIN',
+				payload: {
+					message: 'Invalid secret'
+				}
+			})
+			return
+		}
+		const updatedUser: User = yield updateUserInfo(storedUser)
+		yield put(updateUserState(updatedUser))
+		socket.emit('LOGGED_IN', {
+			type: 'LOGGED_IN',
+			payload: updatedUser,
+		})
+		return
+	}
 
 	const uuid: Uuid = yield selectUserUUID(username, password)
 	console.log(`Login: ${uuid}`)
@@ -64,18 +89,6 @@ function* loginSaga(action: any) {
 		})
 		return
 	}
-	const storedUser = getUsers(store.getState()).find(
-		(storedUser) => storedUser.uuid === user.uuid && storedUser.secret === secret
-	)
-	if (storedUser) {
-		const updatedUser: User = yield updateUserInfo(user)
-		yield put(updateUserState(updatedUser))
-		socket.emit('LOGGED_IN', {
-			type: 'LOGGED_IN',
-			payload: updatedUser,
-		})
-		return
-	}
 	user.secret = uuidv4()
 
 	yield put(addUser(user))
@@ -87,7 +100,7 @@ function* loginSaga(action: any) {
 }
 
 function* signUpSaga(action: any) {
-	const {username, password, confirmPassword, email} = action.payload.payload
+	const {username, password, confirmPassword, email} = action.payload
 	const {socket} = action
 
 	const fail_signup = (message: string) => {

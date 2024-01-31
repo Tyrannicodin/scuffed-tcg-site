@@ -18,6 +18,9 @@ import {User} from 'common/models/user'
 import {loadTrades} from 'logic/cards/cards-actions'
 
 function* onLogin(user: User) {
+	if (user.secret) {
+		localStorage.setItem('secret', user.secret)
+	}
 	yield put(connect(user))
 	store.dispatch({
 		type: 'GET_CARDS',
@@ -82,6 +85,26 @@ function* verifySaga() {
 }
 
 export function* loginSaga() {
+	if (localStorage.getItem('secret')) {
+		socket.connect()
+		socket.emit('LOGIN', {
+			type: 'LOGIN',
+			payload: {
+				secret: localStorage.getItem('secret')
+			}
+		})
+
+		const {login} = yield race({
+			login: call(receiveMsg, 'LOGGED_IN'),
+			loginFail: call(receiveMsg, 'FAIL_LOGIN'),
+			timeout: delay(2500),
+		})
+
+		if (login) {
+			yield onLogin(login.payload)
+			return
+		}
+	}
 	const {login: clientLogin, signup: clientSignup} = yield race({
 		login: take('LOGIN'),
 		signup: take('SIGNUP'),
@@ -106,22 +129,20 @@ export function* loginSaga() {
 	if (clientLogin) {
 		socket.emit('LOGIN', {
 			type: 'LOGIN',
-			payload: {...clientLogin},
+			payload: clientLogin.payload,
 		})
 	} else if (clientSignup) {
 		socket.emit('SIGNUP', {
 			type: 'SIGNUP',
-			payload: {
-				...clientSignup,
-			},
+			payload: clientSignup.payload,
 		})
 	}
 
-	const {login, login_fail, onboard, signup_fail, timeout} = yield race({
+	const {login, loginFail, onboard, signupFail, timeout} = yield race({
 		login: call(receiveMsg, 'LOGGED_IN'),
-		login_fail: call(receiveMsg, 'FAIL_LOGIN'),
+		loginFail: call(receiveMsg, 'FAIL_LOGIN'),
 		onboard: call(receiveMsg, 'ONBOARDING'),
-		signup_fail: call(receiveMsg, 'FAIL_SIGNUP'),
+		signupFail: call(receiveMsg, 'FAIL_SIGNUP'),
 		timeout: delay(10000), //10 seconds
 	})
 
@@ -130,8 +151,8 @@ export function* loginSaga() {
 	} else if (onboard) {
 		yield put(onboarding(onboard.payload))
 		yield call(verifySaga)
-	} else if (login_fail || signup_fail) {
-		yield put(disconnect((login_fail || signup_fail).payload.message))
+	} else if (loginFail || signupFail) {
+		yield put(disconnect((loginFail || signupFail).payload.message))
 	} else if (timeout) {
 		yield put(disconnect('Connection timed out'))
 	}
