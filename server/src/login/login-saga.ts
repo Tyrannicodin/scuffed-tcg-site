@@ -55,6 +55,7 @@ function* loginSaga(action: any) {
 			return
 		}
 		const updatedUser: User = yield updateUserInfo(storedUser)
+		updatedUser.secret = uuidv4()
 		yield put(updateUserState(updatedUser))
 		socket.emit('LOGGED_IN', {
 			type: 'LOGGED_IN',
