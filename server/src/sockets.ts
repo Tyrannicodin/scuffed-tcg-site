@@ -45,7 +45,7 @@ function startSocketIO(server: any) {
 			if (!message?.type) return
 			if (!message?.auth || !message.auth.uuid || !message.auth.secret) return
 			const user = getUsers(store.getState())[message.auth.secret]
-			if (!user || message.auth.uuid === user.uuid) return
+			if (!user || message.auth.uuid !== user.uuid) return
 			store.dispatch({...message, user, socket})
 		})
 		socket.on('disconnect', () => {
