@@ -43,11 +43,8 @@ function* loginSaga(action: any) {
 	const {socket}: {socket: Socket} = action
 	const state = store.getState()
 
-	console.log(secret)
 	if (secret) {
-		console.log(getUsers(state))
 		const storedUser = getUsers(state)[secret]
-		console.log(storedUser)
 		if (!storedUser) {
 			socket.emit('FAIL_LOGIN', {
 				type: 'FAIL_LOGIN',

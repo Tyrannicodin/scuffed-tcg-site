@@ -21,7 +21,6 @@ function startSocketIO(server: any) {
 	})
 
 	io.use((socket, next) => {
-		const playerName = socket.handshake.auth?.playerName || ''
 		const clientVersion = socket.handshake.auth?.version || ''
 		if (!isValidVersion(clientVersion)) {
 			console.log('Invalid version: ', clientVersion)
@@ -32,7 +31,6 @@ function startSocketIO(server: any) {
 
 	io.on('connection', (socket) => {
 		const unauthorisedHandler = (message: any) => {
-			console.log(message.type)
 			if (!message.type) return
 			store.dispatch({...message, socket})
 		}
