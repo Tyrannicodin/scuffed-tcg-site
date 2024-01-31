@@ -20,9 +20,7 @@ export function OtpEntry({children}: Props) {
 		if (newArr.filter((value) => value).length === digits) {
 			dispatch({
 				type: 'CODE_SUBMIT',
-				payload: {
-					otpCode: newArr.join(''),
-				},
+				payload: newArr.join(''),
 			})
 		}
 
