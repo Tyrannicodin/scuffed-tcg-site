@@ -15,6 +15,7 @@ export function NumberFilter({name, filterValue, setFilter, minValue, maxValue, 
 			{name}
 			<div className={css.number_input}>
 				<input
+					className={css.number_input}
 					onChange={(e) => setFilter(parseInt(e.target.value))}
 					value={filterValue}
 					type="number"

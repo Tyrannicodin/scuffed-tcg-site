@@ -49,6 +49,13 @@ export function Trading({menuSetter}: Props) {
 		})
 	}
 
+	const buySale = (sale: Sale) => {
+		dispatch({
+			type: 'PURCHASE_SALE',
+			payload: {sale},
+		})
+	}
+
 	return (
 		<main>
 			<SaleModal setOpen={setListModalOpen} isOpen={listModalOpen} />
@@ -81,6 +88,7 @@ export function Trading({menuSetter}: Props) {
 							price={sale.price}
 							copies={sale.copies}
 							timestamp={sale.timestamp}
+							onPurchase={() => buySale(sale)}
 						/>
 					))}
 			</Section>

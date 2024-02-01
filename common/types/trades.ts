@@ -1,6 +1,6 @@
 import { Sale } from "../models/trade"
 
-export type saleCreationResultT = {
+export type genericSaleResultT = {
     result: 'success' | 'failure'
     sale?: Sale
 }

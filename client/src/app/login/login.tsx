@@ -70,7 +70,10 @@ export function Login() {
 						pressed={persistLogin}
 						onPressedChange={setPersistLogin}
 					>
-						<p>Save login</p> <p className={css.google_symbol}>{persistLogin ? 'select_check_box' : 'check_box_outline_blank'}</p>
+						<p>Save login</p>{' '}
+						<p className={css.google_symbol}>
+							{persistLogin ? 'select_check_box' : 'check_box_outline_blank'}
+						</p>
 					</Toggle.Root>
 				</div>
 				<button className={css.uiItem} onClick={() => setPage('signup')}>
