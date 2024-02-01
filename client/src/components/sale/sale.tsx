@@ -8,9 +8,10 @@ type Props = {
 	price: number
 	copies: number
 	timestamp: number
+	onPurchase: () => void
 }
 
-export function SaleComponent({username, card, price, copies, timestamp}: Props) {
+export function SaleComponent({username, card, price, copies, timestamp, onPurchase}: Props) {
 	return (
 		<div className={css.sale}>
 			<div className={css.sale_row}>
@@ -25,7 +26,7 @@ export function SaleComponent({username, card, price, copies, timestamp}: Props)
 					<br />
 					Listed <ReactTimeago date={timestamp * 1000} />
 				</div>
-				<button className={css.purchase_button}>Purchase</button>
+				<button className={css.purchase_button} onClick={onPurchase}>Purchase</button>
 			</div>
 		</div>
 	)

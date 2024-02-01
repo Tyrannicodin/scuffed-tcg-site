@@ -5,8 +5,9 @@ import {getCards} from './cards-selectors'
 import {Card} from 'common/models/card'
 import {newCard as addNewCards, updateRollResults} from './cards-actions'
 import {receiveMsg, sendMsg} from 'logic/socket/socket-saga'
-import {getUuid} from 'logic/session/session-selectors'
+import {getUser, getUuid} from 'logic/session/session-selectors'
 import {PastPurchasesT} from 'common/types/user'
+import { Sale } from 'common/models/trade'
 
 function* newCardsSaga(action: UnknownAction) {
 	const state = store.getState()
@@ -63,8 +64,21 @@ function* getTradesSaga() {
 	})
 }
 
-function* createSaleSaga(action: any) {
+function* createSaleSaga(action: UnknownAction) {
 	sendMsg(action) //@TODO: Make better somehow
+}
+
+function* purchaseSaleSaga(action:UnknownAction) {
+	const {sale} = action.payload as {sale:Sale}
+	const user = getUser(store.getState())
+
+	if (!user) return
+	//if (!user || !user.library.some((card) => card.card === sale.card && card.copies > sale.copies)) return
+	if (sale.price > 0 && user.tokens < sale.price) return
+	sendMsg({
+		type: 'PURCHASE_SALE',
+		payload: {sale}
+	})
 }
 
 export default function* cardSaga() {
@@ -72,4 +86,5 @@ export default function* cardSaga() {
 	yield* takeEvery('CARDS_ROLLED', lastRollResultSaga)
 	yield* takeEvery('GET_TRADES', getTradesSaga)
 	yield* takeEvery('CREATE_SALE', createSaleSaga)
+	yield* takeEvery('PURCHASE_SALE', purchaseSaleSaga)
 }
