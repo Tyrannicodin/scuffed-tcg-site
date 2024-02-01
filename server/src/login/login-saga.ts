@@ -5,7 +5,7 @@ import {
 	selectUserUUID,
 	updateUserInfo,
 } from 'db/user'
-import {call, delay, put, race, takeEvery} from 'typed-redux-saga'
+import {call, delay, put, race, take, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
 import {Action} from 'redux'
 import {
@@ -76,7 +76,7 @@ function* loginSaga(action: any) {
 		return
 	}
 
-	const user: User | null = yield selectUserInfoFromUuid(uuid)
+	const user: User | null = yield call(selectUserInfoFromUuid, uuid)
 	if (user === null) {
 		//This should never happen, as it's checked before but type checking lol
 		socket.emit('FAIL_LOGIN', {
@@ -109,6 +109,10 @@ function* signUpSaga(action: any) {
 			},
 		})
 	}
+	if (!(username && password && confirmPassword && email)) {
+		fail_signup("Couldn't get some signup data")
+		return
+	}
 
 	const validUsername = validateUsername(username)
 	if (validUsername !== 'success') {
@@ -138,20 +142,29 @@ function* signUpSaga(action: any) {
 	}
 
 	const userSecret = uuidv4()
-	const {uuid} = yield call(selectUserUUID, username, password)
+	const uuid: Uuid | null = yield call(selectUserUUID, username, password)
+	if (uuid === null) {
+		fail_signup('Unknown error')
+		return
+	}
 
-	const user: User = yield call(selectUserInfoFromUuid, uuid)
+	var user: User = yield call(selectUserInfoFromUuid, uuid)
+	while (!user) {
+		console.log(user)
+		yield delay(500)
+		user = yield call(selectUserInfoFromUuid, uuid)
+	}
 	user.secret = userSecret
 	user.authed = false
 
-	store.dispatch({
+	yield put({
 		type: 'ADD_USER',
 		payload: user,
 	})
 
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
-		payload: user,
+		payload: {user},
 	})
 
 	const verifyMessage = () =>
@@ -172,10 +185,10 @@ function* signUpSaga(action: any) {
 	var inputCode = ''
 	while (code !== inputCode) {
 		const {verify, timeout} = yield race({
-			verify: verifyMessage(),
+			verify: take('VERIFY'),
 			timeout: delay(endTime - Date.now()), //5 minutes that doesn't reset when a code is entered
 		})
-		if (verify && verify.payload.userSecret === user.secret) {
+		if (verify) {
 			inputCode = verify.payload.code
 		} else if (timeout) {
 			yield call(deleteUser, username)

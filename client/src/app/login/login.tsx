@@ -37,7 +37,6 @@ export function Login() {
 				email: emailField,
 				password: passwordField,
 				confirmPassword: confirmPasswordField,
-				persistLogin,
 			},
 		})
 	}
