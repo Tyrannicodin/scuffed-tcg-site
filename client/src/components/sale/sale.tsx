@@ -26,7 +26,9 @@ export function SaleComponent({username, card, price, copies, timestamp, onPurch
 					<br />
 					Listed <ReactTimeago date={timestamp * 1000} />
 				</div>
-				<button className={css.purchase_button} onClick={onPurchase}>Purchase</button>
+				<button className={css.purchase_button} onClick={onPurchase}>
+					Purchase
+				</button>
 			</div>
 		</div>
 	)

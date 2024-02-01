@@ -66,27 +66,26 @@ export async function getSale(uuid: string): Promise<genericSaleResultT> {
 			[uuid]
 		)
 		const sale = sales.rows[0]
-		return {result: 'success',
+		return {
+			result: 'success',
 			sale: new Sale({
-			id: sale.sale_id,
-			seller: sale.username,
-			card: {name: sale.card_name, rarity: sale.card_rarity},
-			price: sale.price,
-			copies: sale.copies,
-			timestamp: sale.list_time,
-		})}
+				id: sale.sale_id,
+				seller: sale.username,
+				card: {name: sale.card_name, rarity: sale.card_rarity},
+				price: sale.price,
+				copies: sale.copies,
+				timestamp: sale.list_time,
+			}),
+		}
 	} catch (err) {
 		console.log(err)
 		return {result: 'failure'}
 	}
 }
 
-export async function deleteSale(uuid:string): Promise<genericSaleResultT> {
+export async function deleteSale(uuid: string): Promise<genericSaleResultT> {
 	try {
-		await pool.query(
-			sql`DELETE FROM sales WHERE sale_id = $1`,
-			[uuid]
-		)
+		await pool.query(sql`DELETE FROM sales WHERE sale_id = $1`, [uuid])
 		return {result: 'success'}
 	} catch (err) {
 		console.log(err)

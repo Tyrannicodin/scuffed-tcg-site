@@ -49,10 +49,10 @@ export function Trading({menuSetter}: Props) {
 		})
 	}
 
-	const buySale = (sale:Sale) => {
+	const buySale = (sale: Sale) => {
 		dispatch({
 			type: 'PURCHASE_SALE',
-			payload: {sale}
+			payload: {sale},
 		})
 	}
 

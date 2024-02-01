@@ -7,7 +7,7 @@ import {newCard as addNewCards, updateRollResults} from './cards-actions'
 import {receiveMsg, sendMsg} from 'logic/socket/socket-saga'
 import {getUser, getUuid} from 'logic/session/session-selectors'
 import {PastPurchasesT} from 'common/types/user'
-import { Sale } from 'common/models/trade'
+import {Sale} from 'common/models/trade'
 
 function* newCardsSaga(action: UnknownAction) {
 	const state = store.getState()
@@ -68,8 +68,8 @@ function* createSaleSaga(action: UnknownAction) {
 	sendMsg(action) //@TODO: Make better somehow
 }
 
-function* purchaseSaleSaga(action:UnknownAction) {
-	const {sale} = action.payload as {sale:Sale}
+function* purchaseSaleSaga(action: UnknownAction) {
+	const {sale} = action.payload as {sale: Sale}
 	const user = getUser(store.getState())
 
 	if (!user) return
@@ -77,7 +77,7 @@ function* purchaseSaleSaga(action:UnknownAction) {
 	if (sale.price > 0 && user.tokens < sale.price) return
 	sendMsg({
 		type: 'PURCHASE_SALE',
-		payload: {sale}
+		payload: {sale},
 	})
 }
 
