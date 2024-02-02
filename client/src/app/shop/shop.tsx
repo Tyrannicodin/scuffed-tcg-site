@@ -16,6 +16,7 @@ import PackList from 'components/pack-list'
 import PackModal from 'components/shop-modals'
 import {PackOptionsT, PartialCardT} from 'common/types/cards'
 import {
+	cardSort,
 	getFormattedDate,
 	getFullCardsFromPartial,
 	getFullPackFromPartial,
@@ -119,10 +120,7 @@ export function Shop({menuSetter}: Props) {
 						<p>Daily Hermits!</p>
 					</div>
 					<CardList
-						children={hermitCards.sort((a, b) => {
-							if (a.tokens === null || b.tokens === null) return a.name.localeCompare(b.name)
-							return a.tokens - b.tokens || a.name.localeCompare(b.name)
-						})}
+						children={hermitCards.sort((a, b) => cardSort(a, b))}
 						showDescription={false}
 						actionButtonCreator={purchaseButtonCreator}
 						library={library}
@@ -131,10 +129,7 @@ export function Shop({menuSetter}: Props) {
 						<p>Daily Effects!</p>
 					</div>
 					<CardList
-						children={effectCards.sort((a, b) => {
-							if (a.tokens === null || b.tokens === null) return a.name.localeCompare(b.name)
-							return a.tokens - b.tokens || a.name.localeCompare(b.name)
-						})}
+						children={effectCards.sort((a, b) => cardSort(a, b))}
 						showDescription={false}
 						actionButtonCreator={purchaseButtonCreator}
 						library={library}

@@ -25,3 +25,8 @@ export function getFullPackFromPartial(partialPack: Array<PartialPackT>) {
 		})
 	})
 }
+
+export function cardSort(a: Card, b: Card) {
+	if (a.tokens === null || b.tokens === null) return a.name.localeCompare(b.name)
+	return a.tokens - b.tokens || a.name.localeCompare(b.name)
+}
