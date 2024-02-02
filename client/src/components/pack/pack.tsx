@@ -11,7 +11,11 @@ import {useSelector} from 'react-redux'
 type Props = {
 	pack: Pack
 	showDescription: boolean
-	onPurchase: ((pack: Pack, options: Array<PackOptionsT>, discounted: boolean) => void) | null
+	actionButtonCreator?: (
+		pack: Pack,
+		options: Array<PackOptionsT>,
+		discounted: boolean
+	) => JSX.Element
 	discounted: number
 }
 
@@ -20,8 +24,9 @@ type DropdownT = {
 	option: PackOptionsT
 }
 
-export function PackInfo({pack, showDescription, discounted, onPurchase}: Props) {
+export function PackInfo({pack, showDescription, discounted, actionButtonCreator}: Props) {
 	const [dropdownSettings, setDropdownSettings] = useState<Array<DropdownT>>([])
+	const [finalSettings, setFinalSettings] = useState<Array<PackOptionsT>>([])
 	const cards = useSelector(getCards)
 	const pastPurchases = useSelector(getPastPurchases)
 
@@ -31,26 +36,8 @@ export function PackInfo({pack, showDescription, discounted, onPurchase}: Props)
 	)
 	const actuallyDiscounted = amountPurchased < discounted && discounted > 0
 	const tokenCost = actuallyDiscounted ? Math.floor(pack.tokens / 2) : pack.tokens
-	const discountedPercent = Math.floor(((pack.tokens - tokenCost) / pack.tokens) * 100)
 
 	const {expansions, types} = getFilters(cards)
-
-	const packPurchased = () => {
-		if (onPurchase === null) return
-
-		const settings: Array<DropdownT> = []
-		dropdownSettings.reverse().forEach((setting) => {
-			if (settings.some((e) => e.dropdownId === setting.dropdownId)) return
-			settings.push(setting)
-		})
-		dropdownSettings.reverse()
-
-		onPurchase(
-			pack,
-			settings.map((dropdown) => dropdown.option),
-			actuallyDiscounted
-		)
-	}
 
 	return (
 		<div className={css.outer}>
@@ -64,20 +51,7 @@ export function PackInfo({pack, showDescription, discounted, onPurchase}: Props)
 					</span>
 				</div>
 				<div className={css.rightAligned}></div>
-				{onPurchase && (
-					<button
-						onClick={() => packPurchased()}
-						className={(css.rightAligned, css.purchaseButton)}
-					>
-						{actuallyDiscounted ? (
-							<span className={classNames(css.discount, css.shadow)}>
-								{discountedPercent}% Off!
-							</span>
-						) : (
-							'Buy'
-						)}
-					</button>
-				)}
+				{actionButtonCreator && actionButtonCreator(pack, finalSettings, actuallyDiscounted)}
 			</div>
 			{showDescription && (
 				<div className={css.infobox}>
@@ -110,6 +84,14 @@ export function PackInfo({pack, showDescription, discounted, onPurchase}: Props)
 									newSettings.filter((e) => e.dropdownId === dropdownId)
 									newSettings.push(newElement)
 									setDropdownSettings(newSettings)
+									const otherDropdownSetting = dropdownSettings.findLast(
+										(e) => e.dropdownId !== dropdownId
+									)
+									if (!otherDropdownSetting) {
+										setFinalSettings([newElement.option])
+										return
+									}
+									setFinalSettings([newElement.option, otherDropdownSetting.option])
 								}}
 							/>
 						))}

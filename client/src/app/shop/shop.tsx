@@ -22,6 +22,7 @@ import {
 	getFullPackFromPartial,
 } from 'common/functions/daily-shop'
 import ShopTimer from 'components/shop-timer'
+import classNames from 'classnames'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'shop') => void
@@ -81,15 +82,44 @@ export function Shop({menuSetter}: Props) {
 	const purchaseButtonCreator = (card: Card) => (
 		<button
 			onClick={() => onCardPurchase(card)}
-			disabled={pastPurchases.some(
-				(pur) =>
-					pur.type === 'card' &&
-					pur.purchase.name === card.name &&
-					(pur.purchase as PartialCardT).rarity === card.rarity
-			)}
+			disabled={
+				card.tokens === null ||
+				pastPurchases.some(
+					(pur) =>
+						pur.type === 'card' &&
+						pur.purchase.name === card.name &&
+						(pur.purchase as PartialCardT).rarity === card.rarity
+				) ||
+				tokens < card.tokens
+			}
 			className={(css.rightAligned, css.purchaseButton)}
 		>
 			Buy
+		</button>
+	)
+
+	const packPurchaseButtonCreator = (
+		pack: Pack,
+		options: Array<PackOptionsT>,
+		discounted: boolean
+	) => (
+		<button
+			onClick={() => onPackPurchase(pack, options, discounted)}
+			className={(css.rightAligned, css.purchaseButton)}
+			disabled={tokens < pack.tokens}
+		>
+			{discounted ? (
+				<span className={classNames(css.discount, css.shadow)}>
+					{Math.floor(
+						((pack.tokens - (discounted ? Math.floor(pack.tokens / 2) : pack.tokens)) /
+							pack.tokens) *
+							100
+					)}
+					% Off!
+				</span>
+			) : (
+				'Buy'
+			)}
 		</button>
 	)
 
@@ -111,7 +141,7 @@ export function Shop({menuSetter}: Props) {
 					<PackList
 						children={PACKS}
 						showDescription={true}
-						onPurchase={onPackPurchase}
+						actionButtonCreator={packPurchaseButtonCreator}
 						discounted={discountedPacks}
 					/>
 				</div>

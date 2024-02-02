@@ -8,10 +8,14 @@ type Props = {
 	children: Pack[]
 	discounted: Pack[]
 	showDescription: boolean
-	onPurchase: ((pack: Pack, options: Array<PackOptionsT>, discounted: boolean) => void) | null
+	actionButtonCreator?: (
+		pack: Pack,
+		options: Array<PackOptionsT>,
+		discounted: boolean
+	) => JSX.Element
 }
 
-export function PackList({children, discounted, showDescription, onPurchase}: Props) {
+export function PackList({children, discounted, showDescription, actionButtonCreator}: Props) {
 	const handleScroll = () => {
 		const scrollpos = window.scrollY
 		console.log(scrollpos)
@@ -32,12 +36,12 @@ export function PackList({children, discounted, showDescription, onPurchase}: Pr
 					<PackInfo
 						key={index}
 						pack={pack}
-						onPurchase={onPurchase}
+						actionButtonCreator={actionButtonCreator}
 						showDescription={showDescription}
-						discounted={
-							discounted.reduce((acc, curr) => (curr.name === pack.name ? (acc += 1) : acc), 0) +
-							(pack.name === 'All Cards Pack' ? 2 : 0)
-						}
+						discounted={discounted.reduce(
+							(acc, curr) => (curr.name === pack.name ? (acc += 1) : acc),
+							0
+						)}
 					/>
 				))}
 			</ul>
