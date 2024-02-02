@@ -11,7 +11,8 @@ type Props = {
 	actionButtonCreator?: (
 		pack: Pack,
 		options: Array<PackOptionsT>,
-		discounted: boolean
+		discounted: boolean,
+		disabled: boolean
 	) => JSX.Element
 }
 

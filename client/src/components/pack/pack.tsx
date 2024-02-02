@@ -14,7 +14,8 @@ type Props = {
 	actionButtonCreator?: (
 		pack: Pack,
 		options: Array<PackOptionsT>,
-		discounted: boolean
+		discounted: boolean,
+		disabled: boolean
 	) => JSX.Element
 	discounted: number
 }
@@ -27,6 +28,7 @@ type DropdownT = {
 export function PackInfo({pack, showDescription, discounted, actionButtonCreator}: Props) {
 	const [dropdownSettings, setDropdownSettings] = useState<Array<DropdownT>>([])
 	const [finalSettings, setFinalSettings] = useState<Array<PackOptionsT>>([])
+	const [disabled, setDisabled] = useState(false)
 	const cards = useSelector(getCards)
 	const pastPurchases = useSelector(getPastPurchases)
 
@@ -38,6 +40,8 @@ export function PackInfo({pack, showDescription, discounted, actionButtonCreator
 	const tokenCost = actuallyDiscounted ? Math.floor(pack.tokens / 2) : pack.tokens
 
 	const {expansions, types} = getFilters(cards)
+
+	if (disabled === false && finalSettings.length < pack.maxFilters) setDisabled(true)
 
 	return (
 		<div className={css.outer}>
@@ -51,7 +55,8 @@ export function PackInfo({pack, showDescription, discounted, actionButtonCreator
 					</span>
 				</div>
 				<div className={css.rightAligned}></div>
-				{actionButtonCreator && actionButtonCreator(pack, finalSettings, actuallyDiscounted)}
+				{actionButtonCreator &&
+					actionButtonCreator(pack, finalSettings, actuallyDiscounted, disabled)}
 			</div>
 			{showDescription && (
 				<div className={css.infobox}>
@@ -87,11 +92,16 @@ export function PackInfo({pack, showDescription, discounted, actionButtonCreator
 									const otherDropdownSetting = dropdownSettings.findLast(
 										(e) => e.dropdownId !== dropdownId
 									)
-									if (!otherDropdownSetting) {
-										setFinalSettings([newElement.option])
-										return
+
+									const newFinalSettings = [newElement.option]
+									if (otherDropdownSetting) newFinalSettings.push(otherDropdownSetting.option)
+									setFinalSettings(newFinalSettings)
+									const roll = cards.filter((card) => pack.filter(card, newFinalSettings))
+									if (roll.length === 0) {
+										setDisabled(true)
+									} else {
+										setDisabled(false)
 									}
-									setFinalSettings([newElement.option, otherDropdownSetting.option])
 								}}
 							/>
 						))}

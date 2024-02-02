@@ -101,12 +101,13 @@ export function Shop({menuSetter}: Props) {
 	const packPurchaseButtonCreator = (
 		pack: Pack,
 		options: Array<PackOptionsT>,
-		discounted: boolean
+		discounted: boolean,
+		disabled: boolean
 	) => (
 		<button
 			onClick={() => onPackPurchase(pack, options, discounted)}
 			className={(css.rightAligned, css.purchaseButton)}
-			disabled={tokens < pack.tokens}
+			disabled={tokens < pack.tokens || disabled}
 		>
 			{discounted ? (
 				<span className={classNames(css.discount, css.shadow)}>
