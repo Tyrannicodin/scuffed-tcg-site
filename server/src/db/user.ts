@@ -77,7 +77,10 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 
 		const purchasesQuery = await pool.query(
 			sql`
-				SELECT * FROM purchases WHERE user_id = $1;
+				SELECT purchases_cards.user_id, purchases_cards.purchase_name, purchases_cards.purchase_rarity,
+				purchases_cards.purchase_time FROM purchases_cards WHERE purchases_cards.user_id = $1
+				UNION ALL SELECT purchases_packs.user_id, purchases_packs.purchase_name, null,
+				purchases_packs.purchase_time FROM purchases_packs WHERE purchases_packs.user_id = $1;
 			`,
 			[uuid]
 		)
@@ -107,7 +110,7 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 					name: row.purchase_name,
 					rarity: row.purchase_rarity,
 				},
-				type: row.is_pack_purchase ? 'pack' : 'card',
+				type: row.purchase_rarity ? 'card' : 'pack',
 				date: row.purchase_time,
 			}
 
@@ -132,75 +135,11 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 }
 
 export async function updateUserInfo(user: User) {
-	try {
-		const result = await pool.query(
-			sql`
-				SELECT users.user_id,users.username,users.tokens,users.picture,users.is_admin,
-				libraries.card_name,libraries.rarity,libraries.copies
-				FROM users
-				LEFT JOIN libraries ON (libraries.user_id = users.user_id)
-				WHERE users.user_id = $1;
-            `,
-			[user.uuid]
-		)
-
-		const purchasesQuery = await pool.query(
-			sql`
-				SELECT * FROM purchases WHERE user_id = $1;
-			`,
-			[user.uuid]
-		)
-
-		if (!result.rowCount) {
-			return user
-		}
-
-		const library: Array<PartialCardWithCopiesT> = []
-		const purchases: Array<PastPurchasesT> = []
-
-		result.rows.forEach((row: any) => {
-			const partialCard: PartialCardWithCopiesT = {
-				card: {
-					name: row.card_name,
-					rarity: row.rarity,
-				},
-				copies: row.copies,
-			}
-
-			library.push(partialCard)
-		})
-
-		purchasesQuery.rows.forEach((row: any) => {
-			const purchase: PastPurchasesT = {
-				purchase: {
-					name: row.purchase_name,
-					rarity: row.purchase_rarity,
-				},
-				type: row.is_pack_purchase ? 'pack' : 'card',
-				date: row.purchase_time,
-			}
-
-			purchases.push(purchase)
-		})
-
-		const userDef: userDefs = {
-			uuid: result.rows[0].user_id,
-			username: result.rows[0].username,
-			tokens: result.rows[0].tokens,
-			picture: result.rows[0].picture,
-			is_admin: result.rows[0].is_admin,
-			library: library,
-			purchases: purchases,
-		}
-
-		const updatedUser = new User(userDef)
-		updatedUser.authed = user.authed
-		updatedUser.secret = user.secret
-		return updatedUser
-	} catch (err) {
-		console.log(err)
-	}
-	return user
+	const updatedUser = await selectUserInfoFromUuid(user.uuid)
+	if (!updatedUser) return user
+	updatedUser.authed = user.authed
+	updatedUser.secret = user.secret
+	return updatedUser
 }
 
 export async function deleteUser(username: string) {
@@ -220,20 +159,25 @@ export async function deleteUser(username: string) {
 export async function addPurchaseToUser(uuid: string, purchase: PastPurchasesT): Promise<string> {
 	const purchaseDate = getFormattedDate()
 	try {
-		await pool.query(
-			sql`
-				INSERT INTO purchases (user_id,purchase_name,purchase_rarity,purchase_time,is_pack_purchase) VALUES (
-                    $1,$2,$3,$4,$5
-                );
-			`,
-			[
-				uuid,
-				purchase.purchase.name,
-				purchase.type === 'card' ? (purchase.purchase as PartialCardT).rarity : null,
-				purchaseDate,
-				purchase.type === 'pack' ? true : false,
-			]
-		)
+		if (purchase.type === 'card') {
+			await pool.query(
+				sql`
+					INSERT INTO purchases_cards (user_id,purchase_name,purchase_rarity,purchase_time) VALUES (
+						$1,$2,$3,$4
+					);
+				`,
+				[uuid, purchase.purchase.name, (purchase.purchase as PartialCardT).rarity, purchaseDate]
+			)
+		} else if (purchase.type === 'pack') {
+			await pool.query(
+				sql`
+					INSERT INTO purchases_packs (user_id,purchase_name,purchase_time) VALUES (
+						$1,$2,$3
+					);
+				`,
+				[uuid, purchase.purchase.name, purchaseDate]
+			)
+		}
 		return 'success'
 	} catch (err) {
 		console.log(err)

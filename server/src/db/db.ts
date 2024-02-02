@@ -3,6 +3,7 @@ import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
+import {PACKS} from '../../../common/packs'
 
 const {Pool} = pg
 
@@ -80,6 +81,9 @@ export async function createTables() {
                 UNIQUE (card_name, rarity),
                 FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
             );
+			CREATE TABLE IF NOT EXISTS packs(
+                pack_name varchar(255) NOT NULL PRIMARY KEY
+			);
             CREATE TABLE IF NOT EXISTS libraries(
                 user_id uuid REFERENCES users(user_id),
                 card_name varchar(255),
@@ -99,12 +103,28 @@ export async function createTables() {
                 rarity varchar(255),
                 FOREIGN KEY (card_name, rarity) REFERENCES cards(card_name, rarity)
             );
-			CREATE TABLE IF NOT EXISTS purchases(
+			CREATE TABLE IF NOT EXISTS purchases_cards(
                 user_id uuid REFERENCES users(user_id),
                 purchase_name varchar(255) NOT NULL,
 				purchase_rarity varchar(255),
-				purchase_time varchar(255) NOT NULL,
-				is_pack_purchase boolean NOT NULL
+				purchase_time date NOT NULL,
+				FOREIGN KEY (purchase_name, purchase_rarity) REFERENCES cards(card_name, rarity)
+            );
+			CREATE TABLE IF NOT EXISTS purchases_packs(
+				user_id uuid REFERENCES users(user_id),
+                purchase_name varchar(255) REFERENCES packs(pack_name),
+				purchase_time date NOT NULL
+            );
+			CREATE TABLE IF NOT EXISTS shop_cards(
+                item_name varchar(255) NOT NULL,
+				item_rarity varchar(255),
+				item_type varchar(255),
+				shop_date date NOT NULL,
+				FOREIGN KEY (item_name, item_rarity) REFERENCES cards(card_name, rarity)
+            );
+			CREATE TABLE IF NOT EXISTS shop_packs(
+                item_name varchar(255) REFERENCES packs(pack_name),
+				shop_date date NOT NULL
             );
 			CREATE TABLE IF NOT EXISTS sales(
 				sale_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -126,7 +146,10 @@ export async function destroyTables(): Promise<string> {
 	try {
 		await pool.query(
 			sql`
-				DROP TABLE purchases CASCADE;
+				DROP TABLE shop_cards CASCADE;
+				DROP TABLE shop_packs CASCADE;
+				DROP TABLE purchases_cards CASCADE;
+				DROP TABLE purchases_packs CASCADE;
 				DROP TABLE sales CASCADE;
 				DROP TABLE ability_cost CASCADE;
 				DROP TABLE libraries CASCADE;
@@ -135,6 +158,7 @@ export async function destroyTables(): Promise<string> {
 				DROP TABLE hermit_cards CASCADE;
 				DROP TABLE effect_cards CASCADE;
 				DROP TABLE cards CASCADE;
+				DROP TABLE packs CASCADE;
 				DROP TABLE expansions CASCADE;
 				DROP TABLE types CASCADE;
 				DROP TABLE users CASCADE;
@@ -245,6 +269,7 @@ export async function addCardsToDatabase() {
 				hermitCards.moveCosts[3],
 			]
 		)
+
 		// Insert Effect cards to the Effect card sheet
 		await pool.query(
 			sql`
@@ -255,6 +280,17 @@ export async function addCardsToDatabase() {
                 ) ON CONFLICT DO NOTHING;
             `,
 			[effectCards.names, effectCards.rarities, effectCards.description]
+		)
+
+		// Insert packs
+		const packNames = PACKS.map((pack) => pack.name)
+		await pool.query(
+			sql`
+                INSERT INTO packs (pack_name) SELECT * FROM UNNEST (
+                    $1::text[]
+                ) ON CONFLICT DO NOTHING;
+            `,
+			[packNames]
 		)
 	} catch (err) {
 		console.log(err)

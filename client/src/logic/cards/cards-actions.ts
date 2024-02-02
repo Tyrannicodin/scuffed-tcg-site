@@ -1,10 +1,16 @@
 import {Card} from 'common/models/card'
 import {Sale, Trade} from 'common/models/trade'
 import {PartialCardWithCopiesT} from 'common/types/cards'
+import {ShopT} from 'common/types/shop'
 
 export const newCard = (cards: Card[]) => ({
 	type: 'NEW_CARDS' as const,
 	payload: cards,
+})
+
+export const updateShop = (shop: ShopT) => ({
+	type: 'UPDATE_SHOP' as const,
+	payload: shop,
 })
 
 export const updateLibrary = (library: PartialCardWithCopiesT[]) => ({

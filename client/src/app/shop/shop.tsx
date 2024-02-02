@@ -1,15 +1,25 @@
 import CardList from 'components/card-list'
-import {getCards, getLibrary, getPastPurchases, getTokens} from 'logic/cards/cards-selectors'
+import {
+	getCards,
+	getLibrary,
+	getPastPurchases,
+	getShop,
+	getTokens,
+} from 'logic/cards/cards-selectors'
 import {useDispatch, useSelector} from 'react-redux'
 import css from './shop.module.scss'
 import {useState} from 'react'
 import {Card} from 'common/models/card'
-import {packs} from '../../../../common/packs'
+import {PACKS} from '../../../../common/packs'
 import {Pack} from 'common/models/pack'
 import PackList from 'components/pack-list'
 import PackModal from 'components/shop-modals'
 import {PackOptionsT, PartialCardT} from 'common/types/cards'
-import {getFormattedDate, getDailyShop} from 'common/functions/daily-shop'
+import {
+	getFormattedDate,
+	getFullCardsFromPartial,
+	getFullPackFromPartial,
+} from 'common/functions/daily-shop'
 import ShopTimer from 'components/shop-timer'
 
 type Props = {
@@ -25,8 +35,14 @@ export function Shop({menuSetter}: Props) {
 	const library = useSelector(getLibrary)
 	const tokens = useSelector(getTokens)
 	const pastPurchases = useSelector(getPastPurchases)
-	const {rolledPacks, hermitCards, effectCards} = getDailyShop(cards)
+	const shop = useSelector(getShop)
 	const [showPackModal, setShowPackModal] = useState<boolean>(false)
+
+	const discountedPacks = getFullPackFromPartial(shop.packs)
+	const hermitCards = getFullCardsFromPartial(shop.hermitCards, cards)
+	const effectCards = getFullCardsFromPartial(shop.effectCards, cards)
+
+	console.log(hermitCards)
 
 	const onCardPurchase = (card: Card) => {
 		dispatch({
@@ -92,10 +108,10 @@ export function Shop({menuSetter}: Props) {
 						</p>
 					</div>
 					<PackList
-						children={packs}
+						children={PACKS}
 						showDescription={true}
 						onPurchase={onPackPurchase}
-						discounted={rolledPacks}
+						discounted={discountedPacks}
 					/>
 				</div>
 				<div className={css.right}>
@@ -103,7 +119,10 @@ export function Shop({menuSetter}: Props) {
 						<p>Daily Hermits!</p>
 					</div>
 					<CardList
-						children={hermitCards.sort((a, b) => (a.tokens || 0) - (b.tokens || 0))}
+						children={hermitCards.sort((a, b) => {
+							if (a.tokens === null || b.tokens === null) return a.name.localeCompare(b.name)
+							return a.tokens - b.tokens || a.name.localeCompare(b.name)
+						})}
 						showDescription={false}
 						actionButtonCreator={purchaseButtonCreator}
 						library={library}
@@ -112,7 +131,10 @@ export function Shop({menuSetter}: Props) {
 						<p>Daily Effects!</p>
 					</div>
 					<CardList
-						children={effectCards.sort((a, b) => (a.tokens || 0) - (b.tokens || 0))}
+						children={effectCards.sort((a, b) => {
+							if (a.tokens === null || b.tokens === null) return a.name.localeCompare(b.name)
+							return a.tokens - b.tokens || a.name.localeCompare(b.name)
+						})}
 						showDescription={false}
 						actionButtonCreator={purchaseButtonCreator}
 						library={library}

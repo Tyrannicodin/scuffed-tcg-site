@@ -1,12 +1,14 @@
 import {Card} from 'common/models/card'
 import {UnknownAction} from 'redux'
 import {Sale, Trade} from 'common/models/trade'
+import {ShopT} from 'common/types/shop'
 
 type CardsState = {
 	cards: Card[]
 	lastRollResult: Card[]
 	sales: Sale[]
 	trades: Trade[]
+	shop: ShopT
 }
 
 const defaultState: CardsState = {
@@ -14,6 +16,7 @@ const defaultState: CardsState = {
 	lastRollResult: [],
 	sales: [],
 	trades: [],
+	shop: {packs: [], hermitCards: [], effectCards: []},
 }
 
 const cardsReducer = (state = defaultState, action: UnknownAction): CardsState => {
@@ -28,6 +31,11 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 			return {
 				...state,
 				lastRollResult: action.payload as Card[],
+			}
+		case 'UPDATE_SHOP':
+			return {
+				...state,
+				shop: action.payload as ShopT,
 			}
 		case 'LOAD_TRADES':
 			return {
