@@ -3,11 +3,12 @@ import store from 'store'
 import {put, takeEvery} from 'typed-redux-saga'
 import {getCards} from './cards-selectors'
 import {Card} from 'common/models/card'
-import {newCard as addNewCards, updateRollResults} from './cards-actions'
+import {newCard as addNewCards, updateRollResults, updateShop} from './cards-actions'
 import {receiveMsg, sendMsg} from 'logic/socket/socket-saga'
 import {getUser, getUuid} from 'logic/session/session-selectors'
 import {PastPurchasesT} from 'common/types/user'
 import {Sale} from 'common/models/trade'
+import {ShopT} from 'common/types/shop'
 
 function* newCardsSaga(action: UnknownAction) {
 	const state = store.getState()
@@ -29,6 +30,21 @@ function* newCardsSaga(action: UnknownAction) {
 	)
 
 	yield put(addNewCards(newCards))
+}
+
+function* shopUpdateSaga(action: UnknownAction) {
+	const state = store.getState()
+	const cards = getCards(state)
+	const initialPayload = action.payload as {cardCount: number}
+
+	sendMsg({
+		type: 'GET_SHOP',
+		payload: {},
+	})
+
+	const {payload}: {payload: ShopT} = yield receiveMsg('UPDATE_SHOP')
+
+	yield put(updateShop(payload))
 }
 
 function* lastRollResultSaga(action: UnknownAction) {
@@ -83,6 +99,7 @@ function* purchaseSaleSaga(action: UnknownAction) {
 
 export default function* cardSaga() {
 	yield* takeEvery('GET_CARDS', newCardsSaga)
+	yield* takeEvery('GET_SHOP', shopUpdateSaga)
 	yield* takeEvery('CARDS_ROLLED', lastRollResultSaga)
 	yield* takeEvery('GET_TRADES', getTradesSaga)
 	yield* takeEvery('CREATE_SALE', createSaleSaga)

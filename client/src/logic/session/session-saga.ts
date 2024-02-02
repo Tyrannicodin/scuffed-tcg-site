@@ -30,6 +30,10 @@ function* onLogin(user: User, saveSecret: boolean) {
 				cardCount: 10000,
 			},
 		}),
+		put({
+			type: 'GET_SHOP',
+			payload: {},
+		}),
 		fork(listen('UPDATE_USER', updateUserState)),
 		fork(listen('LOAD_TRADES', loadTrades)),
 	]) //Init rest of client logic

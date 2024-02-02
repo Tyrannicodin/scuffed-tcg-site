@@ -1,6 +1,7 @@
 import {Card} from 'common/models/card'
 import {Sale, Trade} from 'common/models/trade'
 import {PartialCardWithCopiesT} from 'common/types/cards'
+import {ShopT} from 'common/types/shop'
 import {PastPurchasesT} from 'common/types/user'
 import {getUser} from 'logic/session/session-selectors'
 import {RootState} from 'store'
@@ -19,6 +20,10 @@ export const getCards = (state: RootState): Card[] => {
 
 export const getLibrary = (state: RootState): PartialCardWithCopiesT[] => {
 	return getUser(state)?.library || []
+}
+
+export const getShop = (state: RootState): ShopT => {
+	return getCardsState(state).shop
 }
 
 export const getTokens = (state: RootState): number => {

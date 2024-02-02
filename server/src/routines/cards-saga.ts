@@ -8,6 +8,7 @@ import {Socket} from 'socket.io'
 import {PastPurchasesT} from '../../../common/types/user'
 import {User} from '../../../common/models/user'
 import {updateUser} from './root'
+import {getShop} from 'db/shop'
 
 function* sendCards(action: UnknownAction) {
 	const cardList = [...store.getState().cards.cards]
@@ -49,8 +50,18 @@ function* loadCardsSaga() {
 	})
 }
 
+function* sendShop(action: UnknownAction) {
+	const shop: cardObjectsResult = yield getShop()
+
+	;(action.socket as Socket).emit('UPDATE_SHOP', {
+		type: 'UPDATE_SHOP',
+		payload: shop,
+	})
+}
+
 export function* cardsSaga() {
 	yield call(loadCardsSaga)
 	yield* takeEvery('GET_CARDS', sendCards)
+	yield* takeEvery('GET_SHOP', sendShop)
 	yield* takeEvery('CARDS_ROLLED', verifyCardRolls)
 }

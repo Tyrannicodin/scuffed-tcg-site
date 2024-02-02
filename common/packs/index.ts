@@ -24,7 +24,7 @@ function optionsFilter(card: Card, options: Array<PackOptionsT>) {
 	})
 }
 
-export const packs = [
+export const PACKS = [
 	new Pack({
 		name: 'All Cards Pack',
 		tokens: 1,
@@ -54,7 +54,7 @@ export const packs = [
 	}),
 	new Pack({
 		name: 'Item x2 Pack',
-		tokens: 3,
+		tokens: 2,
 		description: 'Contains nine item cards.',
 		maxFilters: 0,
 		filter: (card: Card) => {

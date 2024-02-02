@@ -5,7 +5,9 @@ import {createServer} from 'http'
 import cors from 'cors'
 import {CONFIG} from '../../common/config'
 import {createTables, addCardsToDatabase, destroyTables} from 'db/db'
+import {updateShop} from 'db/shop'
 import startSocketIO from 'sockets'
+import {CronJob} from 'cron'
 
 const port = process.env.PORT || CONFIG.port || 9000
 
@@ -44,3 +46,14 @@ app.get('/', (req, res) => {
 server.listen(port, () => {
 	console.log(`Server listening on port ${port}`)
 })
+
+// Shop stuff
+const shopJob = new CronJob(
+	'0 0 * * * *', // cronTime
+	updateShop,
+	null,
+	true, // start
+	'UTC',
+	null,
+	true
+)
