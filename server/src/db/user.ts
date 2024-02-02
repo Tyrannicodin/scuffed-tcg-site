@@ -8,35 +8,31 @@ import {DBKEY} from '../../../common/config'
 
 export async function createUser(
 	username: string,
-	email: string,
 	hash: string
 ): Promise<userCreateResultT> {
 	try {
 		const unique_check = await pool.query(
 			sql`
-                SELECT * FROM users WHERE username = $1 OR email = $2;
+                SELECT * FROM users WHERE username = $1;
             `,
-			[username, email]
+			[username]
 		)
 
 		if (unique_check.rows.length > 0 && unique_check.rows[0].username === username) {
 			return {result: 'username_taken'}
-		} else if (unique_check.rows.length > 0 && unique_check.rows[0].email === email) {
-			return {result: 'email_taken'}
 		}
 
 		await pool.query(
 			sql`
-                INSERT INTO users (salted_hash, username, email, token_secret, tokens, is_admin) VALUES (
+                INSERT INTO users (salted_hash, username, token_secret, tokens, is_admin) VALUES (
                     crypt($1, gen_salt('bf', 15)),
                     $2,
-                    $3,
-					$4,
+					$3,
                     0,
                     'false'
                 );
             `,
-			[hash, username, email, publicEncrypt(DBKEY, randomBytes(30))]
+			[hash, username, publicEncrypt(DBKEY, randomBytes(30))]
 		)
 		/**
 		 * 30 random bytes is arbitrary, I chose it as it's enough bytes to have lots of combinations

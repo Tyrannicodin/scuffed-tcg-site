@@ -3,7 +3,6 @@ import {User} from 'common/models/user'
 
 type SessionState = {
 	user: User | null
-	email: string
 	message: string
 	tokenSecret: string
 	awaitingCode: boolean
@@ -11,7 +10,6 @@ type SessionState = {
 
 const defaultState: SessionState = {
 	user: null,
-	email: '',
 	message: '',
 	tokenSecret: '',
 	awaitingCode: false,

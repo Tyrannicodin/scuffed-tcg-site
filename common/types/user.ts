@@ -7,7 +7,7 @@ export type userInfoT = {
 }
 
 export type userCreateResultT = {
-	result: 'username_taken' | 'email_taken' | 'success' | 'db_connection' | 'failure'
+	result: 'username_taken' | 'success' | 'db_connection' | 'failure'
 }
 export type Uuid = string
 

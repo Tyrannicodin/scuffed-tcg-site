@@ -9,10 +9,8 @@ import {
 import {call, delay, put, race, take, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
 import {
-	getEmailError,
 	getPasswordError,
 	getUsernameError,
-	validateEmail,
 	validatePassword,
 	validateUsername,
 } from '../../../common/util/validation'
@@ -29,8 +27,6 @@ import { UnknownAction } from 'redux'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
-		case 'email_taken':
-			return 'That email is already in use'
 		case 'username_taken':
 			return 'That username is already in use'
 		case 'db_connection':
@@ -102,7 +98,7 @@ function* loginSaga(action: any) {
 }
 
 function* signUpSaga(action: any) {
-	const {username, password, confirmPassword, email} = action.payload
+	const {username, password, confirmPassword} = action.payload
 	const {socket} = action
 
 	const fail_signup = (message: string) => {
@@ -113,7 +109,7 @@ function* signUpSaga(action: any) {
 			},
 		})
 	}
-	if (!(username && password && confirmPassword && email)) {
+	if (!(username && password && confirmPassword)) {
 		fail_signup("Couldn't get some signup data")
 		return
 	}
@@ -128,13 +124,8 @@ function* signUpSaga(action: any) {
 		fail_signup(getPasswordError(validPassword))
 		return
 	}
-	const validEmail = validateEmail(email)
-	if (!validEmail) {
-		fail_signup(getEmailError(validEmail))
-		return
-	}
 
-	const {result} = yield call(createUser, username, email, password)
+	const {result} = yield call(createUser, username, password)
 	if (result !== 'success') {
 		socket.emit('FAIL_SIGNUP', {
 			type: 'FAIL_SIGNUP',
@@ -154,7 +145,6 @@ function* signUpSaga(action: any) {
 
 	var user: User = yield call(selectUserInfoFromUuid, uuid)
 	while (!user) {
-		console.log(user)
 		yield delay(500)
 		user = yield call(selectUserInfoFromUuid, uuid)
 	}
@@ -173,6 +163,8 @@ function* signUpSaga(action: any) {
 		type: 'ONBOARDING',
 		payload: {user, tokenSecret},
 	})
+
+	yield take('CODE_READY')
 
 	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(user, base32Encode(tokenBytes), action.socket)
 

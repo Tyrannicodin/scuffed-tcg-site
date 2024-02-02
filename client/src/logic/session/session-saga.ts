@@ -2,15 +2,11 @@ import {ServerMessage, receiveMsg, sendMsg} from 'logic/socket/socket-saga'
 import {call, delay, put, race, take} from 'redux-saga/effects'
 import socket from 'socket'
 import {connect, disconnect, onboarding, setMessage, updateUserState} from './session-actions'
-import store from 'store'
-import {getUserSecret} from './session-selectors'
-import {all, fork} from 'typed-redux-saga'
+import {all, fork, takeEvery} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {
-	getEmailError,
 	getPasswordError,
 	getUsernameError,
-	validateEmail,
 	validatePassword,
 	validateUsername,
 } from 'common/util/validation'
@@ -51,7 +47,7 @@ function listen(event: string, action: (payload: any) => any) {
 	return inner
 }
 
-function* verifySaga(saveSecret: boolean) {
+function* otpSaga(action: any) {
 	while (true) {
 		const {code, failure} = yield race({
 			code: take('CODE_SUBMIT'),
@@ -90,6 +86,8 @@ function* verifySaga(saveSecret: boolean) {
 }
 
 export function* loginSaga() {
+	yield* takeEvery('OTP_START', otpSaga)
+
 	if (localStorage.getItem('secret')) {
 		socket.connect()
 		socket.emit('LOGIN', {
@@ -126,10 +124,6 @@ export function* loginSaga() {
 	if (clientSignup && passwordValid !== 'success') {
 		yield put(disconnect(getPasswordError(passwordValid)))
 	}
-	const emailValid = validateEmail(authPayload.email)
-	if (clientSignup && !emailValid) {
-		yield put(disconnect(getEmailError(emailValid)))
-	}
 
 	socket.connect()
 
@@ -157,7 +151,6 @@ export function* loginSaga() {
 		yield onLogin(login.payload, persistLogin)
 	} else if (onboard) {
 		yield put(onboarding(onboard.payload))
-		yield call(verifySaga, persistLogin)
 	} else if (loginFail || signupFail) {
 		yield put(disconnect((loginFail || signupFail).payload.message))
 	} else if (timeout) {

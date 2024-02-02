@@ -2,23 +2,21 @@ import css from './login.module.scss'
 import {useDispatch, useSelector} from 'react-redux'
 import {useState} from 'react'
 import InputField from 'components/input-field'
-import {getAwaitingCode, getEmail, getMessage} from 'logic/session/session-selectors'
-import OtpEntry from 'components/otp-entry'
+import {getMessage, getTokenSecret} from 'logic/session/session-selectors'
 import * as Toggle from '@radix-ui/react-toggle'
 import AuthDisplay from 'components/auth-display'
+import { sendMsg } from 'logic/socket/socket-saga'
 
 export function Login() {
 	const dispatch = useDispatch()
 
 	const [usernameField, setUsernameField] = useState('')
-	const [emailField, setEmailField] = useState('')
 	const [passwordField, setPasswordField] = useState('')
 	const [confirmPasswordField, setConfirmPasswordField] = useState('')
 	const [persistLogin, setPersistLogin] = useState(false)
 	const [page, setPage] = useState<'login' | 'signup' | 'forgot'>('login')
 	const message = useSelector(getMessage)
-	const getCode = useSelector(getAwaitingCode)
-	const email = useSelector(getEmail)
+	const secretUrl = useSelector(getTokenSecret)
 
 	const loginAccount = () => {
 		dispatch({
@@ -35,7 +33,6 @@ export function Login() {
 			type: 'SIGNUP',
 			payload: {
 				username: usernameField,
-				email: emailField,
 				password: passwordField,
 				confirmPassword: confirmPasswordField,
 			},
@@ -45,12 +42,12 @@ export function Login() {
 	const messenger = <p id={css.message}>{message}</p>
 
 	let htmlReturn: JSX.Element
-	if (getCode) {
+	if (secretUrl) {
 		htmlReturn = (
 			<div className={css.flexAlign}>
 				<h3>Scan to add to your authenticator app</h3>
 				<AuthDisplay />
-				{messenger}
+				<button onClick={() => sendMsg({type: 'CODE_READY', payload: {}})}>Verify account</button>
 			</div>
 		)
 	} else if (page === 'login') {
@@ -94,9 +91,6 @@ export function Login() {
 			<div className={css.container}>
 				<InputField type="username" setField={setUsernameField}>
 					Username
-				</InputField>
-				<InputField type="email" setField={setEmailField}>
-					Email
 				</InputField>
 				<InputField type="password" setField={setPasswordField}>
 					Password

@@ -19,19 +19,14 @@ const __dirname = path.dirname(__filename)
 
 const server = createServer(app)
 
-var dbReady = true
 process.argv.forEach(function (val) {
 	if (val === 'buildDatabase') {
-		dbReady = false
-		createTables().then(addCardsToDatabase).then(() => dbReady = true)
+		createTables().then(addCardsToDatabase)
 	}
 	if (val === 'destroyDatabase') {
-		dbReady = false
-		destroyTables().then(() => exit())
+		destroyTables()
 	}
 })
-
-while (!dbReady) {}
 
 app.use(express.json())
 app.use(cors({origin: CONFIG.cors}))
