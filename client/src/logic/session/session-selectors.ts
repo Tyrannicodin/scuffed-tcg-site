@@ -22,9 +22,13 @@ export const getMessage = (state: RootState): string => {
 }
 
 export const getAwaitingCode = (state: RootState): boolean => {
-	return getSession(state).awaiting_code
+	return getSession(state).awaitingCode
 }
 
 export const getEmail = (state: RootState): string => {
 	return getSession(state).email
+}
+
+export const getTokenSecret = (state: RootState): string => {
+	return getSession(state).tokenSecret
 }

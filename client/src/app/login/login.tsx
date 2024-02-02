@@ -5,6 +5,7 @@ import InputField from 'components/input-field'
 import {getAwaitingCode, getEmail, getMessage} from 'logic/session/session-selectors'
 import OtpEntry from 'components/otp-entry'
 import * as Toggle from '@radix-ui/react-toggle'
+import AuthDisplay from 'components/auth-display'
 
 export function Login() {
 	const dispatch = useDispatch()
@@ -47,8 +48,8 @@ export function Login() {
 	if (getCode) {
 		htmlReturn = (
 			<div className={css.flexAlign}>
-				<h3>OTP sent to {email}</h3>
-				<OtpEntry>6</OtpEntry>
+				<h3>Scan to add to your authenticator app</h3>
+				<AuthDisplay />
 				{messenger}
 			</div>
 		)

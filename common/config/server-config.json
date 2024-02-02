@@ -3,10 +3,8 @@
 	"clientDevPort": 3002,
 	"clientPath": "client/dist",
 	"cors": [
-		"http://localhost:3002",
-		"https://hc-tcg.fly.dev",
-		"https://hc-tcg-beta.fly.dev"
+		"http://localhost:3002"
 	],
-	"logoSubText": "Advent of TCG!",
-	"version": "0.0.0"
+	"version": "0.0.0",
+	"otpIssuer": "Scuffed Card Manager"
 }

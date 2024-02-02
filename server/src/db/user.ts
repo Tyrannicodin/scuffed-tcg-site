@@ -3,6 +3,8 @@ import {User, userDefs} from '../../../common/models/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 import {pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
+import { privateDecrypt, publicEncrypt, randomBytes } from 'crypto'
+import {DBKEY} from '../../../common/config'
 
 export async function createUser(
 	username: string,
@@ -25,16 +27,21 @@ export async function createUser(
 
 		await pool.query(
 			sql`
-                INSERT INTO users (salted_hash, username, email, tokens, is_admin) VALUES (
+                INSERT INTO users (salted_hash, username, email, token_secret, tokens, is_admin) VALUES (
                     crypt($1, gen_salt('bf', 15)),
                     $2,
                     $3,
+					$4,
                     0,
                     'false'
                 );
             `,
-			[hash, username, email]
+			[hash, username, email, publicEncrypt(DBKEY, randomBytes(30))]
 		)
+		/**
+		 * 30 random bytes is arbitrary, I chose it as it's enough bytes to have lots of combinations
+		 * whilst not being ridiculous (and it also has no padding as a base32 string)
+		**/
 
 		return {result: 'success'}
 	} catch (err) {
@@ -134,6 +141,23 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 	return null
 }
 
+export async function selectUserTokenSecret(user:User): Promise<Buffer> {
+	try {
+		const result = await pool.query(
+			sql`
+				SELECT users.token_secret FROM users WHERE users.user_id = $1;
+			`,
+			[user.uuid]
+		)
+		
+		if (!result || result.rows.length != 1) return Buffer.from([])
+		return privateDecrypt(DBKEY, result.rows[0].token_secret)
+	} catch (err) {
+		console.log(err)
+		return Buffer.from([])
+	}
+}
+
 export async function updateUserInfo(user: User) {
 	const updatedUser = await selectUserInfoFromUuid(user.uuid)
 	if (!updatedUser) return user
@@ -142,13 +166,13 @@ export async function updateUserInfo(user: User) {
 	return updatedUser
 }
 
-export async function deleteUser(username: string) {
+export async function deleteUser(uuid: string) {
 	try {
 		await pool.query(
 			sql`
-                DELETE FROM users WHERE username = $1;
+                DELETE FROM users WHERE users.uuid = $1;
             `,
-			[username]
+			[uuid]
 		)
 		return {result: 'success'}
 	} catch (err) {

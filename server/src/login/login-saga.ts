@@ -2,12 +2,12 @@ import {
 	createUser,
 	deleteUser,
 	selectUserInfoFromUuid,
+	selectUserTokenSecret,
 	selectUserUUID,
 	updateUserInfo,
 } from 'db/user'
 import {call, delay, put, race, take, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
-import {Action} from 'redux'
 import {
 	getEmailError,
 	getPasswordError,
@@ -22,6 +22,10 @@ import {User} from '../../../common/models/user'
 import {addUser, updateUserState} from './login-actions'
 import {getUsers} from './login-selectors'
 import {Socket} from 'socket.io'
+import {totp} from 'otplib'
+import { CONFIG } from '../../../common/config'
+import {base32Encode} from '@ctrl/ts-base32'
+import { UnknownAction } from 'redux'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -162,44 +166,25 @@ function* signUpSaga(action: any) {
 		payload: user,
 	})
 
+	const tokenBytes: Buffer = yield call(selectUserTokenSecret, user)
+	const tokenSecret = totp.keyuri(user.username, CONFIG.otpIssuer, base32Encode(tokenBytes))
+
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
-		payload: {user},
+		payload: {user, tokenSecret},
 	})
 
-	const verifyMessage = () =>
-		new Promise<Action>((resolve) => {
-			const listener = (message: Action) => {
-				resolve(message)
-			}
-			socket.once('VERIFY', listener)
-		})
+	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(user, base32Encode(tokenBytes), action.socket)
 
-	var code = Math.floor(Math.random() * 10000000).toString(16)
-	while (code.length < 6) {
-		code = '0' + code
-	}
-	console.log(code)
-
-	const endTime = Date.now() + 5 * 60 * 1000
-	var inputCode = ''
-	while (code !== inputCode) {
-		const {verify, timeout} = yield race({
-			verify: take('VERIFY'),
-			timeout: delay(endTime - Date.now()), //5 minutes that doesn't reset when a code is entered
-		})
-		if (verify) {
-			inputCode = verify.payload.code
-		} else if (timeout) {
-			yield call(deleteUser, username)
-			socket.emit('AUTH_FAIL', {
-				type: 'AUTH_FAIL',
-				payload: {
-					message: 'OTP timed out',
-				},
-			})
-			return
+	if (verifyResult != 'success') {
+		if (verifyResult === 'failure') {
+			fail_signup('OTP not entered in time')
+		} else if (verifyResult === 'unknown') {
+			fail_signup('Unknown error, please re-try signup')
 		}
+
+		yield call(deleteUser, user.uuid)
+		return
 	}
 
 	user.authed = true
@@ -208,6 +193,44 @@ function* signUpSaga(action: any) {
 		type: 'LOGGED_IN',
 		payload: user,
 	})
+}
+
+function* verificationSaga(user: User, tokenSecret: string, socket: Socket) {
+	socket.emit('OTP_START', {
+		type: 'OTP_START',
+		payload: {}
+	})
+	const {timeout, verfified} = yield race({
+		timeout: delay(1000 * 60 *5),
+		verfified: verificationLoop(user, tokenSecret, socket),
+	})
+	const result = timeout ? 'failure' : verfified ? 'success' : 'unknown'
+	socket.emit('OTP_END', {
+		type: 'OTP_END',
+		payload: {result}
+	})
+	return result
+}
+
+function* verificationLoop(user: User, tokenSecret: string, socket: Socket) {
+	while (true) {
+		const token: UnknownAction = yield take('OTP_SUBMIT')
+		if (!token.user || (token.user as User).uuid != user.uuid) continue
+		const payload = token.payload as {token: string}
+		if (!payload) return
+		if (totp.check(payload.token, tokenSecret)) {
+			socket.emit('OTP_SUCCESS', {
+				type: 'OTP_SUCCESS',
+				payload: {}
+			})
+			return
+		} else {
+			socket.emit('OTP_FAIL', {
+				type: 'OTP_FAIL',
+				payload: {message: 'Invalid OTP entered'}
+			})
+		}
+	}
 }
 
 export function* entrySaga() {

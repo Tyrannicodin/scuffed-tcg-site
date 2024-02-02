@@ -8,6 +8,7 @@ import {createTables, addCardsToDatabase, destroyTables} from 'db/db'
 import {updateShop} from 'db/shop'
 import startSocketIO from 'sockets'
 import {CronJob} from 'cron'
+import { exit } from 'process'
 
 const port = process.env.PORT || CONFIG.port || 9000
 
@@ -18,14 +19,19 @@ const __dirname = path.dirname(__filename)
 
 const server = createServer(app)
 
+var dbReady = true
 process.argv.forEach(function (val) {
 	if (val === 'buildDatabase') {
-		createTables().then(addCardsToDatabase)
+		dbReady = false
+		createTables().then(addCardsToDatabase).then(() => dbReady = true)
 	}
 	if (val === 'destroyDatabase') {
-		destroyTables()
+		dbReady = false
+		destroyTables().then(() => exit())
 	}
 })
+
+while (!dbReady) {}
 
 app.use(express.json())
 app.use(cors({origin: CONFIG.cors}))
@@ -48,7 +54,7 @@ server.listen(port, () => {
 })
 
 // Shop stuff
-const shopJob = new CronJob(
+/*const shopJob = new CronJob(
 	'0 0 * * * *', // cronTime
 	updateShop,
 	null,
@@ -56,4 +62,4 @@ const shopJob = new CronJob(
 	'UTC',
 	null,
 	true
-)
+)*/

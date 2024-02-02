@@ -31,6 +31,7 @@ export async function createTables() {
                 salted_hash varchar(255) NOT NULL,
                 username varchar(255) NOT NULL UNIQUE,
                 email varchar(255) NOT NULL UNIQUE,
+				token_secret bytea NOT NULL UNIQUE,
                 tokens integer NOT NULL,
                 picture varchar(255),
                 is_admin boolean NOT NULL

@@ -5,14 +5,16 @@ type SessionState = {
 	user: User | null
 	email: string
 	message: string
-	awaiting_code: boolean
+	tokenSecret: string
+	awaitingCode: boolean
 }
 
 const defaultState: SessionState = {
 	user: null,
 	email: '',
 	message: '',
-	awaiting_code: false,
+	tokenSecret: '',
+	awaitingCode: false,
 }
 
 const sessionReducer = (state = defaultState, action: UnknownAction): SessionState => {
@@ -29,7 +31,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 			return {
 				...state,
 				user: null,
-				awaiting_code: false,
+				awaitingCode: false,
 			}
 		case 'SET_MESSAGE':
 			return {
@@ -39,13 +41,13 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 		case 'ONBOARDING':
 			return {
 				...state,
-				awaiting_code: true,
+				awaitingCode: true,
 				...action.payload,
 			}
 		case 'CONNECTED':
 			return {
 				...state,
-				awaiting_code: false,
+				awaitingCode: false,
 				user: action.payload as User,
 			}
 		case 'UPDATE_USER':
