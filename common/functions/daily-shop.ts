@@ -10,11 +10,14 @@ export function getFormattedDate() {
 }
 
 export function getFullCardsFromPartial(partialCard: Array<PartialCardT>, fullCards: Array<Card>) {
-	return fullCards.filter((card) => {
-		return partialCard.some((subcard) => {
-			return card.name === subcard.name && card.rarity === subcard.rarity
-		})
+	const cards: Array<Card> = []
+	partialCard.forEach((card) => {
+		const search = fullCards.find(
+			(subcard) => card.name === subcard.name && card.rarity === subcard.rarity
+		)
+		if (search) cards.push(search)
 	})
+	return cards
 }
 
 export function getFullPackFromPartial(partialPack: Array<PartialPackT>) {

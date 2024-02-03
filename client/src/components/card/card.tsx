@@ -16,11 +16,13 @@ const effectColors = {
 type Props = {
 	card: Card
 	copies: number | undefined
-	showDescription: boolean
+	displayStyle: 'full' | 'no-description' | 'mini'
+	onClick?: (card: Card, key: number) => void
+	id: number
 	actionButtonCreator?: (card: Card) => JSX.Element
 }
 
-export function CardInfo({card, copies, showDescription, actionButtonCreator}: Props) {
+export function CardInfo({card, copies, displayStyle, id, onClick, actionButtonCreator}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
 			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' =
@@ -77,9 +79,28 @@ export function CardInfo({card, copies, showDescription, actionButtonCreator}: P
 		return 'x0'
 	}
 
+	if (displayStyle === 'mini') {
+		return (
+			<div className={css.outer}>
+				<div
+					className={classNames(css.card, css.smallFont)}
+					onClick={() => onClick && onClick(card, id)}
+				>
+					<div>
+						{card.name}
+						{getType(card)}{' '}
+					</div>
+				</div>
+			</div>
+		)
+	}
+
 	return (
 		<div className={css.outer}>
-			<div className={classNames(css.card, card.rarity === 'Mythic' ? css.mythic : null)}>
+			<div
+				className={classNames(css.card, card.rarity === 'Mythic' ? css.mythic : null)}
+				onClick={() => onClick && onClick(card, id)}
+			>
 				<div>
 					<b className={css.cardName}>{card.name}</b>
 					{getType(card)}{' '}
@@ -93,7 +114,7 @@ export function CardInfo({card, copies, showDescription, actionButtonCreator}: P
 				<div className={css.rightAligned}>{getCopies(copies)}</div>
 				{actionButtonCreator && actionButtonCreator(card)}
 			</div>
-			{showDescription && <div className={css.infobox}>{getDescription(card)}</div>}
+			{displayStyle === 'full' && <div className={css.infobox}>{getDescription(card)}</div>}
 		</div>
 	)
 }

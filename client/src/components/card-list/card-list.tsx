@@ -6,15 +6,17 @@ import {PartialCardWithCopiesT} from 'common/types/cards'
 type Props = {
 	children: Card[]
 	library: PartialCardWithCopiesT[]
-	showDescription: boolean
+	displayStyle: 'full' | 'no-description' | 'mini'
 	scroll?: boolean
+	onClick?: (card: Card, key: number) => void
 	actionButtonCreator?: (card: Card) => JSX.Element
 }
 
 export function CardList({
 	children,
 	library,
-	showDescription,
+	displayStyle,
+	onClick,
 	actionButtonCreator,
 	scroll = true,
 }: Props) {
@@ -23,7 +25,9 @@ export function CardList({
 			<ul className={css.cardList}>
 				{children.map((card, index) => (
 					<CardInfo
+						onClick={onClick}
 						key={index}
+						id={index}
 						card={card}
 						copies={
 							library.find(
@@ -32,7 +36,7 @@ export function CardList({
 							)?.copies
 						}
 						actionButtonCreator={actionButtonCreator}
-						showDescription={showDescription}
+						displayStyle={displayStyle}
 					/>
 				))}
 			</ul>

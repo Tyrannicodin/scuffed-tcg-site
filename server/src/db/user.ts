@@ -3,6 +3,7 @@ import {User, userDefs} from '../../../common/models/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 import {pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
+import {DeckT, DeckWithPartialCardT} from '../../../common/types/deck'
 
 export async function createUser(
 	username: string,
@@ -85,12 +86,21 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 			[uuid]
 		)
 
+		const deckQuery = await pool.query(
+			sql`
+				SELECT * from decks LEFT JOIN deck_cards on (decks.deck_code = deck_cards.deck_code)
+				WHERE decks.user_id = $1;
+			`,
+			[uuid]
+		)
+
 		if (!result.rowCount) {
 			return null
 		}
 
 		const library: Array<PartialCardWithCopiesT> = []
 		const purchases: Array<PastPurchasesT> = []
+		const decks: Array<DeckWithPartialCardT> = []
 
 		result.rows.forEach((row: any) => {
 			const partialCard: PartialCardWithCopiesT = {
@@ -117,6 +127,38 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 			purchases.push(purchase)
 		})
 
+		deckQuery.rows.forEach((row: any) => {
+			const previousDeck = decks.find((deck) => deck.id === row.deck_code)
+			if (previousDeck !== undefined) {
+				previousDeck.cards.push({
+					name: row.card_name,
+					rarity: row.rarity,
+				})
+				return
+			}
+			if (!row.card_name) {
+				const newDeck: DeckWithPartialCardT = {
+					name: row.deck_name,
+					id: row.deck_code,
+					cards: [],
+				}
+				decks.push(newDeck)
+				return
+			}
+			const newDeck: DeckWithPartialCardT = {
+				name: row.deck_name,
+				id: row.deck_code,
+				cards: [
+					{
+						name: row.card_name,
+						rarity: row.rarity,
+					},
+				],
+			}
+
+			decks.push(newDeck)
+		})
+
 		const userDef: userDefs = {
 			uuid: result.rows[0].user_id,
 			username: result.rows[0].username,
@@ -124,6 +166,7 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 			picture: result.rows[0].picture,
 			is_admin: result.rows[0].is_admin,
 			library: library,
+			decks: decks,
 			purchases: purchases,
 		}
 

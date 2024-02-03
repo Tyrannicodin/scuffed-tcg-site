@@ -133,7 +133,7 @@ export function Import({menuSetter}: Props) {
 									)
 								})}
 								library={importedCards}
-								showDescription={false}
+								displayStyle={'no-description'}
 							/>
 						</div>
 					</div>

@@ -21,7 +21,11 @@ export const PackModal = ({setOpen, onClose}: Props) => {
 					<AlertDialog.Title className={css.AlertDialogTitle}>Roll results</AlertDialog.Title>
 					<AlertDialog.Description asChild className={css.AlertDialogDescription}>
 						<div className={css.cardListBox}>
-							<CardList children={lastRolledcards} showDescription={false} library={library} />
+							<CardList
+								children={lastRolledcards}
+								displayStyle={'no-description'}
+								library={library}
+							/>
 						</div>
 					</AlertDialog.Description>
 					<div className={css.buttonContainer}>

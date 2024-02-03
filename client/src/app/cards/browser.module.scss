@@ -7,3 +7,15 @@
 .searchBar {
 	padding: 1vh;
 }
+
+.deckBuilder {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+.deckBuilderCards {
+	height: 80%;
+	flex-grow: 1;
+}

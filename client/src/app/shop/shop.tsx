@@ -152,7 +152,7 @@ export function Shop({menuSetter}: Props) {
 					</div>
 					<CardList
 						children={hermitCards.sort((a, b) => cardSort(a, b))}
-						showDescription={false}
+						displayStyle={'no-description'}
 						actionButtonCreator={purchaseButtonCreator}
 						library={library}
 					/>
@@ -161,7 +161,7 @@ export function Shop({menuSetter}: Props) {
 					</div>
 					<CardList
 						children={effectCards.sort((a, b) => cardSort(a, b))}
-						showDescription={false}
+						displayStyle={'no-description'}
 						actionButtonCreator={purchaseButtonCreator}
 						library={library}
 					/>

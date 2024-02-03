@@ -2,8 +2,23 @@ import {Uuid} from '../../../common/types/user'
 import {PartialCardT, RarityT} from '../../../common/types/cards'
 import {pool, sql} from './db'
 
-export async function createDeck(
-	user_id: Uuid,
+export async function addDeckToUser(uuid: string, name: string): Promise<string> {
+	try {
+		const code = await pool.query(
+			sql`
+				INSERT INTO decks (user_id,deck_name) VALUES ($1,$2) RETURNING deck_code;
+			`,
+			[uuid, name]
+		)
+		return code.rows[0].deck_code
+	} catch (err) {
+		console.log(err)
+		return 'failure'
+	}
+}
+
+export async function modifyDeck(
+	deck_code: string,
 	deck_name: string,
 	cards: Array<PartialCardT>
 ): Promise<string> {
@@ -21,21 +36,22 @@ export async function createDeck(
 	})
 
 	try {
-		const result = await pool.query(
+		await pool.query(
 			sql`
-				INSERT INTO decks (user_id,deck_name) VALUES ($1, $2) RETURNING deck_code
+				UPDATE decks SET deck_name = $2 WHERE deck_code = $1;
 			`,
-			[user_id, deck_name]
+			[deck_code, deck_name]
 		)
-
-		if (!result.rows) return 'failure'
-
-		const deck_code = result.rows[0].deck_code
-
+		await pool.query(
+			sql`
+				DELETE FROM deck_cards WHERE deck_code = $1;
+			`,
+			[deck_code]
+		)
 		await pool.query(
 			sql`
 				INSERT INTO deck_cards (deck_code,card_name,rarity) SELECT * FROM UNNEST (
-					$1::uuid[],
+					$1::text[],
 					$2::text[],
 					$3::text[]
 				)

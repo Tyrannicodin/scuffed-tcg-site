@@ -28,9 +28,9 @@ export function Dropdown({options, id, defaultValue, action}: Props) {
 							return (
 								<Select.Group>
 									<Select.Label className={css.groupName}>{group.group}</Select.Label>
-									{group.value.map((option) => {
+									{group.value.map((option, item_id) => {
 										return (
-											<Select.Item className={css.menuItem} value={option}>
+											<Select.Item key={item_id} className={css.menuItem} value={option}>
 												<Select.ItemText>{option}</Select.ItemText>
 											</Select.Item>
 										)

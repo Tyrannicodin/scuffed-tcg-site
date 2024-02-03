@@ -10,6 +10,8 @@ $spacing: 0.6vh;
 	scroll-behavior: smooth;
 	scrollbar-color: #ffffff;
 	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
 }
 
 .cardList {
@@ -20,4 +22,10 @@ $spacing: 0.6vh;
 	align-items: center;
 	row-gap: $spacing;
 	padding: $spacing * 2;
+	flex-grow: 1;
+}
+
+.utilityButtons {
+	display: flex;
+	flex-direction: row;
 }

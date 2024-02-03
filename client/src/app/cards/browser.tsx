@@ -1,25 +1,39 @@
 import CardList from 'components/card-list'
-import {getCards, getLibrary} from 'logic/cards/cards-selectors'
-import {useSelector} from 'react-redux'
+import {getCards, getDecks, getLibrary} from 'logic/cards/cards-selectors'
+import {useDispatch, useSelector} from 'react-redux'
 import css from './browser.module.scss'
 import {useState} from 'react'
 import {HermitCard} from 'common/models/hermit-card'
 import {getFilters} from 'common/functions/get-filters'
 import Section from 'components/flex-section'
 import TextFilter from 'components/text-filter'
+import DeckList from 'components/deck-list'
+import {DeckT} from 'common/types/deck'
+import {getFullCardsFromPartial} from 'common/functions/daily-shop'
+import {Card} from 'common/models/card'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'browser') => void
 }
 
 export function CardBrowser({menuSetter}: Props) {
+	const dispatch = useDispatch()
 	const cards = useSelector(getCards)
 	const library = useSelector(getLibrary)
+	const decks = useSelector(getDecks).map((deck) => {
+		const newDeck: DeckT = {
+			name: deck.name,
+			id: deck.id,
+			cards: getFullCardsFromPartial(deck.cards, cards),
+		}
+		return newDeck
+	})
 	const [expansionFilter, setExpansionFilter] = useState('')
 	const [rarityFilter, setRarityFilter] = useState('')
 	const [typeFilter, setTypeFilter] = useState('')
 	const [tokenFilter, setTokenFilter] = useState('')
 	const [updateFilter, setUpdateFilter] = useState('')
+	const [currentDeck, setCurrentDeck] = useState<DeckT | null>(null)
 
 	const filterOptions = getFilters(cards)
 
@@ -51,6 +65,59 @@ export function CardBrowser({menuSetter}: Props) {
 
 		return true
 	})
+
+	const onDeckCreate = () => {
+		dispatch({
+			type: 'CREATE_DECK',
+			payload: {
+				name: 'New Deck',
+			},
+		})
+		return null
+	}
+
+	const onDeckSave = () => {
+		if (!currentDeck) return
+		dispatch({
+			type: 'MODIFY_DECK',
+			payload: {
+				name: currentDeck.name,
+				deck_code: currentDeck.id,
+				cards: currentDeck.cards,
+			},
+		})
+		setCurrentDeck(null)
+		return null
+	}
+
+	const onDeckImport = () => {
+		return null
+	}
+
+	const onDeckSelect = (deck: DeckT) => {
+		setCurrentDeck(deck)
+	}
+
+	const onCardClick = (card: Card, key: number) => {
+		if (!currentDeck) return
+		const newDeck: DeckT = {
+			name: currentDeck.name,
+			id: currentDeck.id,
+			cards: [...currentDeck.cards, card],
+		}
+		setCurrentDeck(newDeck)
+	}
+
+	const onDeckCardClick = (card: Card, key: number) => {
+		if (!currentDeck) return
+		currentDeck.cards.splice(key, 1)
+		const newDeck: DeckT = {
+			name: currentDeck.name,
+			id: currentDeck.id,
+			cards: currentDeck.cards,
+		}
+		setCurrentDeck(newDeck)
+	}
 
 	return (
 		<main className={css.main}>
@@ -101,10 +168,50 @@ export function CardBrowser({menuSetter}: Props) {
 					placeholder="Search cards..."
 					onChange={(e) => setFilter(e.target.value)}
 				></input>
-				<CardList children={filteredCards} showDescription={true} library={library} />
+				<CardList
+					children={filteredCards}
+					displayStyle={'full'}
+					library={library}
+					onClick={onCardClick}
+				/>
 			</Section>
 			<Section width={25}>
-				<div>Future place of the deck builder</div>
+				{currentDeck === null ? (
+					<DeckList
+						children={decks}
+						onDeckCreate={onDeckCreate}
+						onDeckImport={onDeckImport}
+						onDeckSelect={onDeckSelect}
+					/>
+				) : (
+					<div className={css.deckBuilder}>
+						<button onClick={() => setCurrentDeck(null)}>Back</button>
+						<input
+							className={css.searchBar}
+							value={currentDeck.name}
+							onChange={(e) => {
+								const newDeck: DeckT = {
+									name: e.target.value,
+									id: currentDeck.id,
+									cards: currentDeck.cards,
+								}
+								setCurrentDeck(newDeck)
+							}}
+						></input>
+						<div>
+							<span>{currentDeck.cards.length}/42 Cards</span>
+						</div>
+						<div className={css.deckBuilderCards}>
+							<CardList
+								children={currentDeck ? getFullCardsFromPartial(currentDeck.cards, cards) : []}
+								displayStyle={'mini'}
+								library={library}
+								onClick={onDeckCardClick}
+							/>
+						</div>
+						<button onClick={() => onDeckSave()}>Save</button>
+					</div>
+				)}
 			</Section>
 		</main>
 	)
