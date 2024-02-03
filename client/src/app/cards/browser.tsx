@@ -11,6 +11,7 @@ import DeckList from 'components/deck-list'
 import {DeckT} from 'common/types/deck'
 import {getFullCardsFromPartial} from 'common/functions/daily-shop'
 import {Card} from 'common/models/card'
+import {ImportModal} from 'components/modals'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'browser') => void
@@ -39,6 +40,8 @@ export function CardBrowser({menuSetter}: Props) {
 
 	const [filter, setFilter] = useState<string>('')
 	const [showOnlyOwned, setShowOnlyOwned] = useState<boolean>(false)
+
+	const [showImportModal, setShowImportModal] = useState<boolean>(false)
 
 	cards.sort((a, b) => {
 		return a.name.localeCompare(b.name)
@@ -87,11 +90,10 @@ export function CardBrowser({menuSetter}: Props) {
 			},
 		})
 		setCurrentDeck(null)
-		return null
 	}
 
 	const onDeckImport = () => {
-		return null
+		setShowImportModal(true)
 	}
 
 	const onDeckSelect = (deck: DeckT) => {
@@ -120,99 +122,102 @@ export function CardBrowser({menuSetter}: Props) {
 	}
 
 	return (
-		<main className={css.main}>
-			<Section width={15}>
-				<button className={css.backButton} onClick={() => menuSetter('mainMenu')}>
-					Back
-				</button>
-				<div>Filters</div>
-				<TextFilter
-					name="Expansion"
-					filterOptions={filterOptions.expansions}
-					defaultFilter=""
-					setFilter={setExpansionFilter}
-				/>
-				<TextFilter
-					name="Type"
-					filterOptions={filterOptions.types}
-					defaultFilter=""
-					setFilter={setTypeFilter}
-				/>
-				<TextFilter
-					name="Rarity"
-					filterOptions={filterOptions.rarities}
-					defaultFilter=""
-					setFilter={setRarityFilter}
-				/>
-				<TextFilter
-					name="Token"
-					filterOptions={filterOptions.tokens}
-					defaultFilter=""
-					setFilter={setTokenFilter}
-				/>
-				<TextFilter
-					name="Update"
-					filterOptions={filterOptions.updates}
-					defaultFilter=""
-					setFilter={setUpdateFilter}
-				/>
-				<div>
-					Show only my cards{' '}
-					<input type="checkbox" onChange={(e) => setShowOnlyOwned(e.target.checked)}></input>
-				</div>
-			</Section>
-			<Section width={60}>
-				<input
-					className={css.searchBar}
-					value={filter}
-					placeholder="Search cards..."
-					onChange={(e) => setFilter(e.target.value)}
-				></input>
-				<CardList
-					children={filteredCards}
-					displayStyle={'full'}
-					library={library}
-					onClick={onCardClick}
-				/>
-			</Section>
-			<Section width={25}>
-				{currentDeck === null ? (
-					<DeckList
-						children={decks}
-						onDeckCreate={onDeckCreate}
-						onDeckImport={onDeckImport}
-						onDeckSelect={onDeckSelect}
+		<>
+			<ImportModal setOpen={showImportModal} onClose={() => setShowImportModal(!showImportModal)} />
+			<main className={css.main}>
+				<Section width={15}>
+					<button className={css.backButton} onClick={() => menuSetter('mainMenu')}>
+						Back
+					</button>
+					<div>Filters</div>
+					<TextFilter
+						name="Expansion"
+						filterOptions={filterOptions.expansions}
+						defaultFilter=""
+						setFilter={setExpansionFilter}
 					/>
-				) : (
-					<div className={css.deckBuilder}>
-						<button onClick={() => setCurrentDeck(null)}>Back</button>
-						<input
-							className={css.searchBar}
-							value={currentDeck.name}
-							onChange={(e) => {
-								const newDeck: DeckT = {
-									name: e.target.value,
-									id: currentDeck.id,
-									cards: currentDeck.cards,
-								}
-								setCurrentDeck(newDeck)
-							}}
-						></input>
-						<div>
-							<span>{currentDeck.cards.length}/42 Cards</span>
-						</div>
-						<div className={css.deckBuilderCards}>
-							<CardList
-								children={currentDeck ? getFullCardsFromPartial(currentDeck.cards, cards) : []}
-								displayStyle={'mini'}
-								library={library}
-								onClick={onDeckCardClick}
-							/>
-						</div>
-						<button onClick={() => onDeckSave()}>Save</button>
+					<TextFilter
+						name="Type"
+						filterOptions={filterOptions.types}
+						defaultFilter=""
+						setFilter={setTypeFilter}
+					/>
+					<TextFilter
+						name="Rarity"
+						filterOptions={filterOptions.rarities}
+						defaultFilter=""
+						setFilter={setRarityFilter}
+					/>
+					<TextFilter
+						name="Token"
+						filterOptions={filterOptions.tokens}
+						defaultFilter=""
+						setFilter={setTokenFilter}
+					/>
+					<TextFilter
+						name="Update"
+						filterOptions={filterOptions.updates}
+						defaultFilter=""
+						setFilter={setUpdateFilter}
+					/>
+					<div>
+						Show only my cards{' '}
+						<input type="checkbox" onChange={(e) => setShowOnlyOwned(e.target.checked)}></input>
 					</div>
-				)}
-			</Section>
-		</main>
+				</Section>
+				<Section width={60}>
+					<input
+						className={css.searchBar}
+						value={filter}
+						placeholder="Search cards..."
+						onChange={(e) => setFilter(e.target.value)}
+					></input>
+					<CardList
+						children={filteredCards}
+						displayStyle={'full'}
+						library={library}
+						onClick={onCardClick}
+					/>
+				</Section>
+				<Section width={25}>
+					{currentDeck === null ? (
+						<DeckList
+							children={decks}
+							onDeckCreate={onDeckCreate}
+							onDeckImport={onDeckImport}
+							onDeckSelect={onDeckSelect}
+						/>
+					) : (
+						<div className={css.deckBuilder}>
+							<button onClick={() => setCurrentDeck(null)}>Back</button>
+							<input
+								className={css.searchBar}
+								value={currentDeck.name}
+								onChange={(e) => {
+									const newDeck: DeckT = {
+										name: e.target.value,
+										id: currentDeck.id,
+										cards: currentDeck.cards,
+									}
+									setCurrentDeck(newDeck)
+								}}
+							></input>
+							<div>
+								<span>{currentDeck.cards.length}/42 Cards</span>
+							</div>
+							<div className={css.deckBuilderCards}>
+								<CardList
+									children={currentDeck ? getFullCardsFromPartial(currentDeck.cards, cards) : []}
+									displayStyle={'mini'}
+									library={library}
+									onClick={onDeckCardClick}
+								/>
+							</div>
+							<button onClick={() => onDeckSave()}>Save</button>
+						</div>
+					)}
+				</Section>
+			</main>
+		</>
 	)
 }

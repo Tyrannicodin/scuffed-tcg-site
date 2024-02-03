@@ -91,13 +91,29 @@
 	flex-direction: column;
 }
 
-.list_button {
+.listButton {
 	width: 5vw;
 	margin-left: $spacing;
 }
 
-.cancel_button {
+.cancelButton {
 	background: linear-gradient(red 85%, #470000 15%);
+}
+
+.buttonContainer {
+	display: flex;
+	padding: 1rem;
+	flex-direction: row;
+	gap: 0.25rem;
+	justify-content: center;
+	width: 100%;
+	box-shadow:
+		inset 0 2px 0 0 var(--gray-400),
+		inset 0 -2px 0 0 var(--gray-700);
+
+	button {
+		flex-grow: 1;
+	}
 }
 
 @keyframes overlayShow {

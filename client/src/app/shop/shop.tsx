@@ -13,7 +13,7 @@ import {Card} from 'common/models/card'
 import {PACKS} from '../../../../common/packs'
 import {Pack} from 'common/models/pack'
 import PackList from 'components/pack-list'
-import PackModal from 'components/shop-modals'
+import {PackModal} from 'components/modals/'
 import {PackOptionsT, PartialCardT} from 'common/types/cards'
 import {
 	cardSort,
