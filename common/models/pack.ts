@@ -26,12 +26,15 @@ export class Pack {
 		this.maxFilters = defs.maxFilters
 	}
 
+	private unrollableItems = ['Bdubs x2', 'Miner/Farm x2', 'Everything x2']
+
 	private getWeight(card: Card): number {
-		if (card.type === 'item') return 64
+		if (this.unrollableItems.includes(card.name)) return 0
 		if (card.rarity === 'Common') return 64
 		if (card.rarity === 'Rare') return 32
 		if (card.rarity === 'Ultra Rare') return 8
-		return 1
+		if (card.rarity === 'Mythic') return 1
+		return 0
 	}
 
 	private weightedRandom(cards: Array<Card>): Card {
