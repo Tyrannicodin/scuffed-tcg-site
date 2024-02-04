@@ -12,6 +12,7 @@ import {DeckT} from 'common/types/deck'
 import {getFullCardsFromPartial} from 'common/functions/daily-shop'
 import {Card} from 'common/models/card'
 import {ImportModal} from 'components/modals'
+import classNames from 'classnames'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'browser') => void
@@ -34,7 +35,18 @@ export function CardBrowser({menuSetter}: Props) {
 	const [typeFilter, setTypeFilter] = useState('')
 	const [tokenFilter, setTokenFilter] = useState('')
 	const [updateFilter, setUpdateFilter] = useState('')
+	const [categoryFilter, setCategoryFilter] = useState('')
+
 	const [currentDeck, setCurrentDeck] = useState<DeckT | null>(null)
+
+	const currentDeckCards = currentDeck ? getFullCardsFromPartial(currentDeck.cards, cards) : []
+	const currentDeckTokens = currentDeckCards.reduce(
+		(sum, card) => (sum += card.tokens ? card.tokens : 0),
+		0
+	)
+	const currentDeckHermitCards = currentDeckCards.filter((card) => card.type === 'hermit')
+	const currentDeckEffectCards = currentDeckCards.filter((card) => card.type === 'effect')
+	const currentDeckItemCards = currentDeckCards.filter((card) => card.type === 'item')
 
 	const filterOptions = getFilters(cards)
 
@@ -112,11 +124,16 @@ export function CardBrowser({menuSetter}: Props) {
 
 	const onDeckCardClick = (card: Card, key: number) => {
 		if (!currentDeck) return
-		currentDeck.cards.splice(key, 1)
+
+		const cardType = card.type
+		const thisTypeCards = currentDeckCards.filter((c) => c.type === cardType)
+		const otherTypeCards = currentDeckCards.filter((c) => c.type !== cardType)
+		thisTypeCards.splice(key, 1)
+
 		const newDeck: DeckT = {
 			name: currentDeck.name,
 			id: currentDeck.id,
-			cards: currentDeck.cards,
+			cards: [...thisTypeCards, ...otherTypeCards],
 		}
 		setCurrentDeck(newDeck)
 	}
@@ -129,7 +146,13 @@ export function CardBrowser({menuSetter}: Props) {
 					<button className={css.backButton} onClick={() => menuSetter('mainMenu')}>
 						Back
 					</button>
-					<div>Filters</div>
+					<div>Filters</div>\
+					<TextFilter
+						name="Category"
+						filterOptions={filterOptions.updates}
+						defaultFilter=""
+						setFilter={setUpdateFilter}
+					/>
 					<TextFilter
 						name="Expansion"
 						filterOptions={filterOptions.expansions}
@@ -165,7 +188,7 @@ export function CardBrowser({menuSetter}: Props) {
 						<input type="checkbox" onChange={(e) => setShowOnlyOwned(e.target.checked)}></input>
 					</div>
 				</Section>
-				<Section width={60}>
+				<Section width={55}>
 					<input
 						className={css.searchBar}
 						value={filter}
@@ -179,7 +202,7 @@ export function CardBrowser({menuSetter}: Props) {
 						onClick={onCardClick}
 					/>
 				</Section>
-				<Section width={25}>
+				<Section width={30}>
 					{currentDeck === null ? (
 						<DeckList
 							children={decks}
@@ -190,24 +213,46 @@ export function CardBrowser({menuSetter}: Props) {
 					) : (
 						<div className={css.deckBuilder}>
 							<button onClick={() => setCurrentDeck(null)}>Back</button>
-							<input
-								className={css.searchBar}
-								value={currentDeck.name}
-								onChange={(e) => {
-									const newDeck: DeckT = {
-										name: e.target.value,
-										id: currentDeck.id,
-										cards: currentDeck.cards,
-									}
-									setCurrentDeck(newDeck)
-								}}
-							></input>
-							<div>
-								<span>{currentDeck.cards.length}/42 Cards</span>
+							<div className={css.deckInfoBox}>
+								<div>Deck Name:</div>
+								<input
+									className={classNames(css.searchBar, css.deckNameInput)}
+									value={currentDeck.name}
+									onChange={(e) => {
+										const newDeck: DeckT = {
+											name: e.target.value,
+											id: currentDeck.id,
+											cards: currentDeck.cards,
+										}
+										setCurrentDeck(newDeck)
+									}}
+								></input>
+							</div>
+							<div className={css.shareButton}>
+								Share this deck: <b>{currentDeck.id.toUpperCase()}</b>
+							</div>
+							<div className={css.deckInfoBubbleBox}>
+								<div className={css.deckInfoBubble}>{currentDeckCards.length}/42 Cards</div>
+								<div className={css.deckInfoBubble}>{currentDeckTokens}/42 Tokens</div>
 							</div>
 							<div className={css.deckBuilderCards}>
+								<div className={css.cardTypeText}>Hermits ({currentDeckHermitCards.length})</div>
 								<CardList
-									children={currentDeck ? getFullCardsFromPartial(currentDeck.cards, cards) : []}
+									children={currentDeckHermitCards}
+									displayStyle={'mini'}
+									library={library}
+									onClick={onDeckCardClick}
+								/>
+								<div className={css.cardTypeText}>Effects ({currentDeckEffectCards.length})</div>
+								<CardList
+									children={currentDeckEffectCards}
+									displayStyle={'mini'}
+									library={library}
+									onClick={onDeckCardClick}
+								/>
+								<div className={css.cardTypeText}>Items ({currentDeckItemCards.length})</div>
+								<CardList
+									children={currentDeckItemCards}
 									displayStyle={'mini'}
 									library={library}
 									onClick={onDeckCardClick}

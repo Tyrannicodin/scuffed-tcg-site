@@ -4,7 +4,6 @@ $spacing: 0.6vh;
 
 .outerContainer {
 	width: 100%;
-	height: 100%;
 	display: flex;
 	justify-content: center;
 	scroll-behavior: smooth;
@@ -14,9 +13,15 @@ $spacing: 0.6vh;
 	flex-direction: column;
 }
 
-.cardList {
+.deckListSection {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.deckList {
 	width: 100%;
-	height: fit-content;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;

@@ -11,12 +11,15 @@ type Props = {
 
 export function DeckList({children, onDeckCreate, onDeckImport, onDeckSelect}: Props) {
 	return (
-		<div className={css.outerContainer} style={{overflowY: 'scroll'}}>
-			<ul className={css.cardList}>
-				{children.map((deck, index) => (
-					<DeckInfo key={index} deck={deck} onDeckSelect={onDeckSelect} />
-				))}
-			</ul>
+		<div className={css.deckListSection}>
+			<div>My Decks</div>
+			<div className={css.outerContainer} style={{overflowY: 'scroll'}}>
+				<ul className={css.deckList}>
+					{children.map((deck, index) => (
+						<DeckInfo key={index} deck={deck} onDeckSelect={onDeckSelect} />
+					))}
+				</ul>
+			</div>
 			<div className={css.utilityButtons}>
 				<button onClick={() => onDeckCreate()}>New deck</button>
 				<button onClick={() => onDeckImport()}>Import deck</button>

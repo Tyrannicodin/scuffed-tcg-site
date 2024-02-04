@@ -6,7 +6,7 @@ import {ShopT} from '../types/shop'
 
 export function getFormattedDate() {
 	const date = new Date()
-	return date.getUTCFullYear() * 10000 + date.getUTCMonth() * 100 + date.getUTCDay()
+	return date.getUTCFullYear() * 10000 + date.getUTCMonth() * 100 + date.getUTCDate()
 }
 
 export function getFullCardsFromPartial(partialCard: Array<PartialCardT>, fullCards: Array<Card>) {

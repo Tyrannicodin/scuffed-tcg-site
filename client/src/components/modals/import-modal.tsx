@@ -17,7 +17,7 @@ export const ImportModal = ({setOpen, onClose}: Props) => {
 		dispatch({
 			type: 'IMPORT_DECK',
 			payload: {
-				id: code,
+				id: code.toLowerCase(),
 			},
 		})
 	}

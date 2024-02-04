@@ -1,6 +1,7 @@
 import {Card} from 'common/models/card'
 import {EffectCard} from 'common/models/effect-card'
 import {HermitCard} from 'common/models/hermit-card'
+import {ItemCard} from 'common/models/item-card'
 import css from './card.module.scss'
 import {HermitAttackTypeT} from 'common/types/cards'
 import classNames from 'classnames'
@@ -69,7 +70,9 @@ export function CardInfo({card, copies, displayStyle, id, onClick, actionButtonC
 				</div>
 			)
 		} else if (card.type === 'item') {
-			return <p>Counts as 2 items.</p>
+			if (card.name.includes('x2'))
+				return <p>Counts as 2 {(card as ItemCard).hermitType.name} items.</p>
+			return <p>Counts as a {(card as ItemCard).hermitType.name} item.</p>
 		}
 		return
 	}
@@ -88,7 +91,7 @@ export function CardInfo({card, copies, displayStyle, id, onClick, actionButtonC
 				>
 					<div>
 						{card.name}
-						{getType(card)}{' '}
+						{getType(card)} {getCopies(copies)}
 					</div>
 				</div>
 			</div>
