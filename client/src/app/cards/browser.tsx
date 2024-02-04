@@ -77,6 +77,7 @@ export function CardBrowser({menuSetter}: Props) {
 		if (rarityFilter && card.rarity !== rarityFilter) return false
 		if (tokenFilter && card.tokens?.toString() !== tokenFilter) return false
 		if (updateFilter && card.update.toString() !== updateFilter) return false
+		if (categoryFilter && card.type !== categoryFilter.toLocaleLowerCase()) return false
 
 		return true
 	})
@@ -146,12 +147,12 @@ export function CardBrowser({menuSetter}: Props) {
 					<button className={css.backButton} onClick={() => menuSetter('mainMenu')}>
 						Back
 					</button>
-					<div>Filters</div>\
+					<div>Filters</div>
 					<TextFilter
 						name="Category"
-						filterOptions={filterOptions.updates}
+						filterOptions={filterOptions.categories}
 						defaultFilter=""
-						setFilter={setUpdateFilter}
+						setFilter={setCategoryFilter}
 					/>
 					<TextFilter
 						name="Expansion"
