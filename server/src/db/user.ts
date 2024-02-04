@@ -5,6 +5,7 @@ import {pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
 import { privateDecrypt, publicEncrypt, randomBytes } from 'crypto'
 import {DBKEY} from '../../../common/config'
+import { authenticator, totp } from 'otplib'
 
 export async function createUser(
 	username: string,
@@ -32,12 +33,8 @@ export async function createUser(
                     'false'
                 );
             `,
-			[hash, username, publicEncrypt(DBKEY, randomBytes(30))]
+			[hash, username, publicEncrypt(DBKEY, Buffer.from(authenticator.generateSecret(), 'utf-8'))]
 		)
-		/**
-		 * 30 random bytes is arbitrary, I chose it as it's enough bytes to have lots of combinations
-		 * whilst not being ridiculous (and it also has no padding as a base32 string)
-		**/
 
 		return {result: 'success'}
 	} catch (err) {
@@ -137,7 +134,7 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 	return null
 }
 
-export async function selectUserTokenSecret(user:User): Promise<Buffer> {
+export async function selectUserTokenSecret(user:User): Promise<string> {
 	try {
 		const result = await pool.query(
 			sql`
@@ -146,11 +143,11 @@ export async function selectUserTokenSecret(user:User): Promise<Buffer> {
 			[user.uuid]
 		)
 		
-		if (!result || result.rows.length != 1) return Buffer.from([])
-		return privateDecrypt(DBKEY, result.rows[0].token_secret)
+		if (!result || result.rows.length != 1) return ''
+		return privateDecrypt(DBKEY, result.rows[0].token_secret).toString('utf-8')
 	} catch (err) {
 		console.log(err)
-		return Buffer.from([])
+		return ''
 	}
 }
 

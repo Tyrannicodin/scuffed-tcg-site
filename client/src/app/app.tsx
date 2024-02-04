@@ -1,24 +1,33 @@
 import Login from './login'
 import css from './app.module.scss'
 import {useSelector} from 'react-redux'
-import {getAwaitingCode, getUserSecret} from 'logic/session/session-selectors'
+import {getMessage, getShowOtp, getUser} from 'logic/session/session-selectors'
 import MainMenu from './menu'
 import {useState} from 'react'
 import CardBrowser from './cards'
 import Shop from './shop'
 import Import from './import'
 import Trading from './trading'
+import OtpEntry from 'components/otp-entry'
 
 export function App() {
-	const awaitingCode = useSelector(getAwaitingCode)
-	const userSecret = useSelector(getUserSecret)
+	const showOtp = useSelector(getShowOtp)
+	const user = useSelector(getUser)
+	const message = useSelector(getMessage)
 
 	const [menuSection, setMenuSection] = useState<
 		'mainMenu' | 'browser' | 'shop' | 'trading' | 'import'
 	>('mainMenu')
 
 	const router = () => {
-		if (!awaitingCode && userSecret) {
+		if (showOtp) {
+			return <>
+				<h3 className={css.text_info}>Enter OTP</h3>
+				<OtpEntry>6</OtpEntry>
+				<p id={css.message}>{message}</p>
+			</>
+		}
+		if (user?.authed && user?.secret) {
 			switch (menuSection) {
 				case 'browser':
 					return <CardBrowser menuSetter={setMenuSection} />

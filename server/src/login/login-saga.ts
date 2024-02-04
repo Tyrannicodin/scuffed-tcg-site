@@ -20,7 +20,7 @@ import {User} from '../../../common/models/user'
 import {addUser, updateUserState} from './login-actions'
 import {getUsers} from './login-selectors'
 import {Socket} from 'socket.io'
-import {totp} from 'otplib'
+import {authenticator} from 'otplib'
 import { CONFIG } from '../../../common/config'
 import {base32Encode} from '@ctrl/ts-base32'
 import { UnknownAction } from 'redux'
@@ -156,17 +156,17 @@ function* signUpSaga(action: any) {
 		payload: user,
 	})
 
-	const tokenBytes: Buffer = yield call(selectUserTokenSecret, user)
-	const tokenSecret = totp.keyuri(user.username, CONFIG.otpIssuer, base32Encode(tokenBytes))
+	const tokenSecret: string = yield call(selectUserTokenSecret, user)
+	const tokenUri = authenticator.keyuri(user.username, CONFIG.otpIssuer, tokenSecret)
 
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
-		payload: {user, tokenSecret},
+		payload: {user, tokenSecret: tokenUri},
 	})
 
 	yield take('CODE_READY')
 
-	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(user, base32Encode(tokenBytes), action.socket)
+	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(user, tokenSecret, action.socket)
 
 	if (verifyResult != 'success') {
 		if (verifyResult === 'failure') {
@@ -208,14 +208,14 @@ function* verificationLoop(user: User, tokenSecret: string, socket: Socket) {
 	while (true) {
 		const token: UnknownAction = yield take('OTP_SUBMIT')
 		if (!token.user || (token.user as User).uuid != user.uuid) continue
-		const payload = token.payload as {token: string}
-		if (!payload) return
-		if (totp.check(payload.token, tokenSecret)) {
+		const payload = token.payload as {code: string}
+		if (!payload) continue
+		if (authenticator.check(payload.code, tokenSecret)) {
 			socket.emit('OTP_SUCCESS', {
 				type: 'OTP_SUCCESS',
 				payload: {}
 			})
-			return
+			return true
 		} else {
 			socket.emit('OTP_FAIL', {
 				type: 'OTP_FAIL',

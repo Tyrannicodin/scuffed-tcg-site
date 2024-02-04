@@ -24,3 +24,13 @@ export const updateUserState = (user: User) => ({
 	type: 'UPDATE_USER' as const,
 	payload: user,
 })
+
+export const otpStart = () => ({
+	type: 'OTP_START' as const,
+	payload: {}
+})
+
+export const otpEnd = () => ({
+	type: 'OTP_END' as const,
+	payload: {}
+})

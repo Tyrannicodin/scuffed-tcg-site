@@ -21,8 +21,8 @@ export const getMessage = (state: RootState): string => {
 	return getSession(state).message
 }
 
-export const getAwaitingCode = (state: RootState): boolean => {
-	return getSession(state).awaitingCode
+export const getShowOtp = (state: RootState): boolean => {
+	return getSession(state).showOtp
 }
 
 export const getTokenSecret = (state: RootState): string => {

@@ -1,8 +1,8 @@
 import {ServerMessage, receiveMsg, sendMsg} from 'logic/socket/socket-saga'
 import {call, delay, put, race, take} from 'redux-saga/effects'
 import socket from 'socket'
-import {connect, disconnect, onboarding, setMessage, updateUserState} from './session-actions'
-import {all, fork, takeEvery} from 'typed-redux-saga'
+import {connect, disconnect, onboarding, otpEnd, otpStart, setMessage, updateUserState} from './session-actions'
+import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {
 	getPasswordError,
@@ -47,47 +47,50 @@ function listen(event: string, action: (payload: any) => any) {
 	return inner
 }
 
-function* otpSaga(action: any) {
+function* otpSaga() {
+	yield receiveMsg('OTP_START')
+	yield put(otpStart())
+
 	while (true) {
 		const {code, failure} = yield race({
 			code: take('CODE_SUBMIT'),
-			failure: call(receiveMsg, 'AUTH_FAIL'),
+			failure: call(receiveMsg, 'OTP_END'),
 		})
 		if (failure) {
-			yield put(disconnect('Signup failure: One time password timed out'))
-			return
+			console.log(failure)
+			yield put(otpEnd())
+			return failure
 		} else if (!code.payload) {
 			continue
 		}
 
 		sendMsg({
-			type: 'VERIFY',
+			type: 'OTP_SUBMIT',
 			payload: {
-				code: code.payload,
+				code: code.payload.code,
 			},
 		})
 
-		const {login, failOnSend} = yield race({
-			login: call(receiveMsg, 'LOGGED_IN'),
-			failOnSend: call(receiveMsg, 'AUTH_FAIL'), //Low chance happening then, but possible
-			timeout: delay(2500), //2.5s
+		const {success, failOnSend} = yield race({
+			success: call(receiveMsg, 'OTP_SUCCESS'),
+			failure: call(receiveMsg, 'OTP_FAIL'),
+			failOnSend: call(receiveMsg, 'OTP_END'), //Low chance happening then, but possible
 		})
 
-		if (login) {
-			yield onLogin(login.payload, saveSecret)
-		} else if (failOnSend) {
-			yield put(disconnect('One time password timed out'))
-		} else {
+		if (success) {
+			yield put(otpEnd())
+			return 'success'
+		} else if (failure) {
 			yield put(setMessage('Incorrect one time password, please double check it'))
-			continue
+		} else {
+			yield put(setMessage('OTP timed out'))
+			yield put(otpEnd())
+			return 'failure'
 		}
-		return
 	}
 }
 
 export function* loginSaga() {
-	yield* takeEvery('OTP_START', otpSaga)
-
 	if (localStorage.getItem('secret')) {
 		socket.connect()
 		socket.emit('LOGIN', {
@@ -151,6 +154,7 @@ export function* loginSaga() {
 		yield onLogin(login.payload, persistLogin)
 	} else if (onboard) {
 		yield put(onboarding(onboard.payload))
+		yield otpSaga()
 	} else if (loginFail || signupFail) {
 		yield put(disconnect((loginFail || signupFail).payload.message))
 	} else if (timeout) {
