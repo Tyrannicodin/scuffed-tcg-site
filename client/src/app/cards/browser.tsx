@@ -13,6 +13,7 @@ import {getFullCardsFromPartial} from 'common/functions/daily-shop'
 import {Card} from 'common/models/card'
 import {ImportModal} from 'components/modals'
 import classNames from 'classnames'
+import {CopyToClipboard} from 'react-copy-to-clipboard'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'browser') => void
@@ -229,9 +230,6 @@ export function CardBrowser({menuSetter}: Props) {
 									}}
 								></input>
 							</div>
-							<div className={css.shareButton}>
-								Share this deck: <b>{currentDeck.id.toUpperCase()}</b>
-							</div>
 							<div className={css.deckInfoBubbleBox}>
 								<div className={css.deckInfoBubble}>{currentDeckCards.length}/42 Cards</div>
 								<div className={css.deckInfoBubble}>{currentDeckTokens}/42 Tokens</div>
@@ -258,6 +256,23 @@ export function CardBrowser({menuSetter}: Props) {
 									library={library}
 									onClick={onDeckCardClick}
 								/>
+							</div>
+							<div className={css.deckInfoBubbleBox}>
+								<CopyToClipboard text={currentDeck.id.toUpperCase()}>
+									<button className={css.shareButton}>
+										Share this deck: <b>{currentDeck.id.toUpperCase()}</b>
+									</button>
+								</CopyToClipboard>
+								<CopyToClipboard
+									text={currentDeck.cards.reduce((sum, card, index) => {
+										return (sum +=
+											`${card.name}` +
+											(card.type !== 'item' ? ` (${card.rarity})` : '') +
+											(index < currentDeck.cards.length - 1 ? '\n' : ''))
+									}, '')}
+								>
+									<button className={css.shareButton}>Copy cards to clipboard</button>
+								</CopyToClipboard>
 							</div>
 							<button onClick={() => onDeckSave()}>Save</button>
 						</div>

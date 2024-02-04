@@ -95,7 +95,8 @@ export async function createTables() {
 			CREATE TABLE IF NOT EXISTS decks(
                 deck_code varchar(7) PRIMARY KEY DEFAULT substr(digest(random()::text, 'sha1')::text, 3, 7),
 				user_id uuid REFERENCES users(user_id),
-				deck_name varchar(255)
+				deck_name varchar(255),
+				deck_icon varchar(255)
             );
 			CREATE TABLE IF NOT EXISTS deck_cards(
                 deck_code varchar(7) REFERENCES decks(deck_code),

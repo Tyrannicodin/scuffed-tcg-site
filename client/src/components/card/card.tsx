@@ -18,12 +18,21 @@ type Props = {
 	card: Card
 	copies: number | undefined
 	displayStyle: 'full' | 'no-description' | 'mini'
-	onClick?: (card: Card, key: number) => void
 	id: number
+	validInDeck?: boolean
+	onClick?: (card: Card, key: number) => void
 	actionButtonCreator?: (card: Card) => JSX.Element
 }
 
-export function CardInfo({card, copies, displayStyle, id, onClick, actionButtonCreator}: Props) {
+export function CardInfo({
+	card,
+	copies,
+	displayStyle,
+	id,
+	validInDeck,
+	onClick,
+	actionButtonCreator,
+}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
 			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' =
@@ -86,12 +95,15 @@ export function CardInfo({card, copies, displayStyle, id, onClick, actionButtonC
 		return (
 			<div className={css.outer}>
 				<div
-					className={classNames(css.card, css.smallFont)}
+					className={classNames(css.card, css.smallFont, validInDeck ? null : css.invalid)}
 					onClick={() => onClick && onClick(card, id)}
 				>
 					<div>
-						{card.name}
-						{getType(card)} {getCopies(copies)}
+						<span className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>
+							{card.tokens}★
+						</span>{' '}
+						<span>{card.name}</span>
+						{getType(card)}
 					</div>
 				</div>
 			</div>
