@@ -57,9 +57,9 @@ function* otpSaga() {
 			failure: call(receiveMsg, 'OTP_END'),
 		})
 		if (failure) {
-			console.log(failure)
+			yield put(setMessage('OTP timed out'))
 			yield put(otpEnd())
-			return failure
+			return 'failure'
 		} else if (!code.payload) {
 			continue
 		}
@@ -71,16 +71,16 @@ function* otpSaga() {
 			},
 		})
 
-		const {success, failOnSend} = yield race({
+		const {success, incorrect} = yield race({
 			success: call(receiveMsg, 'OTP_SUCCESS'),
-			failure: call(receiveMsg, 'OTP_FAIL'),
+			incorrect: call(receiveMsg, 'OTP_FAIL'),
 			failOnSend: call(receiveMsg, 'OTP_END'), //Low chance happening then, but possible
 		})
 
 		if (success) {
 			yield put(otpEnd())
 			return 'success'
-		} else if (failure) {
+		} else if (incorrect) {
 			yield put(setMessage('Incorrect one time password, please double check it'))
 		} else {
 			yield put(setMessage('OTP timed out'))
@@ -154,7 +154,10 @@ export function* loginSaga() {
 		yield onLogin(login.payload, persistLogin)
 	} else if (onboard) {
 		yield put(onboarding(onboard.payload))
-		yield otpSaga()
+		const authResult: string = yield otpSaga()
+		if (authResult === 'failure') {
+			yield put(disconnect('OTP timed out'))
+		}
 	} else if (loginFail || signupFail) {
 		yield put(disconnect((loginFail || signupFail).payload.message))
 	} else if (timeout) {

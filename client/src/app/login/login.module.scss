@@ -38,7 +38,7 @@
 .flexAlign {
 	display: flex;
 	justify-content: center;
-	align-content: center;
+	align-items: center;
 	flex-direction: column;
 	flex-wrap: wrap;
 	text-align: center;
@@ -69,4 +69,8 @@
 .google_symbol {
 	font-family: 'Material Symbols';
 	font-weight: 700;
+}
+
+.verify_button {
+	width: 30%;
 }

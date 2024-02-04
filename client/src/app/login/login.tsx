@@ -47,7 +47,7 @@ export function Login() {
 			<div className={css.flexAlign}>
 				<h3>Scan to add to your authenticator app</h3>
 				<AuthDisplay />
-				<button onClick={() => sendMsg({type: 'CODE_READY', payload: {}})}>Verify account</button>
+				<button className={css.verify_button} onClick={() => sendMsg({type: 'CODE_READY', payload: {}})}>Verify account</button>
 			</div>
 		)
 	} else if (page === 'login') {

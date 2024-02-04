@@ -54,7 +54,8 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 		case 'OTP_START':
 			return {
 				...state,
-				showOtp: true
+				showOtp: true,
+				tokenSecret: '',
 			}
 		case 'OTP_END':
 			return {
