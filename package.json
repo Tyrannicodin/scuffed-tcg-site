@@ -21,7 +21,6 @@
     "client:preview": "vite preview --port 3002 client/"
   },
   "dependencies": {
-    "@ctrl/ts-base32": "^3.0.0",
     "@google-cloud/local-auth": "^3.0.1",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",

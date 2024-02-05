@@ -22,7 +22,6 @@ import {getUsers} from './login-selectors'
 import {Socket} from 'socket.io'
 import {authenticator} from 'otplib'
 import { CONFIG } from '../../../common/config'
-import {base32Encode} from '@ctrl/ts-base32'
 import { UnknownAction } from 'redux'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
