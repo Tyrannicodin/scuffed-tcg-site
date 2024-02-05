@@ -19,6 +19,10 @@ function userReducer(state = defaultState, action: UnknownAction): UsersState {
 		case 'ADD_USER':
 			const newUser = action.payload as User
 			if (!newUser.secret) return state
+			const oldUser = Object.values(state.users).find((user) => newUser.uuid===user.uuid)
+			if (oldUser) {
+				delete state.users[oldUser.secret]
+			}
 			state.users[newUser.secret] = newUser
 			return {
 				...state,

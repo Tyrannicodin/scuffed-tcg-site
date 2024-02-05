@@ -20,7 +20,6 @@ import {
 } from 'common/util/validation'
 import {User} from 'common/models/user'
 import {loadTrades} from 'logic/cards/cards-actions'
-import {UnknownAction} from 'redux'
 
 function* onLogin(user: User, saveSecret: boolean) {
 	if (saveSecret && user.secret) {
@@ -42,8 +41,6 @@ function* onLogin(user: User, saveSecret: boolean) {
 		fork(listen('UPDATE_USER', updateUserState)),
 		fork(listen('LOAD_TRADES', loadTrades)),
 	]) //Init rest of client logic
-
-	yield
 }
 
 function listen(event: string, action: (payload: any) => any) {
@@ -55,8 +52,6 @@ function listen(event: string, action: (payload: any) => any) {
 	}
 	return inner
 }
-
-function* resetPasswordSaga(action: UnknownAction) {}
 
 function* otpSaga() {
 	yield receiveMsg('OTP_START')
@@ -135,14 +130,14 @@ export function* loginSaga() {
 	const {
 		login: clientLogin,
 		signup: clientSignup,
-		reset,
+		otpLogin,
 	} = yield race({
 		login: take('LOGIN'),
 		signup: take('SIGNUP'),
-		reset: take('PASSWORD_RESET'),
+		otpLogin: take('OTP_LOGIN'),
 	})
 
-	const authPayload = (clientLogin || clientSignup).payload
+	const authPayload = (clientLogin || clientSignup || otpLogin).payload
 	const {persistLogin} = authPayload
 	const usernameValid = validateUsername(authPayload.username)
 	if (usernameValid !== 'success') {
@@ -165,12 +160,22 @@ export function* loginSaga() {
 			type: 'SIGNUP',
 			payload: clientSignup.payload,
 		})
-	} else if (reset) {
-		socket.emit('PASSWORD_RESET', {
-			payload: reset.payload,
+	} else if (otpLogin) {
+		socket.emit('OTP_LOGIN', {
+			type: 'OTP_LOGIN',
+			payload: otpLogin.payload,
 		})
+		const {setUser, loginFail} = yield race({
+			setUser: call(receiveMsg, 'TARGET_USER'),
+			loginFail: call(receiveMsg, 'FAIL_LOGIN'),
+		})
+		if (loginFail) {
+			yield put(disconnect(loginFail.payload.message))
+			return
+		} else {
+			yield put(connect(setUser.payload.user))
+		}
 		yield otpSaga()
-		yield put(disconnect(''))
 		return
 	}
 

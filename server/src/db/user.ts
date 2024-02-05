@@ -60,6 +60,24 @@ export async function selectUserUUID(username: string, hash: string): Promise<Uu
 	return null
 }
 
+export async function selectUserUUIDUnsecure(username: string): Promise<Uuid | null> {
+	try {
+		const uuid = await pool.query(
+			sql`
+                SELECT user_id FROM users WHERE username = $1;
+            `,
+			[username]
+		)
+
+		if (uuid.rowCount && uuid.rowCount > 0) {
+			return uuid.rows[0].user_id
+		}
+	} catch (err) {
+		console.log(err)
+	}
+	return null
+}
+
 export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 	try {
 		const result = await pool.query(
