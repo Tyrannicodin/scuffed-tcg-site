@@ -6,15 +6,18 @@ import {ShopT} from '../types/shop'
 
 export function getFormattedDate() {
 	const date = new Date()
-	return date.getUTCFullYear() * 10000 + date.getUTCMonth() * 100 + date.getUTCDay()
+	return date.getUTCFullYear() * 10000 + date.getUTCMonth() * 100 + date.getUTCDate()
 }
 
 export function getFullCardsFromPartial(partialCard: Array<PartialCardT>, fullCards: Array<Card>) {
-	return fullCards.filter((card) => {
-		return partialCard.some((subcard) => {
-			return card.name === subcard.name && card.rarity === subcard.rarity
-		})
+	const cards: Array<Card> = []
+	partialCard.forEach((card) => {
+		const search = fullCards.find(
+			(subcard) => card.name === subcard.name && card.rarity === subcard.rarity
+		)
+		if (search) cards.push(search)
 	})
+	return cards
 }
 
 export function getFullPackFromPartial(partialPack: Array<PartialPackT>) {

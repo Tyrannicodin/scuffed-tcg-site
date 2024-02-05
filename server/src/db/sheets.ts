@@ -94,6 +94,16 @@ export function generateItemCards(types: Set<string>) {
 	}
 
 	types.forEach((type) => {
+		itemCardMap.names.push(`${type}`)
+		itemCardMap.rarities.push('Free')
+		itemCardMap.expansions.push('Hermitcraft')
+		itemCardMap.updates.push(0)
+		itemCardMap.types.push('item')
+		itemCardMap.subtypes.push(type)
+		itemCardMap.tokens.push(0)
+	})
+
+	types.forEach((type) => {
 		itemCardMap.names.push(`${type} x2`)
 		itemCardMap.rarities.push('Rare')
 		itemCardMap.expansions.push('Hermitcraft')

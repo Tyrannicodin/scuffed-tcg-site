@@ -97,6 +97,18 @@ function* purchaseSaleSaga(action: UnknownAction) {
 	})
 }
 
+function* createDeckSaga(action: UnknownAction) {
+	sendMsg(action) //@TODO: Make better somehow
+}
+
+function* importDeckSaga(action: UnknownAction) {
+	sendMsg(action) //@TODO: Make better somehow
+}
+
+function* modifyDeckSaga(action: UnknownAction) {
+	sendMsg(action) //@TODO: Make better somehow
+}
+
 export default function* cardSaga() {
 	yield* takeEvery('GET_CARDS', newCardsSaga)
 	yield* takeEvery('GET_SHOP', shopUpdateSaga)
@@ -104,4 +116,7 @@ export default function* cardSaga() {
 	yield* takeEvery('GET_TRADES', getTradesSaga)
 	yield* takeEvery('CREATE_SALE', createSaleSaga)
 	yield* takeEvery('PURCHASE_SALE', purchaseSaleSaga)
+	yield* takeEvery('CREATE_DECK', createDeckSaga)
+	yield* takeEvery('IMPORT_DECK', importDeckSaga)
+	yield* takeEvery('MODIFY_DECK', modifyDeckSaga)
 }

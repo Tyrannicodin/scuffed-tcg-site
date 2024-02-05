@@ -71,6 +71,7 @@ export function PackInfo({pack, showDescription, discounted, actionButtonCreator
 						.fill('')
 						.map((element, index) => (
 							<Dropdown
+								key={index}
 								options={[
 									{group: 'Types', value: types},
 									{group: 'Expansions', value: expansions},

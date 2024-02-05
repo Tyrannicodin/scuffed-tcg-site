@@ -7,3 +7,61 @@
 .searchBar {
 	padding: 1vh;
 }
+
+.deckNameInput {
+	flex-grow: 1;
+}
+
+.deckBuilder {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+.deckBuilderCards {
+	height: 80%;
+	overflow: scroll;
+	flex-grow: 1;
+}
+
+.deckInfoBubbleBox {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+
+.deckInfoBox {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	gap: 1rem;
+	text-align: center;
+	align-items: center;
+}
+
+.deckInfoBubble {
+	padding: 0.5rem;
+	margin: 0.5rem;
+	background-color: #323232;
+	flex-grow: 1;
+	text-align: center;
+}
+
+.cardTypeText {
+	font-weight: bold;
+	padding: 0.2rem;
+}
+
+.shareButton {
+	align-self: center;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+	width: 100%;
+}
+
+.deckListInfo {
+	display: flex;
+	flex-direction: column;
+	height: 80%;
+}

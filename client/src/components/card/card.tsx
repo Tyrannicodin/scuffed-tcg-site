@@ -1,6 +1,7 @@
 import {Card} from 'common/models/card'
 import {EffectCard} from 'common/models/effect-card'
 import {HermitCard} from 'common/models/hermit-card'
+import {ItemCard} from 'common/models/item-card'
 import css from './card.module.scss'
 import {HermitAttackTypeT} from 'common/types/cards'
 import classNames from 'classnames'
@@ -16,11 +17,22 @@ const effectColors = {
 type Props = {
 	card: Card
 	copies: number | undefined
-	showDescription: boolean
+	displayStyle: 'full' | 'no-description' | 'mini'
+	id: number
+	validInDeck?: boolean
+	onClick?: (card: Card, key: number) => void
 	actionButtonCreator?: (card: Card) => JSX.Element
 }
 
-export function CardInfo({card, copies, showDescription, actionButtonCreator}: Props) {
+export function CardInfo({
+	card,
+	copies,
+	displayStyle,
+	id,
+	validInDeck,
+	onClick,
+	actionButtonCreator,
+}: Props) {
 	const getType = (card: Card) => {
 		if (card.type === 'effect') {
 			const effectType: 'Attach' | 'Biome' | 'Single Use' | 'Attach/Single Use' =
@@ -67,7 +79,9 @@ export function CardInfo({card, copies, showDescription, actionButtonCreator}: P
 				</div>
 			)
 		} else if (card.type === 'item') {
-			return <p>Counts as 2 items.</p>
+			if (card.name.includes('x2'))
+				return <p>Counts as 2 {(card as ItemCard).hermitType.name} items.</p>
+			return <p>Counts as a {(card as ItemCard).hermitType.name} item.</p>
 		}
 		return
 	}
@@ -77,9 +91,31 @@ export function CardInfo({card, copies, showDescription, actionButtonCreator}: P
 		return 'x0'
 	}
 
+	if (displayStyle === 'mini') {
+		return (
+			<div className={css.outer}>
+				<div
+					className={classNames(css.card, css.smallFont, validInDeck ? null : css.invalid)}
+					onClick={() => onClick && onClick(card, id)}
+				>
+					<div>
+						<span className={css.rank} style={{color: costColors[card.tokens ? card.tokens : 0]}}>
+							{card.tokens}★
+						</span>{' '}
+						<span>{card.name}</span>
+						{getType(card)}
+					</div>
+				</div>
+			</div>
+		)
+	}
+
 	return (
 		<div className={css.outer}>
-			<div className={classNames(css.card, card.rarity === 'Mythic' ? css.mythic : null)}>
+			<div
+				className={classNames(css.card, card.rarity === 'Mythic' ? css.mythic : null)}
+				onClick={() => onClick && onClick(card, id)}
+			>
 				<div>
 					<b className={css.cardName}>{card.name}</b>
 					{getType(card)}{' '}
@@ -93,7 +129,7 @@ export function CardInfo({card, copies, showDescription, actionButtonCreator}: P
 				<div className={css.rightAligned}>{getCopies(copies)}</div>
 				{actionButtonCreator && actionButtonCreator(card)}
 			</div>
-			{showDescription && <div className={css.infobox}>{getDescription(card)}</div>}
+			{displayStyle === 'full' && <div className={css.infobox}>{getDescription(card)}</div>}
 		</div>
 	)
 }

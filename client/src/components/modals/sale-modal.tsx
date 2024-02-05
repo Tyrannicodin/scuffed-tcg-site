@@ -1,5 +1,5 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import css from './sale-modal.module.scss'
+import css from './modal.module.scss'
 import CardList from 'components/card-list'
 import {useDispatch, useSelector} from 'react-redux'
 import {getCards, getLibrary, getTokens} from 'logic/cards/cards-selectors'
@@ -40,7 +40,7 @@ export function SaleModal({isOpen, setOpen}: Props) {
 
 	const listButtonCreator = (card: Card) => {
 		return (
-			<button className={css.list_button} onClick={() => listCard(card)}>
+			<button className={css.listButton} onClick={() => listCard(card)}>
 				Sell
 			</button>
 		)
@@ -58,7 +58,8 @@ export function SaleModal({isOpen, setOpen}: Props) {
 								<CardInfo
 									card={currentCard}
 									copies={getCardCount(currentCard)}
-									showDescription={true}
+									id={0}
+									displayStyle={'full'}
 								/>
 								<NumberFilter
 									name="Price"
@@ -80,7 +81,7 @@ export function SaleModal({isOpen, setOpen}: Props) {
 							<div className={css.cardListBox}>
 								<CardList
 									library={library}
-									showDescription={false}
+									displayStyle={'no-description'}
 									scroll={false}
 									actionButtonCreator={listButtonCreator}
 								>
@@ -118,7 +119,7 @@ export function SaleModal({isOpen, setOpen}: Props) {
 							</>
 						) : (
 							<AlertDialog.Cancel asChild>
-								<button className={css.cancel_button}>Cancel</button>
+								<button className={css.cancelButton}>Cancel</button>
 							</AlertDialog.Cancel>
 						)}
 					</div>

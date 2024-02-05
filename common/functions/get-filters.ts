@@ -5,6 +5,7 @@ type filtersT = {
 	expansions: Array<string>
 	types: Array<string>
 	rarities: Array<string>
+	categories: Array<string>
 	tokens: Array<string>
 	updates: Array<string>
 }
@@ -32,6 +33,7 @@ export function getFilters(cards: Array<Card>): filtersT {
 		types: [...types].sort(),
 		rarities: ['Common', 'Rare', 'Ultra Rare', 'Mythic'],
 		tokens: ['0', '1', '2', '3', '4', '5'],
+		categories: ['Hermit', 'Effect', 'Item'],
 		updates: [...updates].sort(),
 	}
 }

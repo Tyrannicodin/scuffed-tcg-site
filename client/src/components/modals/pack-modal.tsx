@@ -16,12 +16,16 @@ export const PackModal = ({setOpen, onClose}: Props) => {
 	return (
 		<AlertDialog.Root open={setOpen} onOpenChange={(e) => onClose(e)}>
 			<AlertDialog.Portal container={document.getElementById('root')}>
-				<AlertDialog.Overlay className={css.AlertDialogOverlay} />
-				<AlertDialog.Content className={css.AlertDialogContent}>
-					<AlertDialog.Title className={css.AlertDialogTitle}>Roll results</AlertDialog.Title>
-					<AlertDialog.Description asChild className={css.AlertDialogDescription}>
+				<AlertDialog.Overlay className={css.overlay} />
+				<AlertDialog.Content className={css.content}>
+					<AlertDialog.Title className={css.title}>Roll results</AlertDialog.Title>
+					<AlertDialog.Description asChild className={css.description}>
 						<div className={css.cardListBox}>
-							<CardList children={lastRolledcards} showDescription={false} library={library} />
+							<CardList
+								children={lastRolledcards}
+								displayStyle={'no-description'}
+								library={library}
+							/>
 						</div>
 					</AlertDialog.Description>
 					<div className={css.buttonContainer}>

@@ -9,14 +9,28 @@ $spacing: 0.6vh;
 	scroll-behavior: smooth;
 	scrollbar-color: #ffffff;
 	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
 }
 
-.cardList {
+.deckListSection {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.deckList {
 	width: 100%;
-	height: fit-content;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	row-gap: $spacing;
 	padding: $spacing * 2;
+	flex-grow: 1;
+}
+
+.utilityButtons {
+	display: flex;
+	flex-direction: row;
 }

@@ -13,7 +13,7 @@ import {Card} from 'common/models/card'
 import {PACKS} from '../../../../common/packs'
 import {Pack} from 'common/models/pack'
 import PackList from 'components/pack-list'
-import PackModal from 'components/shop-modals'
+import {PackModal} from 'components/modals/'
 import {PackOptionsT, PartialCardT} from 'common/types/cards'
 import {
 	cardSort,
@@ -139,32 +139,38 @@ export function Shop({menuSetter}: Props) {
 							Buy packs! - Your tokens: <b>{tokens}</b> - <ShopTimer />
 						</p>
 					</div>
-					<PackList
-						children={PACKS}
-						showDescription={true}
-						actionButtonCreator={packPurchaseButtonCreator}
-						discounted={discountedPacks}
-					/>
+					<div className={css.packListContainer}>
+						<PackList
+							children={PACKS}
+							showDescription={true}
+							actionButtonCreator={packPurchaseButtonCreator}
+							discounted={discountedPacks}
+						/>
+					</div>
 				</div>
 				<div className={css.right}>
 					<div className={css.availableHermits}>
 						<p>Daily Hermits!</p>
 					</div>
-					<CardList
-						children={hermitCards.sort((a, b) => cardSort(a, b))}
-						showDescription={false}
-						actionButtonCreator={purchaseButtonCreator}
-						library={library}
-					/>
+					<div className={css.cardListContainer}>
+						<CardList
+							children={hermitCards.sort((a, b) => cardSort(a, b))}
+							displayStyle={'no-description'}
+							actionButtonCreator={purchaseButtonCreator}
+							library={library}
+						/>
+					</div>
 					<div className={css.availableEffects}>
 						<p>Daily Effects!</p>
 					</div>
-					<CardList
-						children={effectCards.sort((a, b) => cardSort(a, b))}
-						showDescription={false}
-						actionButtonCreator={purchaseButtonCreator}
-						library={library}
-					/>
+					<div className={css.cardListContainer}>
+						<CardList
+							children={effectCards.sort((a, b) => cardSort(a, b))}
+							displayStyle={'no-description'}
+							actionButtonCreator={purchaseButtonCreator}
+							library={library}
+						/>
+					</div>
 				</div>
 			</main>
 		</>

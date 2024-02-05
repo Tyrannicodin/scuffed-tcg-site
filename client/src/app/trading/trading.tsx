@@ -8,7 +8,7 @@ import css from './trading.module.scss'
 import TextFilter from 'components/text-filter'
 import {getFilters} from 'common/functions/get-filters'
 import NumberFilter from 'components/number-filter'
-import {SaleModal} from 'components/sale-modal/sale-modal'
+import {SaleModal} from 'components/modals'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'trading') => void

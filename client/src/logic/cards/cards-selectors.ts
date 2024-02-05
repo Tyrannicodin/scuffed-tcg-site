@@ -1,6 +1,8 @@
+import {getFullCardsFromPartial} from 'common/functions/daily-shop'
 import {Card} from 'common/models/card'
 import {Sale, Trade} from 'common/models/trade'
 import {PartialCardWithCopiesT} from 'common/types/cards'
+import {DeckT, DeckWithPartialCardT} from 'common/types/deck'
 import {ShopT} from 'common/types/shop'
 import {PastPurchasesT} from 'common/types/user'
 import {getUser} from 'logic/session/session-selectors'
@@ -44,4 +46,8 @@ export const getSales = (state: RootState): Sale[] => {
 
 export const getTrades = (state: RootState): Trade[] => {
 	return getCardsState(state).trades
+}
+
+export const getDecks = (state: RootState): DeckWithPartialCardT[] => {
+	return getUser(state)?.decks || []
 }

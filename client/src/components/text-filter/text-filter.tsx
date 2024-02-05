@@ -12,6 +12,7 @@ export function TextFilter({name, filterOptions, defaultFilter, setFilter}: Prop
 		<div>
 			<div>{name}</div>
 			<Dropdown
+				key={0}
 				options={[{group: name, value: ['All', ...filterOptions]}]}
 				id={`${name.toLowerCase()}Dropdown`}
 				defaultValue={'All'}
