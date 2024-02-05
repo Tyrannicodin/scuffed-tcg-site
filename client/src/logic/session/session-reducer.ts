@@ -3,16 +3,16 @@ import {User} from 'common/models/user'
 
 type SessionState = {
 	user: User | null
-	email: string
 	message: string
-	awaiting_code: boolean
+	tokenSecret: string
+	showOtp: boolean
 }
 
 const defaultState: SessionState = {
 	user: null,
-	email: '',
 	message: '',
-	awaiting_code: false,
+	tokenSecret: '',
+	showOtp: false,
 }
 
 const sessionReducer = (state = defaultState, action: UnknownAction): SessionState => {
@@ -20,7 +20,6 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 	switch (action.type) {
 		case 'LOGIN':
 		case 'SIGNUP':
-		case 'CODE_SUBMIT':
 			return {
 				...state,
 				...action.payload,
@@ -29,7 +28,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 			return {
 				...state,
 				user: null,
-				awaiting_code: false,
+				showOtp: false,
 			}
 		case 'SET_MESSAGE':
 			return {
@@ -39,19 +38,29 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 		case 'ONBOARDING':
 			return {
 				...state,
-				awaiting_code: true,
 				...action.payload,
 			}
 		case 'CONNECTED':
 			return {
 				...state,
-				awaiting_code: false,
+				showOtp: false,
 				user: action.payload as User,
 			}
 		case 'UPDATE_USER':
 			return {
 				...state,
 				user: action.payload as User,
+			}
+		case 'OTP_START':
+			return {
+				...state,
+				showOtp: true,
+				tokenSecret: '',
+			}
+		case 'OTP_END':
+			return {
+				...state,
+				showOtp: false,
 			}
 		default:
 			return state

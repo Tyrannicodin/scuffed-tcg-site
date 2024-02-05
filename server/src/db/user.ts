@@ -3,38 +3,35 @@ import {User, userDefs} from '../../../common/models/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 import {pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
+import {privateDecrypt, publicEncrypt, randomBytes} from 'crypto'
+import {DBKEY} from '../../../common/config'
+import {authenticator, totp} from 'otplib'
 import {DeckT, DeckWithPartialCardT} from '../../../common/types/deck'
 
-export async function createUser(
-	username: string,
-	email: string,
-	hash: string
-): Promise<userCreateResultT> {
+export async function createUser(username: string, hash: string): Promise<userCreateResultT> {
 	try {
 		const unique_check = await pool.query(
 			sql`
-                SELECT * FROM users WHERE username = $1 OR email = $2;
+                SELECT * FROM users WHERE username = $1;
             `,
-			[username, email]
+			[username]
 		)
 
 		if (unique_check.rows.length > 0 && unique_check.rows[0].username === username) {
 			return {result: 'username_taken'}
-		} else if (unique_check.rows.length > 0 && unique_check.rows[0].email === email) {
-			return {result: 'email_taken'}
 		}
 
 		await pool.query(
 			sql`
-                INSERT INTO users (salted_hash, username, email, tokens, is_admin) VALUES (
+                INSERT INTO users (salted_hash, username, token_secret, tokens, is_admin) VALUES (
                     crypt($1, gen_salt('bf', 15)),
                     $2,
-                    $3,
+					$3,
                     0,
                     'false'
                 );
             `,
-			[hash, username, email]
+			[hash, username, publicEncrypt(DBKEY, Buffer.from(authenticator.generateSecret(), 'utf-8'))]
 		)
 
 		return {result: 'success'}
@@ -177,6 +174,23 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 	return null
 }
 
+export async function selectUserTokenSecret(user: User): Promise<string> {
+	try {
+		const result = await pool.query(
+			sql`
+				SELECT users.token_secret FROM users WHERE users.user_id = $1;
+			`,
+			[user.uuid]
+		)
+
+		if (!result || result.rows.length != 1) return ''
+		return privateDecrypt(DBKEY, result.rows[0].token_secret).toString('utf-8')
+	} catch (err) {
+		console.log(err)
+		return ''
+	}
+}
+
 export async function updateUserInfo(user: User) {
 	const updatedUser = await selectUserInfoFromUuid(user.uuid)
 	if (!updatedUser) return user
@@ -185,13 +199,13 @@ export async function updateUserInfo(user: User) {
 	return updatedUser
 }
 
-export async function deleteUser(username: string) {
+export async function deleteUser(uuid: string) {
 	try {
 		await pool.query(
 			sql`
-                DELETE FROM users WHERE username = $1;
+                DELETE FROM users WHERE users.uuid = $1;
             `,
-			[username]
+			[uuid]
 		)
 		return {result: 'success'}
 	} catch (err) {

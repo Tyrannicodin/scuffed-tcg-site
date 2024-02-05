@@ -8,6 +8,7 @@ import {createTables, addCardsToDatabase, destroyTables} from 'db/db'
 import {updateShop} from 'db/shop'
 import startSocketIO from 'sockets'
 import {CronJob} from 'cron'
+import {exit} from 'process'
 
 const port = process.env.PORT || CONFIG.port || 9000
 
@@ -48,7 +49,7 @@ server.listen(port, () => {
 })
 
 // Shop stuff
-const shopJob = new CronJob(
+/*const shopJob = new CronJob(
 	'0 0 * * * *', // cronTime
 	updateShop,
 	null,
@@ -56,4 +57,4 @@ const shopJob = new CronJob(
 	'UTC',
 	null,
 	true
-)
+)*/
