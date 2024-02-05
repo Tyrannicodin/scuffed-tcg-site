@@ -192,11 +192,12 @@ function* verificationSaga(user: User, tokenSecret: string, socket: Socket) {
 		type: 'OTP_START',
 		payload: {}
 	})
-	const {timeout, verfified} = yield race({
+	const {timeout, cancel, verfified} = yield race({
 		timeout: delay(1000 * 60 *5),
 		verfified: verificationLoop(user, tokenSecret, socket),
+		cancel: take('OTP_CANCEL'),
 	})
-	const result = timeout ? 'failure' : verfified ? 'success' : 'unknown'
+	const result = timeout | cancel ? 'failure' : verfified ? 'success' : 'unknown'
 	socket.emit('OTP_END', {
 		type: 'OTP_END',
 		payload: {result}

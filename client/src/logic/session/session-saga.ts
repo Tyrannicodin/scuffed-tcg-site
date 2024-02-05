@@ -12,6 +12,7 @@ import {
 } from 'common/util/validation'
 import {User} from 'common/models/user'
 import {loadTrades} from 'logic/cards/cards-actions'
+import { UnknownAction } from 'redux'
 
 function* onLogin(user: User, saveSecret: boolean) {
 	if (saveSecret && user.secret) {
@@ -47,17 +48,30 @@ function listen(event: string, action: (payload: any) => any) {
 	return inner
 }
 
+function* resetPasswordSaga(action: UnknownAction) {
+
+}
+
 function* otpSaga() {
 	yield receiveMsg('OTP_START')
 	yield put(otpStart())
 
 	while (true) {
-		const {code, failure} = yield race({
+		const {code, cancel, failure} = yield race({
 			code: take('CODE_SUBMIT'),
+			cancel: take('OTP_CANCEL'),
 			failure: call(receiveMsg, 'OTP_END'),
 		})
 		if (failure) {
 			yield put(setMessage('OTP timed out'))
+			yield put(otpEnd())
+			return 'failure'
+		} else if (cancel) {
+			socket.emit('OTP_CANCEL', {
+				type: 'OTP_CANCEL',
+				payload: {}
+			})
+			yield put(setMessage('Authentication cancelled'))
 			yield put(otpEnd())
 			return 'failure'
 		} else if (!code.payload) {
@@ -112,9 +126,10 @@ export function* loginSaga() {
 		}
 	}
 
-	const {login: clientLogin, signup: clientSignup} = yield race({
+	const {login: clientLogin, signup: clientSignup, reset} = yield race({
 		login: take('LOGIN'),
 		signup: take('SIGNUP'),
+		reset: take('PASSWORD_RESET'),
 	})
 
 	const authPayload = (clientLogin || clientSignup).payload
@@ -140,6 +155,13 @@ export function* loginSaga() {
 			type: 'SIGNUP',
 			payload: clientSignup.payload,
 		})
+	} else if (reset) {
+		socket.emit('PASSWORD_RESET', {
+			payload: reset.payload
+		})
+		yield otpSaga()
+		yield put(disconnect(''))
+		return
 	}
 
 	const {login, loginFail, onboard, signupFail, timeout} = yield race({

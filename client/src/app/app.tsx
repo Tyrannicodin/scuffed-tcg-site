@@ -1,6 +1,6 @@
 import Login from './login'
 import css from './app.module.scss'
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {getMessage, getShowOtp, getUser} from 'logic/session/session-selectors'
 import MainMenu from './menu'
 import {useState} from 'react'
@@ -11,6 +11,8 @@ import Trading from './trading'
 import OtpEntry from 'components/otp-entry'
 
 export function App() {
+	const dispatch = useDispatch()
+
 	const showOtp = useSelector(getShowOtp)
 	const user = useSelector(getUser)
 	const message = useSelector(getMessage)
@@ -24,6 +26,7 @@ export function App() {
 			return <>
 				<h3 className={css.text_info}>Enter OTP</h3>
 				<OtpEntry>6</OtpEntry>
+				<button onClick={() => dispatch({type: 'OTP_CANCEL', payload: {}})}>Cancel</button>
 				<p id={css.message}>{message}</p>
 			</>
 		}
