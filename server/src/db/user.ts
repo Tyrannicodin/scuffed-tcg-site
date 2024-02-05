@@ -3,15 +3,12 @@ import {User, userDefs} from '../../../common/models/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 import {pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
-import { privateDecrypt, publicEncrypt, randomBytes } from 'crypto'
+import {privateDecrypt, publicEncrypt, randomBytes} from 'crypto'
 import {DBKEY} from '../../../common/config'
-import { authenticator, totp } from 'otplib'
+import {authenticator, totp} from 'otplib'
 import {DeckT, DeckWithPartialCardT} from '../../../common/types/deck'
 
-export async function createUser(
-	username: string,
-	hash: string
-): Promise<userCreateResultT> {
+export async function createUser(username: string, hash: string): Promise<userCreateResultT> {
 	try {
 		const unique_check = await pool.query(
 			sql`
@@ -177,7 +174,7 @@ export async function selectUserInfoFromUuid(uuid: Uuid): Promise<User | null> {
 	return null
 }
 
-export async function selectUserTokenSecret(user:User): Promise<string> {
+export async function selectUserTokenSecret(user: User): Promise<string> {
 	try {
 		const result = await pool.query(
 			sql`
@@ -185,7 +182,7 @@ export async function selectUserTokenSecret(user:User): Promise<string> {
 			`,
 			[user.uuid]
 		)
-		
+
 		if (!result || result.rows.length != 1) return ''
 		return privateDecrypt(DBKEY, result.rows[0].token_secret).toString('utf-8')
 	} catch (err) {

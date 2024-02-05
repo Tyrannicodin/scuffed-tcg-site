@@ -27,10 +27,10 @@ export const updateUserState = (user: User) => ({
 
 export const otpStart = () => ({
 	type: 'OTP_START' as const,
-	payload: {}
+	payload: {},
 })
 
 export const otpEnd = () => ({
 	type: 'OTP_END' as const,
-	payload: {}
+	payload: {},
 })

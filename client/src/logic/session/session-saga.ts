@@ -1,7 +1,15 @@
 import {ServerMessage, receiveMsg, sendMsg} from 'logic/socket/socket-saga'
 import {call, delay, put, race, take} from 'redux-saga/effects'
 import socket from 'socket'
-import {connect, disconnect, onboarding, otpEnd, otpStart, setMessage, updateUserState} from './session-actions'
+import {
+	connect,
+	disconnect,
+	onboarding,
+	otpEnd,
+	otpStart,
+	setMessage,
+	updateUserState,
+} from './session-actions'
 import {all, fork} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {
@@ -12,7 +20,7 @@ import {
 } from 'common/util/validation'
 import {User} from 'common/models/user'
 import {loadTrades} from 'logic/cards/cards-actions'
-import { UnknownAction } from 'redux'
+import {UnknownAction} from 'redux'
 
 function* onLogin(user: User, saveSecret: boolean) {
 	if (saveSecret && user.secret) {
@@ -48,9 +56,7 @@ function listen(event: string, action: (payload: any) => any) {
 	return inner
 }
 
-function* resetPasswordSaga(action: UnknownAction) {
-
-}
+function* resetPasswordSaga(action: UnknownAction) {}
 
 function* otpSaga() {
 	yield receiveMsg('OTP_START')
@@ -69,7 +75,7 @@ function* otpSaga() {
 		} else if (cancel) {
 			socket.emit('OTP_CANCEL', {
 				type: 'OTP_CANCEL',
-				payload: {}
+				payload: {},
 			})
 			yield put(setMessage('Authentication cancelled'))
 			yield put(otpEnd())
@@ -126,7 +132,11 @@ export function* loginSaga() {
 		}
 	}
 
-	const {login: clientLogin, signup: clientSignup, reset} = yield race({
+	const {
+		login: clientLogin,
+		signup: clientSignup,
+		reset,
+	} = yield race({
 		login: take('LOGIN'),
 		signup: take('SIGNUP'),
 		reset: take('PASSWORD_RESET'),
@@ -157,7 +167,7 @@ export function* loginSaga() {
 		})
 	} else if (reset) {
 		socket.emit('PASSWORD_RESET', {
-			payload: reset.payload
+			payload: reset.payload,
 		})
 		yield otpSaga()
 		yield put(disconnect(''))

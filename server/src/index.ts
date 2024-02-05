@@ -8,7 +8,7 @@ import {createTables, addCardsToDatabase, destroyTables} from 'db/db'
 import {updateShop} from 'db/shop'
 import startSocketIO from 'sockets'
 import {CronJob} from 'cron'
-import { exit } from 'process'
+import {exit} from 'process'
 
 const port = process.env.PORT || CONFIG.port || 9000
 

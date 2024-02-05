@@ -21,8 +21,8 @@ import {addUser, updateUserState} from './login-actions'
 import {getUsers} from './login-selectors'
 import {Socket} from 'socket.io'
 import {authenticator} from 'otplib'
-import { CONFIG } from '../../../common/config'
-import { UnknownAction } from 'redux'
+import {CONFIG} from '../../../common/config'
+import {UnknownAction} from 'redux'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -165,7 +165,11 @@ function* signUpSaga(action: any) {
 
 	yield take('CODE_READY')
 
-	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(user, tokenSecret, action.socket)
+	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(
+		user,
+		tokenSecret,
+		action.socket
+	)
 
 	if (verifyResult != 'success') {
 		if (verifyResult === 'failure') {
@@ -189,17 +193,17 @@ function* signUpSaga(action: any) {
 function* verificationSaga(user: User, tokenSecret: string, socket: Socket) {
 	socket.emit('OTP_START', {
 		type: 'OTP_START',
-		payload: {}
+		payload: {},
 	})
 	const {timeout, cancel, verfified} = yield race({
-		timeout: delay(1000 * 60 *5),
+		timeout: delay(1000 * 60 * 5),
 		verfified: verificationLoop(user, tokenSecret, socket),
 		cancel: take('OTP_CANCEL'),
 	})
 	const result = timeout | cancel ? 'failure' : verfified ? 'success' : 'unknown'
 	socket.emit('OTP_END', {
 		type: 'OTP_END',
-		payload: {result}
+		payload: {result},
 	})
 	return result
 }
@@ -213,13 +217,13 @@ function* verificationLoop(user: User, tokenSecret: string, socket: Socket) {
 		if (authenticator.check(payload.code, tokenSecret)) {
 			socket.emit('OTP_SUCCESS', {
 				type: 'OTP_SUCCESS',
-				payload: {}
+				payload: {},
 			})
 			return true
 		} else {
 			socket.emit('OTP_FAIL', {
 				type: 'OTP_FAIL',
-				payload: {message: 'Invalid OTP entered'}
+				payload: {message: 'Invalid OTP entered'},
 			})
 		}
 	}

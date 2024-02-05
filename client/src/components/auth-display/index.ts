@@ -1,3 +1,3 @@
-import { AuthDisplay } from "./auth-display";
+import {AuthDisplay} from './auth-display'
 
 export default AuthDisplay

@@ -23,12 +23,14 @@ export function App() {
 
 	const router = () => {
 		if (showOtp) {
-			return <>
-				<h3 className={css.text_info}>Enter OTP</h3>
-				<OtpEntry>6</OtpEntry>
-				<button onClick={() => dispatch({type: 'OTP_CANCEL', payload: {}})}>Cancel</button>
-				<p id={css.message}>{message}</p>
-			</>
+			return (
+				<>
+					<h3 className={css.text_info}>Enter OTP</h3>
+					<OtpEntry>6</OtpEntry>
+					<button onClick={() => dispatch({type: 'OTP_CANCEL', payload: {}})}>Cancel</button>
+					<p id={css.message}>{message}</p>
+				</>
+			)
 		}
 		if (user?.authed && user?.secret) {
 			switch (menuSection) {

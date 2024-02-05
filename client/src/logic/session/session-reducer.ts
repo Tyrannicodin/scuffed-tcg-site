@@ -60,7 +60,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 		case 'OTP_END':
 			return {
 				...state,
-				showOtp: false
+				showOtp: false,
 			}
 		default:
 			return state
