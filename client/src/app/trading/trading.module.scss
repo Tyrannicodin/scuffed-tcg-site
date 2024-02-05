@@ -1,3 +1,11 @@
 .search_bar {
 	width: 100%;
 }
+
+.salesContainer {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow: scroll;
+	gap: inherit;
+}

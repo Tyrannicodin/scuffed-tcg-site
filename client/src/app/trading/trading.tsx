@@ -79,18 +79,20 @@ export function Trading({menuSetter}: Props) {
 					placeholder="Search cards..."
 					onChange={(e) => setSearch(e.target.value)}
 				/>
-				{sales
-					.filter((sale) => meetsFilter(sale))
-					.map((sale) => (
-						<SaleComponent
-							username={sale.seller}
-							card={sale.card}
-							price={sale.price}
-							copies={sale.copies}
-							timestamp={sale.timestamp}
-							onPurchase={() => buySale(sale)}
-						/>
-					))}
+				<div className={css.salesContainer}>
+					{sales
+						.filter((sale) => meetsFilter(sale))
+						.map((sale) => (
+							<SaleComponent
+								username={sale.seller}
+								card={sale.card}
+								price={sale.price}
+								copies={sale.copies}
+								timestamp={sale.timestamp}
+								onPurchase={() => buySale(sale)}
+							/>
+						))}
+				</div>
 			</Section>
 		</main>
 	)

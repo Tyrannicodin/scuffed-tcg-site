@@ -8,6 +8,7 @@ import {PartialCardT} from 'common/types/cards'
 import {useState} from 'react'
 import NumberFilter from 'components/number-filter'
 import CardInfo from 'components/card'
+import classNames from 'classnames'
 
 type Props = {
 	isOpen: boolean
@@ -26,10 +27,13 @@ export function SaleModal({isOpen, setOpen}: Props) {
 	const [currentCard, setCurrentCard] = useState<Card>()
 	const [listPrice, setListPrice] = useState<number | ''>(0)
 	const [listCopies, setListCopies] = useState<number | ''>(1)
+	const [filter, setFilter] = useState<string>('')
 
 	const library = useSelector(getLibrary)
 	const cards = useSelector(getCards).filter((card) => {
-		return library.some((row) => cardsEqual(row.card, card))
+		if (filter !== '' && !card.name.toLowerCase().includes(filter.toLowerCase())) return false
+		if (!library.some((row) => cardsEqual(row.card, card))) return false
+		return true
 	})
 	cards.sort((card0: Card, card1: Card) => getCardCount(card1) - getCardCount(card0))
 	const tokens = useSelector(getTokens)
@@ -50,7 +54,9 @@ export function SaleModal({isOpen, setOpen}: Props) {
 		<AlertDialog.Root open={isOpen} onOpenChange={(e) => setOpen(!isOpen)}>
 			<AlertDialog.Portal container={document.getElementById('root')}>
 				<AlertDialog.Overlay className={css.overlay} />
-				<AlertDialog.Content className={css.content}>
+				<AlertDialog.Content
+					className={classNames(css.content, currentCard === undefined ? css.big : '')}
+				>
 					<AlertDialog.Title className={css.title}>List a card</AlertDialog.Title>
 					<AlertDialog.Description asChild className={css.description}>
 						{currentCard ? (
@@ -78,15 +84,23 @@ export function SaleModal({isOpen, setOpen}: Props) {
 								/>
 							</div>
 						) : (
-							<div className={css.cardListBox}>
-								<CardList
-									library={library}
-									displayStyle={'no-description'}
-									scroll={false}
-									actionButtonCreator={listButtonCreator}
-								>
-									{cards}
-								</CardList>
+							<div>
+								<input
+									className={css.searchBar}
+									value={filter}
+									placeholder="Search cards..."
+									onChange={(e) => setFilter(e.target.value)}
+								></input>
+								<div className={classNames(css.cardListBox, css.big)}>
+									<CardList
+										library={library}
+										displayStyle={'no-description'}
+										scroll={false}
+										actionButtonCreator={listButtonCreator}
+									>
+										{cards}
+									</CardList>
+								</div>
 							</div>
 						)}
 					</AlertDialog.Description>
