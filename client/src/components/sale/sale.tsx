@@ -9,16 +9,25 @@ type Props = {
 	copies: number
 	timestamp: number
 	onPurchase: () => void
+	viewedByOwner: boolean
 }
 
-export function SaleComponent({username, card, price, copies, timestamp, onPurchase}: Props) {
+export function SaleComponent({
+	username,
+	card,
+	price,
+	copies,
+	timestamp,
+	onPurchase,
+	viewedByOwner,
+}: Props) {
 	return (
 		<div className={css.sale}>
 			<div className={css.sale_row}>
 				<div className={css.sale_name}>
 					{card.name} - {card.rarity} x{copies}
 				</div>
-				<div className={css.cost}>{price} tokens</div>
+				{!viewedByOwner && <div className={css.cost}>{price} tokens</div>}
 			</div>
 			<div className={css.sale_row}>
 				<div>
@@ -27,7 +36,7 @@ export function SaleComponent({username, card, price, copies, timestamp, onPurch
 					Listed <ReactTimeago date={timestamp * 1000} />
 				</div>
 				<button className={css.purchase_button} onClick={onPurchase}>
-					Purchase
+					{viewedByOwner ? 'Unlist' : 'Purchase'}
 				</button>
 			</div>
 		</div>

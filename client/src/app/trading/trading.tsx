@@ -9,6 +9,7 @@ import TextFilter from 'components/text-filter'
 import {getFilters} from 'common/functions/get-filters'
 import NumberFilter from 'components/number-filter'
 import {SaleModal} from 'components/modals'
+import {getUser} from 'logic/session/session-selectors'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'trading') => void
@@ -16,6 +17,7 @@ type Props = {
 
 export function Trading({menuSetter}: Props) {
 	const dispatch = useDispatch()
+	const user = useSelector(getUser)
 	const sales = useSelector(getSales)
 	const cards = useSelector(getCards)
 	const filterOptions = getFilters(cards)
@@ -52,7 +54,7 @@ export function Trading({menuSetter}: Props) {
 	const buySale = (sale: Sale) => {
 		dispatch({
 			type: 'PURCHASE_SALE',
-			payload: {sale},
+			payload: {sale, unlisted: sale.seller === user?.username},
 		})
 	}
 
@@ -90,6 +92,7 @@ export function Trading({menuSetter}: Props) {
 								copies={sale.copies}
 								timestamp={sale.timestamp}
 								onPurchase={() => buySale(sale)}
+								viewedByOwner={sale.seller === user?.username}
 							/>
 						))}
 				</div>
