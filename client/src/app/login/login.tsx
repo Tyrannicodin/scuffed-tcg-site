@@ -38,6 +38,15 @@ export function Login() {
 			},
 		})
 	}
+	const oneTimeLogin = () => {
+		dispatch({
+			type: 'OTP_LOGIN',
+			payload: {
+				username: usernameField,
+				persistLogin: false,
+			},
+		})
+	}
 
 	const messenger = <p id={css.message}>{message}</p>
 
@@ -121,8 +130,8 @@ export function Login() {
 				<InputField type="username" setField={setUsernameField}>
 					Username
 				</InputField>
-				<button className={css.uiItem} onClick={loginAccount}>
-					Send password reset request
+				<button className={css.uiItem} onClick={oneTimeLogin}>
+					One time login
 				</button>
 				{message === '' ? (
 					<div id={css.message}>

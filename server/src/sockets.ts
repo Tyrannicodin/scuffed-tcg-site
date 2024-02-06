@@ -41,6 +41,7 @@ function startSocketIO(server: any) {
 		})
 		socket.on('LOGIN', unauthorisedHandler)
 		socket.on('SIGNUP', unauthorisedHandler)
+		socket.on('OTP_LOGIN', unauthorisedHandler)
 		socket.onAny((event, message) => {
 			if (!message?.type) return
 			if (!message?.auth || !message.auth.uuid || !message.auth.secret) return
