@@ -23,6 +23,7 @@ import {Socket} from 'socket.io'
 import {authenticator} from 'otplib'
 import {CONFIG} from '../../../common/config'
 import {UnknownAction} from 'redux'
+import { updateUser } from 'routines/root'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -58,7 +59,7 @@ function* loginSaga(action: any) {
 		yield put(updateUserState(updatedUser))
 		socket.emit('LOGGED_IN', {
 			type: 'LOGGED_IN',
-			payload: updatedUser,
+			payload: {user: updatedUser},
 		})
 		return
 	}
@@ -92,7 +93,7 @@ function* loginSaga(action: any) {
 
 	socket.emit('LOGGED_IN', {
 		type: 'LOGGED_IN',
-		payload: user,
+		payload: {user},
 	})
 }
 
@@ -185,7 +186,7 @@ function* signUpSaga(action: any) {
 
 	socket.emit('LOGGED_IN', {
 		type: 'LOGGED_IN',
-		payload: user,
+		payload: {user},
 	})
 }
 
@@ -243,6 +244,13 @@ function* otpLoginSaga(action: any) {
 		})
 		return
 	}
+	user.authed = false
+	user.secret = uuidv4()
+	yield put({
+		type: 'ADD_USER',
+		payload: user,
+	})
+	
 	socket.emit('TARGET_USER', {
 		type: 'TARGET_USER',
 		payload: {
@@ -254,13 +262,11 @@ function* otpLoginSaga(action: any) {
 		action.socket
 	)
 	if (verifyResult === 'success') {
-		user.secret = uuidv4()
-
-		yield put(addUser(user))
+		user.authed = true
 
 		socket.emit('LOGGED_IN', {
 			type: 'LOGGED_IN',
-			payload: user,
+			payload: {user},
 		})
 	}
 }

@@ -176,7 +176,6 @@ export function* loginSaga() {
 			yield put(connect(setUser.payload.user))
 		}
 		yield otpSaga()
-		return
 	}
 
 	const {login, loginFail, onboard, signupFail, timeout} = yield race({
@@ -188,7 +187,7 @@ export function* loginSaga() {
 	})
 
 	if (login) {
-		yield onLogin(login.payload, persistLogin)
+		yield onLogin(login.payload.user, persistLogin)
 	} else if (onboard) {
 		yield put(onboarding(onboard.payload))
 		const authResult: string = yield otpSaga()
