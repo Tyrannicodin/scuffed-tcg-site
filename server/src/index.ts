@@ -49,7 +49,7 @@ server.listen(port, () => {
 })
 
 // Shop stuff
-/*const shopJob = new CronJob(
+const shopJob = new CronJob(
 	'0 0 * * * *', // cronTime
 	updateShop,
 	null,
@@ -57,4 +57,4 @@ server.listen(port, () => {
 	'UTC',
 	null,
 	true
-)*/
+)

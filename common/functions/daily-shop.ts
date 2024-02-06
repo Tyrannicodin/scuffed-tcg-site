@@ -22,11 +22,12 @@ export function getFullCardsFromPartial(partialCard: Array<PartialCardT>, fullCa
 
 export function getFullPackFromPartial(partialPack: Array<PartialPackT>) {
 	const fullPacks = PACKS
-	return fullPacks.filter((pack) => {
-		return partialPack.some((subpack) => {
-			return pack.name === subpack.name
-		})
+	const packs: Array<Pack> = []
+	partialPack.forEach((pack) => {
+		const search = fullPacks.find((subpack) => pack.name === subpack.name)
+		if (search) packs.push(search)
 	})
+	return packs
 }
 
 export function cardSort(a: Card, b: Card) {
