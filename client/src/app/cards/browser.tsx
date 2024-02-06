@@ -11,7 +11,7 @@ import DeckList from 'components/deck-list'
 import {DeckT} from 'common/types/deck'
 import {getFullCardsFromPartial} from 'common/functions/daily-shop'
 import {Card} from 'common/models/card'
-import {ImportModal} from 'components/modals'
+import {ImportModal, DeleteModal} from 'components/modals'
 import classNames from 'classnames'
 import {CopyToClipboard} from 'react-copy-to-clipboard'
 
@@ -55,6 +55,7 @@ export function CardBrowser({menuSetter}: Props) {
 	const [showOnlyOwned, setShowOnlyOwned] = useState<boolean>(false)
 
 	const [showImportModal, setShowImportModal] = useState<boolean>(false)
+	const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
 	cards.sort((a, b) => {
 		return a.name.localeCompare(b.name)
@@ -143,6 +144,13 @@ export function CardBrowser({menuSetter}: Props) {
 	return (
 		<>
 			<ImportModal setOpen={showImportModal} onClose={() => setShowImportModal(!showImportModal)} />
+			{currentDeck && (
+				<DeleteModal
+					setOpen={showDeleteModal}
+					onClose={() => setShowDeleteModal(!showDeleteModal)}
+					deck={currentDeck}
+				/>
+			)}
 			<main className={css.main}>
 				<Section width={15}>
 					<button className={css.backButton} onClick={() => menuSetter('mainMenu')}>
@@ -260,7 +268,7 @@ export function CardBrowser({menuSetter}: Props) {
 							<div className={css.deckInfoBubbleBox}>
 								<CopyToClipboard text={currentDeck.id.toUpperCase()}>
 									<button className={css.shareButton}>
-										Share this deck: <b>{currentDeck.id.toUpperCase()}</b>
+										Share: <b>{currentDeck.id.toUpperCase()}</b>
 									</button>
 								</CopyToClipboard>
 								<CopyToClipboard
@@ -271,8 +279,11 @@ export function CardBrowser({menuSetter}: Props) {
 											(index < currentDeck.cards.length - 1 ? '\n' : ''))
 									}, '')}
 								>
-									<button className={css.shareButton}>Copy cards to clipboard</button>
+									<button className={css.shareButton}>Copy cards</button>
 								</CopyToClipboard>
+								<button className={css.shareButton} onClick={() => setShowDeleteModal(true)}>
+									Delete
+								</button>
 							</div>
 							<button onClick={() => onDeckSave()}>Save</button>
 						</div>

@@ -130,3 +130,19 @@ export async function modifyDeck(
 		return 'failure'
 	}
 }
+
+export async function disassosicateDeck(deckCode: string) {
+	try {
+		await pool.query(
+			sql`
+				UPDATE decks SET user_id = null WHERE deck_code = $1;
+			`,
+			[deckCode]
+		)
+
+		return 'success'
+	} catch (err) {
+		console.log(err)
+		return 'failure'
+	}
+}

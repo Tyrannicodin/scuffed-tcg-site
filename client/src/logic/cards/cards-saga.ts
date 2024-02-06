@@ -109,6 +109,10 @@ function* modifyDeckSaga(action: UnknownAction) {
 	sendMsg(action) //@TODO: Make better somehow
 }
 
+function* deleteDeckSaga(action: UnknownAction) {
+	sendMsg(action)
+}
+
 export default function* cardSaga() {
 	yield* takeEvery('GET_CARDS', newCardsSaga)
 	yield* takeEvery('GET_SHOP', shopUpdateSaga)
@@ -119,4 +123,5 @@ export default function* cardSaga() {
 	yield* takeEvery('CREATE_DECK', createDeckSaga)
 	yield* takeEvery('IMPORT_DECK', importDeckSaga)
 	yield* takeEvery('MODIFY_DECK', modifyDeckSaga)
+	yield* takeEvery('DELETE_DECK', deleteDeckSaga)
 }
