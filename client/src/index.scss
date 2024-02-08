@@ -13,6 +13,8 @@ body,
 #root {
 	height: 100%;
 	overflow: hidden;
+	scrollbar-width: thin;
+	scrollbar-color: #454545 transparent;
 }
 
 main {
