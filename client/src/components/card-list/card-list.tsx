@@ -21,7 +21,7 @@ export function CardList({
 	scroll = true,
 }: Props) {
 	return (
-		<div className={css.outerContainer} style={{overflowY: scroll ? 'scroll' : 'hidden'}}>
+		<div className={css.outerContainer}>
 			<ul className={css.cardList}>
 				{children.map((card, index) => {
 					const copies = library.find(

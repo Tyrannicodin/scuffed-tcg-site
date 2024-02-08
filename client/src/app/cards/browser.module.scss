@@ -40,6 +40,10 @@
 	align-items: center;
 }
 
+.cardListContainer {
+	overflow-y: scroll;
+}
+
 .deckInfoBubble {
 	padding: 0.5rem;
 	margin: 0.5rem;

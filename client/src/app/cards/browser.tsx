@@ -205,12 +205,14 @@ export function CardBrowser({menuSetter}: Props) {
 						placeholder="Search cards..."
 						onChange={(e) => setFilter(e.target.value)}
 					></input>
-					<CardList
-						children={filteredCards}
-						displayStyle={'full'}
-						library={library}
-						onClick={onCardClick}
-					/>
+					<div className={css.cardListContainer}>
+						<CardList
+							children={filteredCards}
+							displayStyle={'full'}
+							library={library}
+							onClick={onCardClick}
+						/>
+					</div>
 				</Section>
 				<Section width={30}>
 					{currentDeck === null ? (
