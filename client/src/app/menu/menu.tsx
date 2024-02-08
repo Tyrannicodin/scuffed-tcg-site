@@ -1,4 +1,5 @@
 import css from './menu.module.scss'
+import { sendMsg } from 'logic/socket/socket-saga'
 
 type Props = {
 	menuSetter: (
@@ -21,7 +22,7 @@ export function MainMenu({menuSetter}: Props) {
 						User settings
 					</button>
 				</div>
-				<button>Log Out</button>
+				<button onClick={() => {sendMsg({type: 'LOGOUT'})}}>Log Out</button>
 			</div>
 		</div>
 	)

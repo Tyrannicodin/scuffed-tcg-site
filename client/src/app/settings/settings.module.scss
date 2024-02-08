@@ -15,7 +15,7 @@
     @extend .button;
 }
 
-.button:active {
+.danger:active {
     animation: forwards;
     background-image: linear-gradient(180deg, red 85%, #470000 15%),
         linear-gradient(#494949 85%, #626262 15%);

@@ -1,4 +1,6 @@
+import { disconnect } from 'logic/session/session-actions'
 import io from 'socket.io-client'
+import store from 'store'
 
 const url =
 	__ENV__ === 'development'
@@ -14,6 +16,10 @@ socket.on('error', (error) => {
 
 socket.onAny((event, payload) => {
 	console.log('[message]', event, payload)
+})
+
+socket.on('disconnect', () => {
+	store.dispatch(disconnect('Logged out'))
 })
 
 export default socket
