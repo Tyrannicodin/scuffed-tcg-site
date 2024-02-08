@@ -3,6 +3,7 @@ import {
 	deleteUser,
 	selectUserInfoFromUuid,
 	selectUserTokenSecret,
+	selectUserUUID,
 	selectUserUUIDUnsecure,
 	updateUserInfo,
 } from 'db/user'
@@ -23,7 +24,7 @@ import {Socket} from 'socket.io'
 import {authenticator} from 'otplib'
 import {CONFIG} from '../../../common/config'
 import {UnknownAction} from 'redux'
-import { updateUser } from 'routines/root'
+import {updateUser} from 'routines/root'
 
 function getDatabaseError(result: userCreateResultT['result']): string {
 	switch (result) {
@@ -64,7 +65,7 @@ function* loginSaga(action: any) {
 		return
 	}
 
-	const uuid: Uuid = yield selectUserUUIDUnsecure(username, password)
+	const uuid: Uuid = yield selectUserUUID(username, password)
 	console.log(`Login: ${uuid}`)
 	if (uuid === null) {
 		socket.emit('FAIL_LOGIN', {
@@ -137,7 +138,7 @@ function* signUpSaga(action: any) {
 	}
 
 	const userSecret = uuidv4()
-	const uuid: Uuid | null = yield call(selectUserUUIDUnsecure, username, password)
+	const uuid: Uuid | null = yield call(selectUserUUID, username, password)
 	if (uuid === null) {
 		fail_signup('Unknown error')
 		return
@@ -250,12 +251,12 @@ function* otpLoginSaga(action: any) {
 		type: 'ADD_USER',
 		payload: user,
 	})
-	
+
 	socket.emit('TARGET_USER', {
 		type: 'TARGET_USER',
 		payload: {
-			user
-		}
+			user,
+		},
 	})
 	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(
 		user,
