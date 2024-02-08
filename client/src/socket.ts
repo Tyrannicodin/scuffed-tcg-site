@@ -1,4 +1,4 @@
-import { disconnect } from 'logic/session/session-actions'
+import {disconnect} from 'logic/session/session-actions'
 import io from 'socket.io-client'
 import store from 'store'
 

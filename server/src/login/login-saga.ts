@@ -267,13 +267,13 @@ function* otpLoginSaga(action: any) {
 }
 
 function* logoutSaga(action: any) {
-	const {user, socket}: {user:User, socket: Socket} = action
+	const {user, socket}: {user: User; socket: Socket} = action
 	yield put(removeUser(user))
 	socket.disconnect()
 }
 
-function* deleteAccountSaga(action:any) {
-	const {user, socket}: {user:User, socket: Socket} = action
+function* deleteAccountSaga(action: any) {
+	const {user, socket}: {user: User; socket: Socket} = action
 	const result: 'success' | 'failure' = yield verificationSaga(user, socket)
 	if (result === 'success') {
 		const {result} = yield deleteUser(user.uuid)
@@ -281,20 +281,18 @@ function* deleteAccountSaga(action:any) {
 			yield put(purgeUser(user))
 			socket.emit('LOGOUT', {
 				type: 'LOGOUT',
-				payload: {}
+				payload: {},
 			})
 			socket.disconnect()
 		}
 	}
 	socket.emit('DELETE_FAIL', {
 		type: 'DELETE_FAIL',
-		payload: {}
+		payload: {},
 	})
 }
 
-function* resetPasswordSaga(action:UnknownAction) {
-
-}
+function* resetPasswordSaga(action: UnknownAction) {}
 
 export function* entrySaga() {
 	yield* takeEvery('LOGIN', loginSaga)

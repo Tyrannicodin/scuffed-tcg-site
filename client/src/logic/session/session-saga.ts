@@ -20,7 +20,7 @@ import {
 } from 'common/util/validation'
 import {User} from 'common/models/user'
 import {loadTrades} from 'logic/cards/cards-actions'
-import { UnknownAction } from 'redux'
+import {UnknownAction} from 'redux'
 
 function* onLogin(user: User, saveSecret: boolean) {
 	if (saveSecret && user.secret) {
@@ -77,7 +77,7 @@ function* otpSaga() {
 			})
 			yield put(setMessage('Authentication cancelled'))
 			yield put(otpEnd())
-			return 'failure'
+			return 'cancel'
 		} else if (!code.payload) {
 			continue
 		}
@@ -200,7 +200,7 @@ export function* loginSaga() {
 		}
 		const {fail, success} = yield race({
 			fail: receiveMsg('FAIL_SIGNUP'),
-			success: receiveMsg('LOGGED_IN')
+			success: receiveMsg('LOGGED_IN'),
 		})
 		if (fail) {
 			yield put(disconnect('OTP failed'))
@@ -214,14 +214,29 @@ export function* loginSaga() {
 	}
 }
 
-function* resetPasswordSaga(action: UnknownAction) {
+function* resetPasswordSaga(action: any) {
+	sendMsg({
+		type: 'RESET_PASSWORD',
+		payload: {
+			newPassword: action.payload.newPassword,
+			confirmPassword: action.payload.confirmPassword,
+		},
+	})
+	const result: 'success' | 'failure' | 'cancel' = yield otpSaga()
 
+	if (result === 'success') {
+		yield put(setMessage('Successfully changed password'))
+	} else if (result === 'cancel') {
+		yield put(setMessage('Password change cancelled'))
+	} else {
+		yield put(setMessage("Couldn't change password"))
+	}
 }
 
 function* deleteAccountSaga(action: UnknownAction) {
 	sendMsg({
 		type: 'DELETE_ACCOUNT',
-		payload: {}
+		payload: {},
 	})
 	const result: 'success' | 'failure' = yield otpSaga()
 

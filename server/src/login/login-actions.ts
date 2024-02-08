@@ -12,10 +12,10 @@ export const updateUserState = (user: User) => ({
 
 export const removeUser = (user: User) => ({
 	type: 'REMOVE_USER' as const,
-	payload: {user}
+	payload: {user},
 })
 
-export const purgeUser = (user:User) => ({
+export const purgeUser = (user: User) => ({
 	type: 'PURGE_USER' as const,
-	payload: {user}
+	payload: {user},
 })

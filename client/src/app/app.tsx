@@ -44,7 +44,7 @@ export function App() {
 				case 'import':
 					return <Import menuSetter={setMenuSection} />
 				case 'userSettings':
-					return <Settings menuSetter={setMenuSection}/>
+					return <Settings menuSetter={setMenuSection} />
 				default:
 					return <MainMenu menuSetter={setMenuSection} />
 			}
