@@ -107,7 +107,9 @@ export function Shop({menuSetter}: Props) {
 		<button
 			onClick={() => onPackPurchase(pack, options, discounted)}
 			className={(css.rightAligned, css.purchaseButton)}
-			disabled={tokens < pack.tokens || disabled}
+			disabled={
+				(!discounted && tokens < pack.tokens) || tokens < Math.floor(pack.tokens / 2) || disabled
+			}
 		>
 			{discounted ? (
 				<span className={classNames(css.discount, css.shadow)}>
