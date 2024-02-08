@@ -3,10 +3,10 @@ import {User, userDefs} from '../../../common/models/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
 import {pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
-import {privateDecrypt, publicEncrypt, randomBytes} from 'crypto'
+import {privateDecrypt, publicEncrypt} from 'crypto'
 import {DBKEY} from '../../../common/config'
-import {authenticator, totp} from 'otplib'
-import {DeckT, DeckWithPartialCardT} from '../../../common/types/deck'
+import {authenticator} from 'otplib'
+import {DeckWithPartialCardT} from '../../../common/types/deck'
 
 export async function createUser(username: string, hash: string): Promise<userCreateResultT> {
 	try {
@@ -228,6 +228,21 @@ export async function deleteUser(uuid: string) {
 		return {result: 'success'}
 	} catch (err) {
 		return {result: 'failure'}
+	}
+}
+
+export async function updateUserPassword(user: User, newPassword: string) {
+	try {
+		await pool.query(
+			sql`
+				UPDATE users SET salted_hash=crypt($1, gen_salt('bf', 15)) WHERE user_id=$2
+			`,
+			[newPassword, user.uuid]
+		)
+		return 'success'
+	} catch (err) {
+		console.log(err)
+		return 'failure'
 	}
 }
 

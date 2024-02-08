@@ -222,6 +222,14 @@ function* resetPasswordSaga(action: any) {
 			confirmPassword: action.payload.confirmPassword,
 		},
 	})
+	const {fail} = yield race({
+		go: receiveMsg('RESET_START'),
+		fail: receiveMsg('RESET_FAIL'),
+	})
+	if (fail) {
+		yield put(setMessage(getPasswordError(fail.payload.reason)))
+		return
+	}
 	const result: 'success' | 'failure' | 'cancel' = yield otpSaga()
 
 	if (result === 'success') {

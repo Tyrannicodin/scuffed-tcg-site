@@ -6,6 +6,7 @@ import {
 	selectUserUUID,
 	selectUserUUIDUnsecure,
 	updateUserInfo,
+	updateUserPassword,
 } from 'db/user'
 import {call, delay, put, race, take, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
@@ -292,7 +293,27 @@ function* deleteAccountSaga(action: any) {
 	})
 }
 
-function* resetPasswordSaga(action: UnknownAction) {}
+function* resetPasswordSaga(action: any) {
+	const {user, socket}: {user: User; socket: Socket} = action
+	const {newPassword, confirmPassword}: {newPassword: string; confirmPassword: string} =
+		action.payload
+	const validPassword = validatePassword(newPassword, confirmPassword)
+	if (validPassword != 'success') {
+		socket.emit('RESET_FAIL', {
+			type: 'RESET_FAIL',
+			payload: {reason: validPassword},
+		})
+		return
+	}
+	socket.emit('RESET_START', {
+		type: 'RESET_START',
+		payload: {},
+	})
+	const result: 'success' | 'failure' = yield verificationSaga(user, socket)
+	if (result === 'success') {
+		yield updateUserPassword(user, newPassword)
+	}
+}
 
 export function* entrySaga() {
 	yield* takeEvery('LOGIN', loginSaga)
