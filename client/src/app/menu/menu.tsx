@@ -1,7 +1,10 @@
 import css from './menu.module.scss'
+import { sendMsg } from 'logic/socket/socket-saga'
 
 type Props = {
-	menuSetter: (arg0: 'mainMenu' | 'browser' | 'shop' | 'trading' | 'import') => void
+	menuSetter: (
+		arg0: 'mainMenu' | 'browser' | 'shop' | 'trading' | 'import' | 'userSettings'
+	) => void
 }
 
 export function MainMenu({menuSetter}: Props) {
@@ -15,9 +18,11 @@ export function MainMenu({menuSetter}: Props) {
 					<button onClick={() => menuSetter('import')} className={css.maxWidth}>
 						Import Cards
 					</button>
-					<button className={css.maxWidth}>Vouchers</button>
+					<button className={css.maxWidth} onClick={() => menuSetter('userSettings')}>
+						User settings
+					</button>
 				</div>
-				<button>Log Out</button>
+				<button onClick={() => {sendMsg({type: 'LOGOUT'})}}>Log Out</button>
 			</div>
 		</div>
 	)

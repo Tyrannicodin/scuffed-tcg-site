@@ -18,7 +18,7 @@ import {
 import {Uuid, userCreateResultT} from '../../../common/types/user'
 import store from 'stores'
 import {User} from '../../../common/models/user'
-import {addUser, updateUserState} from './login-actions'
+import {addUser, purgeUser, removeUser, updateUserState} from './login-actions'
 import {getUsers} from './login-selectors'
 import {Socket} from 'socket.io'
 import {authenticator} from 'otplib'
@@ -152,10 +152,7 @@ function* signUpSaga(action: any) {
 	user.secret = userSecret
 	user.authed = false
 
-	yield put({
-		type: 'ADD_USER',
-		payload: user,
-	})
+	yield put(addUser(user))
 
 	const tokenSecret: string = yield call(selectUserTokenSecret, user)
 	const tokenUri = authenticator.keyuri(user.username, CONFIG.otpIssuer, tokenSecret)
@@ -247,10 +244,7 @@ function* otpLoginSaga(action: any) {
 	}
 	user.authed = false
 	user.secret = uuidv4()
-	yield put({
-		type: 'ADD_USER',
-		payload: user,
-	})
+	yield put(addUser(user))
 
 	socket.emit('TARGET_USER', {
 		type: 'TARGET_USER',
@@ -272,8 +266,41 @@ function* otpLoginSaga(action: any) {
 	}
 }
 
+function* logoutSaga(action: any) {
+	const {user, socket}: {user:User, socket: Socket} = action
+	yield put(removeUser(user))
+	socket.disconnect()
+}
+
+function* deleteAccountSaga(action:any) {
+	const {user, socket}: {user:User, socket: Socket} = action
+	const result: 'success' | 'failure' = yield verificationSaga(user, socket)
+	if (result === 'success') {
+		const {result} = yield deleteUser(user.uuid)
+		if (result === 'success') {
+			yield put(purgeUser(user))
+			socket.emit('LOGOUT', {
+				type: 'LOGOUT',
+				payload: {}
+			})
+			socket.disconnect()
+		}
+	}
+	socket.emit('DELETE_FAIL', {
+		type: 'DELETE_FAIL',
+		payload: {}
+	})
+}
+
+function* resetPasswordSaga(action:UnknownAction) {
+
+}
+
 export function* entrySaga() {
 	yield* takeEvery('LOGIN', loginSaga)
 	yield* takeEvery('SIGNUP', signUpSaga)
 	yield* takeEvery('OTP_LOGIN', otpLoginSaga)
+	yield* takeEvery('DELETE_ACCOUNT', deleteAccountSaga)
+	yield* takeEvery('RESET_PASSWORD', resetPasswordSaga)
+	yield* takeEvery('LOGOUT', logoutSaga)
 }

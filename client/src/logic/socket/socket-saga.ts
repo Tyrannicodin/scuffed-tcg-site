@@ -20,7 +20,7 @@ export const sendMsg = (message: ServerMessage) => {
 	const user = getUser(store.getState())
 	socket.emit(message.type, {
 		type: message.type,
-		payload: message.payload,
+		payload: message.payload ? message.payload : {},
 		auth: user
 			? {
 					uuid: user.uuid,
