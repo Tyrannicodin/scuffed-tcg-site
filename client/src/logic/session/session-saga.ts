@@ -196,6 +196,16 @@ export function* loginSaga() {
 		const authResult: string = yield otpSaga()
 		if (authResult === 'failure') {
 			yield put(disconnect('OTP timed out'))
+			return
+		}
+		const {fail, success} = yield race({
+			fail: receiveMsg('FAIL_SIGNUP'),
+			success: receiveMsg('LOGGED_IN')
+		})
+		if (fail) {
+			yield put(disconnect('OTP failed'))
+		} else {
+			yield onLogin(success.payload.user, persistLogin)
 		}
 	} else if (loginFail || signupFail) {
 		yield put(disconnect((loginFail || signupFail).payload.message))
