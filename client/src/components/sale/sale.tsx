@@ -27,7 +27,7 @@ export function SaleComponent({
 				<div className={css.sale_name}>
 					{card.name} - {card.rarity} x{copies}
 				</div>
-				{!viewedByOwner && <div className={css.cost}>{price} tokens</div>}
+				<div className={css.cost}>{price} tokens</div>
 			</div>
 			<div className={css.sale_row}>
 				<div>
