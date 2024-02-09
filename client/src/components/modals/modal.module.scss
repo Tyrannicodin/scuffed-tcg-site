@@ -104,8 +104,15 @@
 	width: 100%;
 }
 
-.column {
+.flex_column {
+	display: flex;
 	flex-direction: column;
+}
+
+#message {
+	text-align: center;
+	width: 100%;
+	color: white;
 }
 
 .listButton {

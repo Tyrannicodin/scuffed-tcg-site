@@ -6,6 +6,7 @@ import {
 	selectUserUUID,
 	selectUserUUIDUnsecure,
 	updateUserInfo,
+	updateUserPassword,
 } from 'db/user'
 import {call, delay, put, race, take, takeEvery} from 'typed-redux-saga'
 import {v4 as uuidv4} from 'uuid'
@@ -267,13 +268,13 @@ function* otpLoginSaga(action: any) {
 }
 
 function* logoutSaga(action: any) {
-	const {user, socket}: {user:User, socket: Socket} = action
+	const {user, socket}: {user: User; socket: Socket} = action
 	yield put(removeUser(user))
 	socket.disconnect()
 }
 
-function* deleteAccountSaga(action:any) {
-	const {user, socket}: {user:User, socket: Socket} = action
+function* deleteAccountSaga(action: any) {
+	const {user, socket}: {user: User; socket: Socket} = action
 	const result: 'success' | 'failure' = yield verificationSaga(user, socket)
 	if (result === 'success') {
 		const {result} = yield deleteUser(user.uuid)
@@ -281,19 +282,37 @@ function* deleteAccountSaga(action:any) {
 			yield put(purgeUser(user))
 			socket.emit('LOGOUT', {
 				type: 'LOGOUT',
-				payload: {}
+				payload: {},
 			})
 			socket.disconnect()
 		}
 	}
 	socket.emit('DELETE_FAIL', {
 		type: 'DELETE_FAIL',
-		payload: {}
+		payload: {},
 	})
 }
 
-function* resetPasswordSaga(action:UnknownAction) {
-
+function* resetPasswordSaga(action: any) {
+	const {user, socket}: {user: User; socket: Socket} = action
+	const {newPassword, confirmPassword}: {newPassword: string; confirmPassword: string} =
+		action.payload
+	const validPassword = validatePassword(newPassword, confirmPassword)
+	if (validPassword != 'success') {
+		socket.emit('RESET_FAIL', {
+			type: 'RESET_FAIL',
+			payload: {reason: validPassword},
+		})
+		return
+	}
+	socket.emit('RESET_START', {
+		type: 'RESET_START',
+		payload: {},
+	})
+	const result: 'success' | 'failure' = yield verificationSaga(user, socket)
+	if (result === 'success') {
+		yield updateUserPassword(user, newPassword)
+	}
 }
 
 export function* entrySaga() {

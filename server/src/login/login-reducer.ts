@@ -35,13 +35,17 @@ function userReducer(state = defaultState, action: UnknownAction): UsersState {
 				...state,
 			}
 		case 'REMOVE_USER':
-			const {user: {secret}} = action.payload as {user: User}
+			const {
+				user: {secret},
+			} = action.payload as {user: User}
 			delete state.users[secret]
 			return {
 				...state,
 			}
 		case 'PURGE_USER':
-			const {user: {uuid}} = action.payload as {user: User}
+			const {
+				user: {uuid},
+			} = action.payload as {user: User}
 			var purgeUser = Object.values(state.users).find((user) => uuid === user.uuid)
 			while (purgeUser) {
 				delete state.users[purgeUser.secret]
