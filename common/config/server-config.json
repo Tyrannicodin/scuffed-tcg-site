@@ -3,7 +3,8 @@
 	"clientDevPort": 3002,
 	"clientPath": "client/dist",
 	"cors": [
-		"http://localhost:3002"
+		"http://localhost:3002",
+		"https://scuffed-card-manager.fly.dev/"
 	],
 	"version": "0.0.0",
 	"otpIssuer": "Scuffed Card Manager"
