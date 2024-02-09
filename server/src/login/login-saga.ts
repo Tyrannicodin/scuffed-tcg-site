@@ -40,6 +40,15 @@ function getDatabaseError(result: userCreateResultT['result']): string {
 	}
 }
 
+function* takeFromUser(user:User, eventType:string) {
+	while (true) {
+		const event = (yield take(eventType)) as {user: User, socket: Socket, payload: any}
+		const {user: eventUser}: {user: User} = event
+		if (eventUser.secret === user.secret && eventUser.uuid === user.uuid)
+			return event
+	}
+}
+
 function* loginSaga(action: any) {
 	const {username, password, secret} = action.payload
 	const {socket}: {socket: Socket} = action
@@ -163,7 +172,7 @@ function* signUpSaga(action: any) {
 		payload: {user, tokenSecret: tokenUri},
 	})
 
-	yield take('CODE_READY')
+	yield takeFromUser(user, 'CODE_READY')
 
 	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(
 		user,
@@ -197,7 +206,7 @@ function* verificationSaga(user: User, socket: Socket) {
 	const {timeout, cancel, verfified} = yield race({
 		timeout: delay(1000 * 60 * 5),
 		verfified: verificationLoop(user, socket),
-		cancel: take('OTP_CANCEL'),
+		cancel: takeFromUser(user, 'OTP_CANCEL'),
 	})
 	const result = timeout | cancel ? 'failure' : verfified ? 'success' : 'unknown'
 	socket.emit('OTP_END', {
@@ -210,7 +219,7 @@ function* verificationSaga(user: User, socket: Socket) {
 function* verificationLoop(user: User, socket: Socket) {
 	const tokenSecret: string = yield call(selectUserTokenSecret, user)
 	while (true) {
-		const token: UnknownAction = yield take('OTP_SUBMIT')
+		const token: UnknownAction = yield takeFromUser(user, 'OTP_SUBMIT')
 		if (!token.user || (token.user as User).uuid != user.uuid) continue
 		const payload = token.payload as {code: string}
 		if (!payload) continue
