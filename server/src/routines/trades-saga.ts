@@ -66,6 +66,7 @@ function* salePurchaseSaga(action: any) {
 		},
 	}: {user: User; socket: Socket; payload: {sale: Sale}} = action
 	const {sale}: {sale: Sale} = yield call(getSale, id)
+	if (!sale) return
 
 	const unlisted = user.username === sale.seller
 
