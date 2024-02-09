@@ -40,12 +40,11 @@ function getDatabaseError(result: userCreateResultT['result']): string {
 	}
 }
 
-function* takeFromUser(user:User, eventType:string) {
+function* takeFromUser(user: User, eventType: string) {
 	while (true) {
-		const event = (yield take(eventType)) as {user: User, socket: Socket, payload: any}
+		const event = (yield take(eventType)) as {user: User; socket: Socket; payload: any}
 		const {user: eventUser}: {user: User} = event
-		if (eventUser.secret === user.secret && eventUser.uuid === user.uuid)
-			return event
+		if (eventUser.secret === user.secret && eventUser.uuid === user.uuid) return event
 	}
 }
 
