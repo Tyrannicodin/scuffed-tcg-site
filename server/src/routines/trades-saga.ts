@@ -72,7 +72,16 @@ function* salePurchaseSaga(action: any) {
 
 	if (sale.price > 0 && user.tokens < sale.price && !unlisted) return
 
-	if (!unlisted) yield updateUserTokens(user.uuid, -sale.price)
+	if (unlisted && sale.price < 0) {
+		yield updateUserTokens(sale.seller, -sale.price)
+	}
+	if (!unlisted && sale.price < 0) {
+		yield updateUserTokens(user.uuid, -sale.price)
+	}
+	if (!unlisted && sale.price > 0) {
+		yield updateUserTokens(sale.seller, sale.price)
+	}
+
 	yield addCardsToUser(user.uuid, Array(sale.copies).fill(sale.card))
 	yield deleteSale(sale.id)
 
