@@ -1,0 +1,18 @@
+.main {
+	display: flex;
+	flex-direction: column;
+	place-content: flex-start center;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+}
+
+.text_info {
+	text-align: center;
+	color: white;
+}
+
+#message {
+	@extend .text_info;
+	width: 100%;
+}

@@ -1,0 +1,21 @@
+@import '../../index';
+
+$spacing: 0.6vh;
+
+.outerContainer {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	scroll-behavior: smooth;
+	scrollbar-color: #ffffff;
+}
+
+.cardList {
+	width: 100%;
+	height: fit-content;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	row-gap: $spacing;
+	padding: $spacing * 2;
+}

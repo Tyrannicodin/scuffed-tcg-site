@@ -1,0 +1,12 @@
+@import '../../index';
+
+.section {
+	background-color: $windowBackground;
+	border: $mainBorder;
+	backdrop-filter: $backgroundBlur;
+	padding: 1vh;
+	display: flex;
+	flex-direction: column;
+	font-family: Minecraft;
+	color: whitesmoke;
+}

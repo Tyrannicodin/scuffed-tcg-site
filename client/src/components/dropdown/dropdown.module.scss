@@ -1,0 +1,47 @@
+.dropdownBox {
+	background-color: #323232;
+	color: whitesmoke;
+	font-family: Minecraft;
+	padding: 4px;
+	display: flex;
+	gap: 4px;
+	flex-direction: column;
+	border: 1px whitesmoke solid;
+}
+
+.groupName {
+	font-weight: bold;
+	text-align: center;
+	padding: 4px;
+}
+
+.menuItem {
+	padding: 4px;
+	margin: 1px;
+	color: whitesmoke;
+}
+
+.menuItem[data-highlighted] {
+	background-color: whitesmoke;
+	color: black;
+}
+
+.trigger {
+	background: #494949;
+	color: white;
+	white-space: nowrap;
+	margin-left: 0.6vh;
+}
+
+.top {
+	text-align: center;
+	padding-top: 0.5em;
+	background: #1f1f1f;
+}
+
+.bottom {
+	text-align: center;
+	transform: rotate(180deg);
+	padding-top: 0.5em;
+	background: #1f1f1f;
+}

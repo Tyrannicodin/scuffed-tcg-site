@@ -1,3 +1,7 @@
+$windowBackground: #000000ac;
+$backgroundBlur: blur(4px);
+$mainBorder: solid 2px black;
+
 * {
 	box-sizing: border-box;
 	padding: 0;
@@ -6,10 +10,18 @@
 
 html,
 body,
-#root,
-main {
+#root {
 	height: 100%;
 	overflow: hidden;
+	scrollbar-width: thin;
+	scrollbar-color: #454545 transparent;
+}
+
+main {
+	@extend html;
+	display: flex;
+	gap: 2vh;
+	margin: 2vh;
 }
 
 body {
@@ -18,9 +30,61 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-size: 1rem;
-	background: rgb(72, 72, 72);
 
 	* {
 		user-select: none;
 	}
+}
+
+input {
+	background-color: rgb(69, 69, 69);
+	font-family: Minecraft;
+	color: white;
+	border: $mainBorder;
+	padding: 1vh;
+	border-radius: 0px;
+}
+
+button {
+	background: linear-gradient(#d7d7d7 85%, #494949 15%);
+	font-family: Minecraft;
+	color: black;
+	border: $mainBorder;
+	padding: 1.2vh;
+	border-radius: 0px;
+}
+
+button:active {
+	background: linear-gradient(#494949 85%, #626262 15%);
+}
+
+button:disabled {
+	background: #494949;
+	color: gray;
+}
+
+input:focus {
+	border: 1px solid white;
+	border-radius: 0px;
+	outline-color: white;
+}
+
+@font-face {
+	font-family: Minecraft;
+	src: url('/fonts/MinecraftRegular.otf');
+}
+
+@font-face {
+	font-family: MinecraftBold;
+	src: url('/fonts/MinecraftBold.otf');
+}
+
+@font-face {
+	font-family: MinecraftItalic;
+	src: url('/fonts/MinecraftItalic.otf');
+}
+
+@font-face {
+	font-family: MinecraftBoldItalic;
+	src: url('/fonts/MinecraftBoldItalic.otf');
 }

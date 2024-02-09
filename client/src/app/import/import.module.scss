@@ -1,0 +1,72 @@
+@import '../../index';
+
+.main {
+	display: flex;
+	flex-direction: column;
+	gap: 2vh;
+	margin: 2vh;
+	align-items: center;
+}
+
+.bottom {
+	display: flex;
+	gap: 2vh;
+	width: 80%;
+	height: 100%;
+	align-items: center;
+	overflow: auto;
+}
+
+.backButton {
+	width: 100%;
+}
+
+.returnArea {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+	width: 80%;
+}
+
+.importInstructions {
+	width: 80%;
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+
+	color: white;
+	font-family: Minecraft;
+}
+
+.code {
+	color: lightgoldenrodyellow;
+}
+
+.cardListContainer {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: scroll;
+}
+
+.cardListContainerContainer {
+	width: 100%;
+	height: 100%;
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+}
+
+.leftArea {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+	width: 50%;
+	height: 100%;
+	color: white;
+	font-family: Minecraft;
+}

@@ -1,0 +1,19 @@
+.buttonMenu {
+	width: 30%;
+	display: flex;
+	gap: 1vh;
+	flex-direction: column;
+	margin: auto;
+}
+
+.horizontalButtons {
+	width: 100%;
+	display: flex;
+	gap: 1vh;
+	flex-direction: row;
+	margin: auto;
+}
+
+.maxWidth {
+	width: 100%;
+}

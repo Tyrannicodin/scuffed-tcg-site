@@ -1,0 +1,13 @@
+.search_bar {
+	width: 100%;
+}
+
+.salesContainer {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: inherit;
+	overflow-y: scroll;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}

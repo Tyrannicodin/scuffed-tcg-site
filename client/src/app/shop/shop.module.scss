@@ -1,0 +1,107 @@
+@import '../../index';
+@import 'components/card-list/card-list.module';
+
+.main {
+	display: flex;
+	gap: 2vh;
+	margin: 2vh;
+}
+
+.backButton {
+	width: 100%;
+}
+
+.returnArea {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+}
+
+.left {
+	display: flex;
+	flex-direction: column;
+	width: 40%;
+	height: 100%;
+	gap: 2vh;
+}
+
+.right {
+	display: flex;
+	flex-direction: column;
+	width: 60%;
+	height: 100%;
+	gap: 2vh;
+}
+
+.packs {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+	flex-grow: 1;
+
+	color: white;
+	font-family: Minecraft;
+}
+
+.availableHermits {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+
+	color: white;
+	font-family: Minecraft;
+}
+
+.availableEffects {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	padding: 1vh;
+
+	color: white;
+	font-family: Minecraft;
+}
+
+.rightAligned {
+	text-align: right;
+	flex-grow: 1;
+}
+
+.purchaseButton {
+	width: 8vw;
+	margin-left: $spacing;
+}
+
+.discount {
+	color: rgb(94, 255, 94);
+	font-weight: bold;
+}
+
+.shadow {
+	text-shadow:
+		1px 1px 0 #000,
+		-1px 1px 0 #000,
+		-1px -1px 0 #000,
+		1px -1px 0 #000;
+}
+
+.cardListContainer {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	overflow-y: scroll;
+	width: 100%;
+	height: 42%;
+}
+
+.packListContainer {
+	background-color: $windowBackground;
+	backdrop-filter: $backgroundBlur;
+	border: $mainBorder;
+	overflow-y: scroll;
+	width: 100%;
+	height: 80%;
+}

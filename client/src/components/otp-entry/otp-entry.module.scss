@@ -1,0 +1,14 @@
+.otpDiv {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+}
+
+.otpInput {
+	width: 3vh;
+	padding: 0;
+	font-size: 3vh;
+	text-align: center;
+	aspect-ratio: 1;
+}

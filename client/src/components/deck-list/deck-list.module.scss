@@ -1,0 +1,36 @@
+@import '../../index';
+
+$spacing: 0.6vh;
+
+.outerContainer {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	scroll-behavior: smooth;
+	scrollbar-color: #ffffff;
+	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+}
+
+.deckListSection {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.deckList {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	row-gap: $spacing;
+	padding: $spacing * 2;
+	flex-grow: 1;
+}
+
+.utilityButtons {
+	display: flex;
+	flex-direction: row;
+}
