@@ -1,44 +1,27 @@
-import fs from 'fs'
 import {google} from 'googleapis'
-import path from 'path'
+import env from 'env-var'
+import 'dotenv/config'
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-const TOKEN_PATH = path.join(process.cwd(), 'server/token.json')
-const CREDENTIALS_PATH = path.join(process.cwd(), 'server/.credentials.json')
-
-function loadSavedCredentialsIfExist(): any | null {
-	try {
-		const content = fs.readFileSync(TOKEN_PATH, 'utf-8')
-		const credentials = JSON.parse(content)
-		return google.auth.fromJSON(credentials)
-	} catch (err) {
-		return null
-	}
-}
+const CREDENTIALS = env.get('GOOGLE_INFO').asJsonObject()
 
 function saveCredentials(client: any) {
-	const content = fs.readFileSync(CREDENTIALS_PATH, 'utf-8')
-	const keys = JSON.parse(content)
-	const key = keys.installed || keys.web
+	const keys = CREDENTIALS as Record<string, string>
+	if (keys === undefined) return
 	const payload = JSON.stringify({
 		type: 'authorized_user',
-		client_id: key.client_id,
-		client_secret: key.client_secret,
+		client_id: keys.client_id,
+		client_secret: keys.client_secret,
 		refresh_token: client.credentials.refresh_token,
 	})
-	fs.writeFileSync(TOKEN_PATH, payload, 'utf-8')
 }
 
 async function authorize() {
-	var client = loadSavedCredentialsIfExist()
-	if (client) {
-		return client
-	}
-	client = new google.auth.GoogleAuth({
+	var client = new google.auth.GoogleAuth({
 		scopes: SCOPES,
-		keyFile: CREDENTIALS_PATH,
+		credentials: CREDENTIALS,
 	})
-	if (client.credentials) {
+	if ((client as any).credentials) {
 		await saveCredentials(client)
 	}
 	return client

@@ -1,4 +1,6 @@
 import pg from 'pg'
+import env from 'env-var'
+import 'dotenv/config'
 import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
@@ -12,11 +14,11 @@ export const sql = (strings: TemplateStringsArray, ...expr: any[]) =>
 	strings.map((str, index) => str + (expr.length > index ? String(expr[index]) : '')).join('')
 
 export const pool = new Pool({
-	user: 'postgres',
-	password: 'p5J40EmGU24',
-	host: 'localhost',
-	port: 5432,
-	database: 'scuffed_tcg',
+	user: env.get('DB_USERNAME').asString(),
+	password: env.get('DB_PASSWORD').asString(),
+	host: env.get('DB_HOST').asString(),
+	port: env.get('DB_PORT').asPortNumber(),
+	database: env.get('DB_NAME').asString(),
 })
 
 export async function createTables() {
