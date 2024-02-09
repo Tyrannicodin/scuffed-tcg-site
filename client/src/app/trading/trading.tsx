@@ -54,7 +54,7 @@ export function Trading({menuSetter}: Props) {
 	const buySale = (sale: Sale) => {
 		dispatch({
 			type: 'PURCHASE_SALE',
-			payload: {sale, unlisted: sale.seller === user?.username},
+			payload: {sale},
 		})
 	}
 
@@ -84,8 +84,9 @@ export function Trading({menuSetter}: Props) {
 				<div className={css.salesContainer}>
 					{sales
 						.filter((sale) => meetsFilter(sale))
-						.map((sale) => (
+						.map((sale, id) => (
 							<SaleComponent
+								key={id}
 								username={sale.seller}
 								card={sale.card}
 								price={sale.price}

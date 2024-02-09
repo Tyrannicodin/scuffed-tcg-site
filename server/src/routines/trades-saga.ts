@@ -63,10 +63,12 @@ function* salePurchaseSaga(action: any) {
 		socket,
 		payload: {
 			sale: {id},
-			unlisted: unlisted,
 		},
-	}: {user: User; socket: Socket; payload: {sale: Sale; unlisted: boolean}} = action
+	}: {user: User; socket: Socket; payload: {sale: Sale}} = action
 	const {sale}: {sale: Sale} = yield call(getSale, id)
+
+	const unlisted = user.username === sale.seller
+
 	if (sale.price > 0 && user.tokens < sale.price && !unlisted) return
 
 	if (!unlisted) yield updateUserTokens(user.uuid, -sale.price)

@@ -44,8 +44,6 @@ export function Shop({menuSetter}: Props) {
 	const hermitCards = getFullCardsFromPartial(shop.hermitCards, cards)
 	const effectCards = getFullCardsFromPartial(shop.effectCards, cards)
 
-	console.log(hermitCards)
-
 	const onCardPurchase = (card: Card) => {
 		dispatch({
 			type: 'CARDS_ROLLED',

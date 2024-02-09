@@ -85,7 +85,7 @@ function* createSaleSaga(action: UnknownAction) {
 }
 
 function* purchaseSaleSaga(action: UnknownAction) {
-	const {sale, unlisted} = action.payload as {sale: Sale; unlisted: boolean}
+	const {sale} = action.payload as {sale: Sale}
 	const user = getUser(store.getState())
 
 	if (!user) return
@@ -93,7 +93,7 @@ function* purchaseSaleSaga(action: UnknownAction) {
 	if (sale.price > 0 && user.tokens < sale.price) return
 	sendMsg({
 		type: 'PURCHASE_SALE',
-		payload: {sale, unlisted},
+		payload: {sale},
 	})
 }
 

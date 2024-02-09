@@ -24,13 +24,13 @@ export function Dropdown({options, id, defaultValue, action}: Props) {
 				<Select.Content className={css.dropdownBox}>
 					<Select.ScrollUpButton className={css.top}>^</Select.ScrollUpButton>
 					<Select.Viewport>
-						{options.map((group) => {
+						{options.map((group, groupId) => {
 							return (
-								<Select.Group>
+								<Select.Group key={groupId}>
 									<Select.Label className={css.groupName}>{group.group}</Select.Label>
-									{group.value.map((option, item_id) => {
+									{group.value.map((option, itemId) => {
 										return (
-											<Select.Item key={item_id} className={css.menuItem} value={option}>
+											<Select.Item key={itemId} className={css.menuItem} value={option}>
 												<Select.ItemText>{option}</Select.ItemText>
 											</Select.Item>
 										)
