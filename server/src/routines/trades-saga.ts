@@ -1,7 +1,7 @@
 import {all, call, takeEvery} from 'typed-redux-saga'
 import {createSale, deleteSale, getSale, getSales} from '../db/trades'
 import {updateUser} from './root'
-import {addCardsToUser, removeCardsFromUser, updateUserTokens} from 'db/user'
+import {addCardsToUser, removeCardsFromUser, selectUserUUIDUnsecure, updateUserTokens} from 'db/user'
 import {Socket} from 'socket.io'
 import store from 'stores'
 import {getSockets} from 'login/login-selectors'
@@ -70,16 +70,18 @@ function* salePurchaseSaga(action: any) {
 
 	const unlisted = user.username === sale.seller
 
+	const sellerUuid: string = yield selectUserUUIDUnsecure(sale.seller)
+
 	if (sale.price > 0 && user.tokens < sale.price && !unlisted) return
 
 	if (unlisted && sale.price < 0) {
-		yield updateUserTokens(sale.seller, -sale.price)
+		yield updateUserTokens(sellerUuid, -sale.price)
 	}
-	if (!unlisted && sale.price < 0) {
+	if (!unlisted) {
 		yield updateUserTokens(user.uuid, -sale.price)
 	}
 	if (!unlisted && sale.price > 0) {
-		yield updateUserTokens(sale.seller, sale.price)
+		yield updateUserTokens(sellerUuid, sale.price)
 	}
 
 	yield addCardsToUser(user.uuid, Array(sale.copies).fill(sale.card))
