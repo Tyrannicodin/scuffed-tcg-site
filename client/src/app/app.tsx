@@ -10,6 +10,7 @@ import Import from './import'
 import Trading from './trading'
 import OtpEntry from 'components/otp-entry'
 import Settings from './settings'
+import Background from 'components/background'
 
 export function App() {
 	const dispatch = useDispatch()
@@ -53,5 +54,10 @@ export function App() {
 		return <Login />
 	}
 
-	return <main className={css.main}>{router()}</main>
+	return (
+		<main className={css.main}>
+			{router()}
+			<Background panorama="hermit-hill" disabled={false}></Background>
+		</main>
+	)
 }

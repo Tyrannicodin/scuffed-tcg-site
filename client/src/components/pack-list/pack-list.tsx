@@ -19,7 +19,7 @@ type Props = {
 export function PackList({children, discounted, showDescription, actionButtonCreator}: Props) {
 	return (
 		<div className={css.outerContainer}>
-			<ul onScrollCapture={handleScroll} className={css.cardList}>
+			<ul className={css.cardList}>
 				{children.map((pack, index) => (
 					<PackInfo
 						key={index}

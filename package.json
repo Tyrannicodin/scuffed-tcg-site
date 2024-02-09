@@ -26,6 +26,8 @@
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-toggle": "^1.0.3",
+    "@react-three/drei": "^9.97.3",
+    "@react-three/fiber": "^8.15.16",
     "@reduxjs/toolkit": "^2.0.1",
     "@types/gapi": "^0.0.47",
     "@types/react-timeago": "^4.1.7",
@@ -54,6 +56,7 @@
     "socket.io": "^4.7.3",
     "socket.io-client": "^4.7.3",
     "terser": "^5.26.0",
+    "three": "^0.161.0",
     "typed-redux-saga": "^1.5.0",
     "uuid": "^9.0.1",
     "vite": "^5.0.11"
