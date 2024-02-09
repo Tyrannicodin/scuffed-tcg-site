@@ -33,12 +33,17 @@ export function Import({menuSetter}: Props) {
 			const splitRow = row.split(',')
 			if (splitRow.length < 2) return
 			if (!cards.some((card) => card.name === splitRow[0] && card.rarity === splitRow[1])) return
+
+			var alreadyAdded = false
 			rows.forEach((card) => {
 				if (card.card.name === splitRow[0] && card.card.rarity === splitRow[1]) {
 					card.copies += Number(splitRow[2]) ? Number(splitRow[2]) : 1
-					return
+					alreadyAdded = true
 				}
 			})
+
+			if (alreadyAdded) return
+
 			const partialCard: PartialCardWithCopiesT = {
 				card: {
 					name: splitRow[0],
@@ -52,14 +57,16 @@ export function Import({menuSetter}: Props) {
 		setImportedCards(rows)
 	}
 
-	const onCardsImported = (cards: Array<PartialCardWithCopiesT>) => {
+	const onCardsImported = () => {
 		const cardsFormatted: Array<PartialCardT> = []
 
-		cards.forEach((card) => {
+		importedCards.forEach((card) => {
 			for (var i = 0; i < card.copies; i++) {
 				cardsFormatted.push(card.card)
 			}
 		})
+
+		setImportedCards([])
 
 		dispatch({
 			type: 'CARDS_ROLLED',
@@ -139,7 +146,7 @@ export function Import({menuSetter}: Props) {
 					</div>
 					<div className={css.leftArea}>
 						If the imported cards look correct, click this button to import your library into your
-						account. <button onClick={(e) => onCardsImported(importedCards)}>Import!</button>
+						account. <button onClick={() => onCardsImported()}>Import!</button>
 						<div>
 							<input onChange={(e) => setTokens(Number(e.target.value))}></input>
 							<button onClick={(e) => onTokensAdded(tokens)}>Add tokens!</button>
