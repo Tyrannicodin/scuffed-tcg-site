@@ -14,10 +14,6 @@ socket.on('error', (error) => {
 	console.log('Socket error: ', error)
 })
 
-socket.onAny((event, payload) => {
-	console.log('[message]', event, payload)
-})
-
 socket.on('disconnect', () => {
 	store.dispatch(disconnect('Logged out'))
 })

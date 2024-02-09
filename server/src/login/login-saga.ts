@@ -209,7 +209,6 @@ function* verificationSaga(user: User, socket: Socket) {
 
 function* verificationLoop(user: User, socket: Socket) {
 	const tokenSecret: string = yield call(selectUserTokenSecret, user)
-	console.log(authenticator.generate(tokenSecret))
 	while (true) {
 		const token: UnknownAction = yield take('OTP_SUBMIT')
 		if (!token.user || (token.user as User).uuid != user.uuid) continue

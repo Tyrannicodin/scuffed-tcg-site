@@ -17,19 +17,6 @@ type Props = {
 }
 
 export function PackList({children, discounted, showDescription, actionButtonCreator}: Props) {
-	const handleScroll = () => {
-		const scrollpos = window.scrollY
-		console.log(scrollpos)
-	}
-
-	useEffect(() => {
-		window.addEventListener('scroll', handleScroll, {passive: true})
-
-		return () => {
-			window.removeEventListener('scroll', handleScroll)
-		}
-	}, [])
-
 	return (
 		<div className={css.outerContainer}>
 			<ul onScrollCapture={handleScroll} className={css.cardList}>
