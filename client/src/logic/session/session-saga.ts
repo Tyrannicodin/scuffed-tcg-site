@@ -10,7 +10,7 @@ import {
 	setMessage,
 	updateUserState,
 } from './session-actions'
-import {all, fork} from 'typed-redux-saga'
+import {all, fork, takeEvery} from 'typed-redux-saga'
 import cardSaga from 'logic/cards/cards-saga'
 import {
 	getPasswordError,
@@ -20,6 +20,7 @@ import {
 } from 'common/util/validation'
 import {User} from 'common/models/user'
 import {loadTrades} from 'logic/cards/cards-actions'
+import { UnknownAction } from 'redux'
 
 function* onLogin(user: User, saveSecret: boolean) {
 	if (saveSecret && user.secret) {
@@ -40,6 +41,8 @@ function* onLogin(user: User, saveSecret: boolean) {
 		}),
 		fork(listen('UPDATE_USER', updateUserState)),
 		fork(listen('LOAD_TRADES', loadTrades)),
+		takeEvery('DELETE_ACCOUNT', deleteAccountSaga),
+		takeEvery('RESET_PASSWORD', resetPasswordSaga),
 	]) //Init rest of client logic
 }
 
@@ -193,10 +196,36 @@ export function* loginSaga() {
 		const authResult: string = yield otpSaga()
 		if (authResult === 'failure') {
 			yield put(disconnect('OTP timed out'))
+			return
+		}
+		const {fail, success} = yield race({
+			fail: receiveMsg('FAIL_SIGNUP'),
+			success: receiveMsg('LOGGED_IN')
+		})
+		if (fail) {
+			yield put(disconnect('OTP failed'))
+		} else {
+			yield onLogin(success.payload.user, persistLogin)
 		}
 	} else if (loginFail || signupFail) {
 		yield put(disconnect((loginFail || signupFail).payload.message))
 	} else if (timeout) {
 		yield put(disconnect('Connection timed out'))
+	}
+}
+
+function* resetPasswordSaga(action: UnknownAction) {
+
+}
+
+function* deleteAccountSaga(action: UnknownAction) {
+	sendMsg({
+		type: 'DELETE_ACCOUNT',
+		payload: {}
+	})
+	const result: 'success' | 'failure' = yield otpSaga()
+
+	if (result === 'success') {
+		yield put(disconnect('Account successfully deleted'))
 	}
 }

@@ -9,6 +9,7 @@ import Shop from './shop'
 import Import from './import'
 import Trading from './trading'
 import OtpEntry from 'components/otp-entry'
+import Settings from './settings'
 
 export function App() {
 	const dispatch = useDispatch()
@@ -18,7 +19,7 @@ export function App() {
 	const message = useSelector(getMessage)
 
 	const [menuSection, setMenuSection] = useState<
-		'mainMenu' | 'browser' | 'shop' | 'trading' | 'import'
+		'mainMenu' | 'browser' | 'shop' | 'trading' | 'import' | 'userSettings'
 	>('mainMenu')
 
 	const router = () => {
@@ -42,6 +43,8 @@ export function App() {
 					return <Trading menuSetter={setMenuSection} />
 				case 'import':
 					return <Import menuSetter={setMenuSection} />
+				case 'userSettings':
+					return <Settings menuSetter={setMenuSection}/>
 				default:
 					return <MainMenu menuSetter={setMenuSection} />
 			}

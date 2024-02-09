@@ -221,7 +221,7 @@ export async function deleteUser(uuid: string) {
 	try {
 		await pool.query(
 			sql`
-                DELETE FROM users WHERE users.uuid = $1;
+                DELETE FROM users WHERE users.user_id = $1;
             `,
 			[uuid]
 		)
