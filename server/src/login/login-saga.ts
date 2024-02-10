@@ -40,11 +40,12 @@ function getDatabaseError(result: userCreateResultT['result']): string {
 	}
 }
 
-function* takeFromUser(user: User, eventType: string) {
+function* takeFromSocket(socket: Socket, eventType: string) {
 	while (true) {
-		const event = (yield take(eventType)) as {user: User; socket: Socket; payload: any}
-		const {user: eventUser}: {user: User} = event
-		if (eventUser.secret === user.secret && eventUser.uuid === user.uuid) return event
+		const event = (yield take(eventType)) as {socket: Socket}
+		console.log(event)
+		const {socket: eventSocket} = event
+		if (eventSocket === socket) return event
 	}
 }
 
@@ -109,7 +110,7 @@ function* loginSaga(action: any) {
 
 function* signUpSaga(action: any) {
 	const {username, password, confirmPassword} = action.payload
-	const {socket} = action
+	const {socket} : {socket: Socket} = action
 
 	const fail_signup = (message: string) => {
 		socket.emit('FAIL_SIGNUP', {
@@ -168,10 +169,20 @@ function* signUpSaga(action: any) {
 
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
-		payload: {user, tokenSecret: tokenUri},
+		payload: {user, tokenUri, tokenSecret},
 	})
 
-	yield takeFromUser(user, 'CODE_READY')
+	const {gotUser} = yield race({
+		gotUser: takeFromSocket(socket, 'CODE_READY'),
+		disconnect: takeFromSocket(socket, 'CLIENT_DISCONNECTED'),
+		timeout: delay(5*60*1000)
+	})
+
+	if (!gotUser) {
+		fail_signup('Timed out (or socket disconnected)')
+		yield call(deleteUser, user.uuid)
+		return
+	}
 
 	const verifyResult: 'success' | 'failure' | 'unknown' = yield verificationSaga(
 		user,
@@ -205,7 +216,7 @@ function* verificationSaga(user: User, socket: Socket) {
 	const {timeout, cancel, verfified} = yield race({
 		timeout: delay(1000 * 60 * 5),
 		verfified: verificationLoop(user, socket),
-		cancel: takeFromUser(user, 'OTP_CANCEL'),
+		cancel: takeFromSocket(socket, 'OTP_CANCEL'),
 	})
 	const result = timeout | cancel ? 'failure' : verfified ? 'success' : 'unknown'
 	socket.emit('OTP_END', {
@@ -218,7 +229,7 @@ function* verificationSaga(user: User, socket: Socket) {
 function* verificationLoop(user: User, socket: Socket) {
 	const tokenSecret: string = yield call(selectUserTokenSecret, user)
 	while (true) {
-		const token: UnknownAction = yield takeFromUser(user, 'OTP_SUBMIT')
+		const token: UnknownAction = yield takeFromSocket(socket, 'OTP_SUBMIT')
 		if (!token.user || (token.user as User).uuid != user.uuid) continue
 		const payload = token.payload as {code: string}
 		if (!payload) continue
