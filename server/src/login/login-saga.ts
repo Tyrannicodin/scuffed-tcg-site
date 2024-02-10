@@ -169,7 +169,7 @@ function* signUpSaga(action: any) {
 
 	socket.emit('ONBOARDING', {
 		type: 'ONBOARDING',
-		payload: {user, tokenSecret: tokenUri},
+		payload: {user, tokenUri, tokenSecret},
 	})
 
 	const {gotUser} = yield race({
