@@ -54,7 +54,7 @@ export function Shop({menuSetter}: Props) {
 					purchase: card,
 					date: currentDate,
 				},
-				cost: card.tokens,
+				cost: Math.min(card.tokens ? card.tokens : 0, 0),
 			},
 		})
 		setShowPackModal(true)
