@@ -125,7 +125,7 @@ export function* loginSaga() {
 		})
 
 		if (login) {
-			yield onLogin(login.payload, true)
+			yield onLogin(login.payload.user, true)
 			return
 		}
 	}

@@ -25,6 +25,10 @@ export const getShowOtp = (state: RootState): boolean => {
 	return getSession(state).showOtp
 }
 
+export const getTokenUri = (state: RootState): string => {
+	return getSession(state).tokenUri
+}
+
 export const getTokenSecret = (state: RootState): string => {
 	return getSession(state).tokenSecret
 }

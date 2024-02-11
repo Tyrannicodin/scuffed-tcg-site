@@ -13,7 +13,6 @@ const store = configureStore({
 		cards: cardsReducer,
 	},
 	middleware: () => new Tuple(sagaMiddleware),
-	devTools: true,
 })
 
 sagaMiddleware.run(rootSaga)

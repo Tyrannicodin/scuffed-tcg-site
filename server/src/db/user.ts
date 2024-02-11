@@ -7,6 +7,7 @@ import {privateDecrypt, publicEncrypt} from 'crypto'
 import {DBKEY} from '../../../common/config'
 import {authenticator} from 'otplib'
 import {DeckWithPartialCardT} from '../../../common/types/deck'
+import { deleteDeck } from './decks'
 
 export async function createUser(username: string, hash: string): Promise<userCreateResultT> {
 	try {
@@ -219,14 +220,42 @@ export async function updateUserInfo(user: User) {
 
 export async function deleteUser(uuid: string) {
 	try {
+		const userDecks = await pool.query(
+			sql`
+				SELECT decks.deck_code FROM decks WHERE decks.user_id=$1
+			`,
+			[uuid]
+		)
+		userDecks.rows.forEach(async (row) => {
+			await deleteDeck(row.deck_code)
+		})
 		await pool.query(
 			sql`
-                DELETE FROM users WHERE users.user_id = $1;
+				DELETE FROM libraries WHERE libraries.user_id=$1
+			`,
+			[uuid]
+		)
+		await pool.query(
+			sql`
+				DELETE FROM purchases_cards WHERE purchases_cards.user_id=$1
+			`,
+			[uuid]
+		)
+		await pool.query(
+			sql`
+				DELETE FROM purchases_packs WHERE purchases_packs.user_id=$1
+			`,
+			[uuid]
+		)
+		await pool.query(
+			sql`
+                DELETE FROM users WHERE users.user_id=$1;
             `,
 			[uuid]
 		)
 		return {result: 'success'}
 	} catch (err) {
+		console.log(err)
 		return {result: 'failure'}
 	}
 }

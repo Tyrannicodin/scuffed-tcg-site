@@ -72,14 +72,16 @@ export async function updateShop() {
 		await pool.query(
 			sql`
                 INSERT INTO shop_cards (SELECT hermit_cards.card_name,hermit_cards.rarity,'hermit',$1
-                FROM hermit_cards CROSS JOIN (SELECT * FROM hermit_cards) ORDER BY random() LIMIT 14);
+                FROM hermit_cards CROSS JOIN (SELECT * FROM hermit_cards WHERE rarity != 'Mythic')
+				WHERE hermit_cards.rarity != 'Mythic' ORDER BY random() LIMIT 14);
             `,
 			[date]
 		)
 		await pool.query(
 			sql`
                 INSERT INTO shop_cards (SELECT effect_cards.card_name,effect_cards.rarity,'effect',$1
-                FROM effect_cards CROSS JOIN (SELECT * FROM effect_cards) ORDER BY random() LIMIT 14);
+                FROM effect_cards CROSS JOIN (SELECT * FROM effect_cards WHERE rarity != 'Mythic')
+				WHERE effect_cards.rarity != 'Mythic' ORDER BY random() LIMIT 14);
             `,
 			[date]
 		)

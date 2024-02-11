@@ -90,7 +90,7 @@ function* purchaseSaleSaga(action: UnknownAction) {
 
 	if (!user) return
 	//if (!user || !user.library.some((card) => card.card === sale.card && card.copies > sale.copies)) return
-	if (sale.price > 0 && user.tokens < sale.price) return
+	if (sale.price > 0 && (user.tokens < sale.price || user.username === sale.seller)) return
 	sendMsg({
 		type: 'PURCHASE_SALE',
 		payload: {sale},

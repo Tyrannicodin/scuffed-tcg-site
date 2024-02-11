@@ -52,7 +52,8 @@ function startSocketIO(server: any) {
 		socket.on('disconnect', () => {
 			store.dispatch({
 				type: 'CLIENT_DISCONNECTED',
-				payload: socket,
+				payload: {},
+				socket: socket,
 			})
 		})
 	})
