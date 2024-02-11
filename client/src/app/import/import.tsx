@@ -29,20 +29,22 @@ export function Import({menuSetter}: Props) {
 
 		const rows: Array<PartialCardWithCopiesT> = []
 
-		fileContents.split('\n').forEach((row) => {
+		const cleanFileContents = fileContents.replaceAll('\r', '')
+
+		cleanFileContents.split('\n').forEach((row) => {
 			const splitRow = row.split(',')
 			if (splitRow.length < 2) return
+			if (!splitRow[2]) splitRow[2] === '1'
 			if (!cards.some((card) => card.name === splitRow[0] && card.rarity === splitRow[1])) return
 
-			var alreadyAdded = false
-			rows.forEach((card) => {
+			const cardsInList = rows.some((card) => {
 				if (card.card.name === splitRow[0] && card.card.rarity === splitRow[1]) {
 					card.copies += Number(splitRow[2]) ? Number(splitRow[2]) : 1
-					alreadyAdded = true
+					return true
 				}
 			})
 
-			if (alreadyAdded) return
+			if (cardsInList) return
 
 			const partialCard: PartialCardWithCopiesT = {
 				card: {

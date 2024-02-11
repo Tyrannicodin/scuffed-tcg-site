@@ -29,7 +29,7 @@ function* verifyCardRolls(action: UnknownAction) {
 
 	const cardResult: string = yield call(addCardsToUser, user.uuid, payload.cards)
 
-	yield call(addPurchaseToUser, user.uuid, payload.metadata)
+	if (payload.metadata.type !== 'import') yield call(addPurchaseToUser, user.uuid, payload.metadata)
 	yield call(updateUserTokens, user.uuid, payload.cost * -1)
 	if (cardResult !== 'success') return
 	;(action.socket as Socket).emit('ROLL_VERIFIED', {
