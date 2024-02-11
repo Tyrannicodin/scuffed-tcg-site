@@ -2,10 +2,11 @@ import css from './login.module.scss'
 import {useDispatch, useSelector} from 'react-redux'
 import {useState} from 'react'
 import InputField from 'components/input-field'
-import {getMessage, getTokenSecret} from 'logic/session/session-selectors'
+import {getMessage, getTokenSecret, getTokenUri} from 'logic/session/session-selectors'
 import * as Toggle from '@radix-ui/react-toggle'
 import AuthDisplay from 'components/auth-display'
 import {sendMsg} from 'logic/socket/socket-saga'
+import CopyIcon from 'components/copy-icon'
 
 export function Login() {
 	const dispatch = useDispatch()
@@ -16,7 +17,8 @@ export function Login() {
 	const [persistLogin, setPersistLogin] = useState(false)
 	const [page, setPage] = useState<'login' | 'signup' | 'forgot'>('login')
 	const message = useSelector(getMessage)
-	const secretUrl = useSelector(getTokenSecret)
+	const secret = useSelector(getTokenSecret)
+	const secretUrl = useSelector(getTokenUri)
 
 	const loginAccount = () => {
 		dispatch({
@@ -56,6 +58,17 @@ export function Login() {
 			<div className={css.flexAlign}>
 				<h3>Scan to add to your authenticator app</h3>
 				<AuthDisplay />
+				<h4>Optionally, add it using this code</h4>
+				<div className={css.copy_secret}>
+					<input type='text' value={secret} readOnly />
+					<button
+						className={css.copy}
+						onClick={() => navigator.clipboard.writeText(secret)}
+					>
+						{CopyIcon()}
+					</button>
+				</div>
+				
 				<button
 					className={css.verify_button}
 					onClick={() => sendMsg({type: 'CODE_READY', payload: {}})}

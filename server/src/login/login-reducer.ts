@@ -60,7 +60,7 @@ function userReducer(state = defaultState, action: UnknownAction): UsersState {
 				...state,
 			}
 		case 'CLIENT_DISCONNECTED':
-			state.sockets.splice(state.sockets.indexOf(action.payload as Socket))
+			state.sockets.splice(state.sockets.indexOf(action.socket as Socket))
 			return {
 				...state,
 			}

@@ -4,6 +4,7 @@ import {User} from 'common/models/user'
 type SessionState = {
 	user: User | null
 	message: string
+	tokenUri: string
 	tokenSecret: string
 	showOtp: boolean
 }
@@ -11,6 +12,7 @@ type SessionState = {
 const defaultState: SessionState = {
 	user: null,
 	message: '',
+	tokenUri: '',
 	tokenSecret: '',
 	showOtp: false,
 }
@@ -56,6 +58,7 @@ const sessionReducer = (state = defaultState, action: UnknownAction): SessionSta
 				...state,
 				showOtp: true,
 				tokenSecret: '',
+				tokenUri: '',
 			}
 		case 'OTP_END':
 			return {
