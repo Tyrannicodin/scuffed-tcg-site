@@ -222,7 +222,7 @@ export async function deleteUser(uuid: string) {
 	try {
 		const userDecks = await pool.query(
 			sql`
-				SELECT decks.deck_code FROM decks WHERE decks.user_id=$1
+				SELECT decks.deck_code FROM decks WHERE decks.user_id=$1;
 			`,
 			[uuid]
 		)
@@ -231,21 +231,26 @@ export async function deleteUser(uuid: string) {
 		})
 		await pool.query(
 			sql`
-				DELETE FROM libraries WHERE libraries.user_id=$1
+				DELETE FROM libraries WHERE libraries.user_id=$1;
 			`,
 			[uuid]
 		)
 		await pool.query(
 			sql`
-				DELETE FROM purchases_cards WHERE purchases_cards.user_id=$1
+				DELETE FROM purchases_cards WHERE purchases_cards.user_id=$1;
 			`,
 			[uuid]
 		)
 		await pool.query(
 			sql`
-				DELETE FROM purchases_packs WHERE purchases_packs.user_id=$1
+				DELETE FROM purchases_packs WHERE purchases_packs.user_id=$1;
 			`,
 			[uuid]
+		)
+		await pool.query(
+			sql`
+				DELETE FROM sales WHERE sales.user_id=$1;
+			`
 		)
 		await pool.query(
 			sql`

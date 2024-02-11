@@ -8,7 +8,7 @@ const getClientVersion = () => {
 	) as HTMLScriptElement | null
 	if (!scriptTag) return null
 
-	return scriptTag.src.replace(/^.*index-(\w+)\.js/i, '$1')
+	return scriptTag.src.replace(/^.*index-(.+)\.js/i, '$1')
 }
 
 const url =
