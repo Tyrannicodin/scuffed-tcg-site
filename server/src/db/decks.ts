@@ -52,6 +52,25 @@ export async function addDeckToUser(
 	}
 }
 
+export async function deleteDeck(deckCode:string) {
+	try {
+		await pool.query(
+			sql`
+				DELETE FROM deck_cards WHERE deck_cards.deck_code=$1
+			`,
+			[deckCode]
+		)
+		await pool.query(
+			sql`
+				DELETE FROM decks WHERE decks.deck_code=$1
+			`,
+			[deckCode]
+		)
+	} catch (err) {
+		console.log(err)
+	}
+}
+
 export async function importDeck(uuid: string, deckCode: string): Promise<string> {
 	try {
 		const result = await pool.query(

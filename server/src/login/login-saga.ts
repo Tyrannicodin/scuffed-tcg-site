@@ -43,7 +43,6 @@ function getDatabaseError(result: userCreateResultT['result']): string {
 function* takeFromSocket(socket: Socket, eventType: string) {
 	while (true) {
 		const event = (yield take(eventType)) as {socket: Socket}
-		console.log(event)
 		const {socket: eventSocket} = event
 		if (eventSocket === socket) return event
 	}
