@@ -2,6 +2,7 @@ import {useDispatch} from 'react-redux'
 import css from './settings.module.scss'
 import {useState} from 'react'
 import {PasswordResetModal} from 'components/modals'
+import VersionLabel from 'components/version-label'
 
 type Props = {
 	menuSetter: (arg0: 'userSettings' | 'mainMenu') => void
@@ -37,6 +38,7 @@ export function Settings({menuSetter}: Props) {
 				<button className={css.button} onClick={() => menuSetter('mainMenu')}>
 					Back
 				</button>
+				<VersionLabel />
 			</div>
 		</>
 	)

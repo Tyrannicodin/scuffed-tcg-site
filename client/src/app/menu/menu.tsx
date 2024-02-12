@@ -1,3 +1,4 @@
+import VersionLabel from 'components/version-label'
 import css from './menu.module.scss'
 import {sendMsg} from 'logic/socket/socket-saga'
 
@@ -30,6 +31,7 @@ export function MainMenu({menuSetter}: Props) {
 					Log Out
 				</button>
 			</div>
+			<VersionLabel />
 		</div>
 	)
 }

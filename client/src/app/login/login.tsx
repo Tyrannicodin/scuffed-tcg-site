@@ -7,6 +7,7 @@ import * as Toggle from '@radix-ui/react-toggle'
 import AuthDisplay from 'components/auth-display'
 import {sendMsg} from 'logic/socket/socket-saga'
 import CopyIcon from 'components/copy-icon'
+import VersionLabel from 'components/version-label'
 
 export function Login() {
 	const dispatch = useDispatch()
@@ -75,6 +76,7 @@ export function Login() {
 				>
 					Verify account
 				</button>
+				<VersionLabel />
 			</div>
 		)
 	} else if (page === 'login') {
@@ -111,6 +113,7 @@ export function Login() {
 				) : (
 					messenger
 				)}
+				<VersionLabel />
 			</div>
 		)
 	} else if (page === 'signup') {
@@ -135,6 +138,7 @@ export function Login() {
 				) : (
 					messenger
 				)}
+				<VersionLabel />
 			</div>
 		)
 	} else if (page === 'forgot') {
@@ -158,6 +162,7 @@ export function Login() {
 				) : (
 					messenger
 				)}
+				<VersionLabel />
 			</div>
 		)
 	} else {
@@ -166,6 +171,7 @@ export function Login() {
 				<p>I have no idea how we got here...</p>
 				<button onClick={() => setPage('login')}>Go to Login</button>
 				{messenger}
+				<VersionLabel />
 			</div>
 		)
 	}

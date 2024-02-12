@@ -23,6 +23,7 @@ import {
 } from 'common/functions/daily-shop'
 import ShopTimer from 'components/shop-timer'
 import classNames from 'classnames'
+import VersionLabel from 'components/version-label'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'shop') => void

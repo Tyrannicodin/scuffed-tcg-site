@@ -10,6 +10,7 @@ import {getFilters} from 'common/functions/get-filters'
 import NumberFilter from 'components/number-filter'
 import {SaleModal} from 'components/modals'
 import {getUser} from 'logic/session/session-selectors'
+import VersionLabel from 'components/version-label'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'trading') => void
