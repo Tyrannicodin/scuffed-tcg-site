@@ -37,7 +37,7 @@ function getItemTypeArray(name: string, rarity: string, costCell: string, isSeco
 		Exp: 'explorer',
 		Chl: 'challenger',
 		Clct: 'collector',
-		Dip: 'diplomat',
+		Dpl: 'diplomat',
 		Frm: 'farm',
 		Hst: 'historian',
 		Inv: 'inventor',
