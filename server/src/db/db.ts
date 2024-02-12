@@ -1,11 +1,20 @@
 import pg from 'pg'
 import env from 'env-var'
 import 'dotenv/config'
+import {createPrivateKey} from 'crypto'
 import {HermitCard} from '../../../common/models/hermit-card'
 import {EffectCard} from '../../../common/models/effect-card'
 import {ItemCard} from '../../../common/models/item-card'
 import {grabCardsFromGoogleSheets} from './sheets'
 import {PACKS} from '../../../common/packs'
+
+const key = env.get('DB_ENCRYPTION_KEY').asString()
+
+if (!key) {
+	console.log('Database encryption key has not been found.')
+}
+
+export const DBKEY = createPrivateKey(key ? key : '')
 
 const {Pool} = pg
 

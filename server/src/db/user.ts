@@ -1,10 +1,9 @@
 import {PastPurchasesT, Uuid, userCreateResultT} from '../../../common/types/user'
 import {User, userDefs} from '../../../common/models/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
-import {pool, sql} from './db'
+import {DBKEY, pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
 import {privateDecrypt, publicEncrypt} from 'crypto'
-import {DBKEY} from '../../../common/config'
 import {authenticator} from 'otplib'
 import {DeckWithPartialCardT} from '../../../common/types/deck'
 import { deleteDeck } from './decks'
@@ -203,6 +202,7 @@ export async function selectUserTokenSecret(user: User): Promise<string> {
 		)
 
 		if (!result || result.rows.length != 1) return ''
+		if (!DBKEY) return ''
 		return privateDecrypt(DBKEY, result.rows[0].token_secret).toString('utf-8')
 	} catch (err) {
 		console.log(err)
