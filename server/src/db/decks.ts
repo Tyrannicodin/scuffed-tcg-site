@@ -52,7 +52,7 @@ export async function addDeckToUser(
 	}
 }
 
-export async function deleteDeck(deckCode:string) {
+export async function deleteDeck(deckCode: string) {
 	try {
 		await pool.query(
 			sql`

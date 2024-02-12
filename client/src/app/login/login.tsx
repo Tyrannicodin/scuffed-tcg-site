@@ -61,15 +61,12 @@ export function Login() {
 				<AuthDisplay />
 				<h4>Optionally, add it using this code</h4>
 				<div className={css.copy_secret}>
-					<input type='text' value={secret} readOnly />
-					<button
-						className={css.copy}
-						onClick={() => navigator.clipboard.writeText(secret)}
-					>
+					<input type="text" value={secret} readOnly />
+					<button className={css.copy} onClick={() => navigator.clipboard.writeText(secret)}>
 						{CopyIcon()}
 					</button>
 				</div>
-				
+
 				<button
 					className={css.verify_button}
 					onClick={() => sendMsg({type: 'CODE_READY', payload: {}})}

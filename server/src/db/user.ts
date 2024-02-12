@@ -6,7 +6,7 @@ import {getFormattedDate} from '../../../common/functions/daily-shop'
 import {privateDecrypt, publicEncrypt} from 'crypto'
 import {authenticator} from 'otplib'
 import {DeckWithPartialCardT} from '../../../common/types/deck'
-import { deleteDeck } from './decks'
+import {deleteDeck} from './decks'
 
 export async function createUser(username: string, hash: string): Promise<userCreateResultT> {
 	try {

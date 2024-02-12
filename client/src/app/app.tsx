@@ -11,6 +11,7 @@ import Trading from './trading'
 import OtpEntry from 'components/otp-entry'
 import Settings from './settings'
 import Background from 'components/background'
+import TutorialOverlay from 'components/tutorial-overlay'
 
 export function App() {
 	const dispatch = useDispatch()
@@ -56,6 +57,7 @@ export function App() {
 
 	return (
 		<main className={css.main}>
+			<TutorialOverlay />
 			{router()}
 			<Background panorama="hermit-hill" disabled={false}></Background>
 		</main>

@@ -109,7 +109,7 @@ function* loginSaga(action: any) {
 
 function* signUpSaga(action: any) {
 	const {username, password, confirmPassword} = action.payload
-	const {socket} : {socket: Socket} = action
+	const {socket}: {socket: Socket} = action
 
 	const fail_signup = (message: string) => {
 		socket.emit('FAIL_SIGNUP', {
@@ -174,7 +174,7 @@ function* signUpSaga(action: any) {
 	const {gotUser} = yield race({
 		gotUser: takeFromSocket(socket, 'CODE_READY'),
 		disconnect: takeFromSocket(socket, 'CLIENT_DISCONNECTED'),
-		timeout: delay(5*60*1000)
+		timeout: delay(5 * 60 * 1000),
 	})
 
 	if (!gotUser) {
