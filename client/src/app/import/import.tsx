@@ -4,6 +4,7 @@ import {useState} from 'react'
 import {getCards} from 'logic/cards/cards-selectors'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from 'common/types/cards'
 import CardList from 'components/card-list'
+import VersionLabel from 'components/version-label'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'import') => void

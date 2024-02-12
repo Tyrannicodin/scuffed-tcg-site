@@ -2,12 +2,13 @@ import path from 'path'
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
 import {CONFIG} from '../common/config'
+import env from 'env-var'
 
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [react()],
 	define: {
-		__ENV__: JSON.stringify(process.env.NODE_ENV),
+		__ENV__: JSON.stringify(env.get('NODE_ENV').asString()),
 		__PORT__: JSON.stringify(CONFIG.port),
 	},
 	resolve: {

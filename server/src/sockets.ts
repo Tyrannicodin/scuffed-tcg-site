@@ -3,10 +3,11 @@ import {CONFIG} from '../../common/config'
 import {getUsers} from './login/login-selectors'
 import store from './stores'
 import version from './version'
+import env from 'env-var'
 
-const env = process.env.NODE_ENV || 'development'
+const nodeEnv = env.get('NODE_ENV').asString() || 'development'
 const isValidVersion = (clientVersion: string) => {
-	if (env === 'development') {
+	if (nodeEnv === 'development') {
 		return true
 	}
 	return version === clientVersion

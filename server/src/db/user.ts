@@ -1,10 +1,9 @@
 import {PastPurchasesT, Uuid, userCreateResultT} from '../../../common/types/user'
 import {User, userDefs} from '../../../common/models/user'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from '../../../common/types/cards'
-import {pool, sql} from './db'
+import {DBKEY, pool, sql} from './db'
 import {getFormattedDate} from '../../../common/functions/daily-shop'
 import {privateDecrypt, publicEncrypt} from 'crypto'
-import {DBKEY} from '../../../common/config'
 import {authenticator} from 'otplib'
 import {DeckWithPartialCardT} from '../../../common/types/deck'
 import { deleteDeck } from './decks'
@@ -203,6 +202,7 @@ export async function selectUserTokenSecret(user: User): Promise<string> {
 		)
 
 		if (!result || result.rows.length != 1) return ''
+		if (!DBKEY) return ''
 		return privateDecrypt(DBKEY, result.rows[0].token_secret).toString('utf-8')
 	} catch (err) {
 		console.log(err)
@@ -222,7 +222,7 @@ export async function deleteUser(uuid: string) {
 	try {
 		const userDecks = await pool.query(
 			sql`
-				SELECT decks.deck_code FROM decks WHERE decks.user_id=$1
+				SELECT decks.deck_code FROM decks WHERE decks.user_id=$1;
 			`,
 			[uuid]
 		)
@@ -231,21 +231,26 @@ export async function deleteUser(uuid: string) {
 		})
 		await pool.query(
 			sql`
-				DELETE FROM libraries WHERE libraries.user_id=$1
+				DELETE FROM libraries WHERE libraries.user_id=$1;
 			`,
 			[uuid]
 		)
 		await pool.query(
 			sql`
-				DELETE FROM purchases_cards WHERE purchases_cards.user_id=$1
+				DELETE FROM purchases_cards WHERE purchases_cards.user_id=$1;
 			`,
 			[uuid]
 		)
 		await pool.query(
 			sql`
-				DELETE FROM purchases_packs WHERE purchases_packs.user_id=$1
+				DELETE FROM purchases_packs WHERE purchases_packs.user_id=$1;
 			`,
 			[uuid]
+		)
+		await pool.query(
+			sql`
+				DELETE FROM sales WHERE sales.user_id=$1;
+			`
 		)
 		await pool.query(
 			sql`
