@@ -58,3 +58,15 @@ const shopJob = new CronJob(
 	null,
 	true
 )
+
+const updateCards = new CronJob(
+	'0 0,6,12,18 * * *', // cronTime
+	function () {
+		addCardsToDatabase()
+	},
+	null,
+	false, // start
+	'UTC',
+	null,
+	true
+)
