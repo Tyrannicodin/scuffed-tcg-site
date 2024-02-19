@@ -61,20 +61,12 @@ export function Import({menuSetter}: Props) {
 	}
 
 	const onCardsImported = () => {
-		const cardsFormatted: Array<PartialCardT> = []
-
-		importedCards.forEach((card) => {
-			for (var i = 0; i < card.copies; i++) {
-				cardsFormatted.push(card.card)
-			}
-		})
-
+		console.log(importedCards)
 		setImportedCards([])
-
 		dispatch({
 			type: 'CARDS_ROLLED',
 			payload: {
-				cards: cardsFormatted,
+				cards: importedCards,
 				metadata: {
 					type: 'import',
 					purchase: {name: Math.random.toString()},

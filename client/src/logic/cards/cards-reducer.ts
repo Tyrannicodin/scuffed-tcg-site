@@ -2,10 +2,11 @@ import {Card} from 'common/models/card'
 import {UnknownAction} from 'redux'
 import {Sale, Trade} from 'common/models/trade'
 import {ShopT} from 'common/types/shop'
+import {PartialCardWithCopiesT} from 'common/types/cards'
 
 type CardsState = {
 	cards: Card[]
-	lastRollResult: Card[]
+	lastRollResult: PartialCardWithCopiesT[]
 	sales: Sale[]
 	trades: Trade[]
 	shop: ShopT
@@ -30,7 +31,7 @@ const cardsReducer = (state = defaultState, action: UnknownAction): CardsState =
 		case 'ROLL_VERIFIED':
 			return {
 				...state,
-				lastRollResult: action.payload as Card[],
+				lastRollResult: action.payload as PartialCardWithCopiesT[],
 			}
 		case 'UPDATE_SHOP':
 			return {
