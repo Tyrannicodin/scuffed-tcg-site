@@ -341,7 +341,7 @@ export async function addCardsToUser(
 	try {
 		await pool.query(
 			sql`
-				INSERT INTO libraries (user_id,card_name,rarity,copies) SELECT * FROM UNNEST (
+				INSERT INTO libraries (user_id,card_name,rarity,copies) SELECT DISTINCT * FROM UNNEST (
 					$1::uuid[],$2::text[],$3::text[],$4::int[]
 				)
 				ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + excluded.copies;
