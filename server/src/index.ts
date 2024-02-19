@@ -8,9 +8,9 @@ import {createTables, addCardsToDatabase, destroyTables} from 'db/db'
 import {updateShop} from 'db/shop'
 import startSocketIO from 'sockets'
 import {CronJob} from 'cron'
-import {exit} from 'process'
+import env from 'env-var'
 
-const port = process.env.PORT || CONFIG.port || 9000
+const port = env.get('PORT').asPortNumber() || CONFIG.port || 9000
 
 const app = express()
 
@@ -52,6 +52,18 @@ server.listen(port, () => {
 const shopJob = new CronJob(
 	'0 0 * * * *', // cronTime
 	updateShop,
+	null,
+	true, // start
+	'UTC',
+	null,
+	true
+)
+
+const updateCards = new CronJob(
+	'0 0,6,12,18 * * *', // cronTime
+	function () {
+		addCardsToDatabase()
+	},
 	null,
 	true, // start
 	'UTC',

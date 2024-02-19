@@ -9,6 +9,7 @@ import {PastPurchasesT} from '../../../common/types/user'
 import {User} from '../../../common/models/user'
 import {updateUser} from './root'
 import {getShop} from 'db/shop'
+import {PartialCardWithCopiesT} from '../../../common/types/cards'
 
 function* sendCards(action: UnknownAction) {
 	const cardList = [...store.getState().cards.cards]
@@ -22,7 +23,7 @@ function* sendCards(action: UnknownAction) {
 function* verifyCardRolls(action: UnknownAction) {
 	const user = action.user as User
 	const payload = action.payload as {
-		cards: Array<Card>
+		cards: Array<PartialCardWithCopiesT>
 		metadata: PastPurchasesT
 		cost: number
 	}

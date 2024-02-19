@@ -4,6 +4,7 @@ import {useState} from 'react'
 import {getCards} from 'logic/cards/cards-selectors'
 import {PartialCardT, PartialCardWithCopiesT, RarityT} from 'common/types/cards'
 import CardList from 'components/card-list'
+import VersionLabel from 'components/version-label'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'import') => void
@@ -60,20 +61,12 @@ export function Import({menuSetter}: Props) {
 	}
 
 	const onCardsImported = () => {
-		const cardsFormatted: Array<PartialCardT> = []
-
-		importedCards.forEach((card) => {
-			for (var i = 0; i < card.copies; i++) {
-				cardsFormatted.push(card.card)
-			}
-		})
-
+		console.log(importedCards)
 		setImportedCards([])
-
 		dispatch({
 			type: 'CARDS_ROLLED',
 			payload: {
-				cards: cardsFormatted,
+				cards: importedCards,
 				metadata: {
 					type: 'import',
 					purchase: {name: Math.random.toString()},

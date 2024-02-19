@@ -23,6 +23,7 @@ import {
 } from 'common/functions/daily-shop'
 import ShopTimer from 'components/shop-timer'
 import classNames from 'classnames'
+import VersionLabel from 'components/version-label'
 
 type Props = {
 	menuSetter: (arg0: 'mainMenu' | 'shop') => void
@@ -48,13 +49,13 @@ export function Shop({menuSetter}: Props) {
 		dispatch({
 			type: 'CARDS_ROLLED',
 			payload: {
-				cards: [card],
+				cards: [{card: card, copies: 1}],
 				metadata: {
 					type: 'card',
 					purchase: card,
 					date: currentDate,
 				},
-				cost: Math.min(card.tokens ? card.tokens : 0, 0),
+				cost: Math.max(card.tokens ? card.tokens : 0, 0),
 			},
 		})
 		setShowPackModal(true)
@@ -65,7 +66,9 @@ export function Shop({menuSetter}: Props) {
 		dispatch({
 			type: 'CARDS_ROLLED',
 			payload: {
-				cards: results,
+				cards: results.map((card) => {
+					return {card: card, copies: 1}
+				}),
 				metadata: {
 					type: 'pack',
 					purchase: {name: pack.name},

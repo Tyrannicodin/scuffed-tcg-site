@@ -36,7 +36,7 @@ export const getPastPurchases = (state: RootState): Array<PastPurchasesT> => {
 	return getUser(state)?.purchases || []
 }
 
-export const getLastRollResult = (state: RootState): Card[] => {
+export const getLastRollResult = (state: RootState): PartialCardWithCopiesT[] => {
 	return getLastRollResultState(state).lastRollResult
 }
 

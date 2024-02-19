@@ -2,7 +2,8 @@ import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import css from './modal.module.scss'
 import CardList from 'components/card-list'
 import {useSelector} from 'react-redux'
-import {getLastRollResult, getLibrary} from 'logic/cards/cards-selectors'
+import {getCards, getLastRollResult, getLibrary} from 'logic/cards/cards-selectors'
+import {getFullCardsFromPartial} from 'common/functions/daily-shop'
 
 type Props = {
 	setOpen: boolean
@@ -11,7 +12,8 @@ type Props = {
 
 export const PackModal = ({setOpen, onClose}: Props) => {
 	const library = useSelector(getLibrary)
-	const lastRolledcards = useSelector(getLastRollResult)
+	const cards = useSelector(getCards)
+	const lastRolledCards = useSelector(getLastRollResult)
 
 	return (
 		<AlertDialog.Root open={setOpen} onOpenChange={(e) => onClose(e)}>
@@ -22,7 +24,10 @@ export const PackModal = ({setOpen, onClose}: Props) => {
 					<AlertDialog.Description asChild className={css.description}>
 						<div className={css.cardListBox}>
 							<CardList
-								children={lastRolledcards}
+								children={getFullCardsFromPartial(
+									lastRolledCards.map((card) => card.card),
+									cards
+								)}
 								displayStyle={'no-description'}
 								library={library}
 							/>

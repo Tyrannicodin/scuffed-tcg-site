@@ -9,6 +9,7 @@ import {getUser, getUuid} from 'logic/session/session-selectors'
 import {PastPurchasesT} from 'common/types/user'
 import {Sale} from 'common/models/trade'
 import {ShopT} from 'common/types/shop'
+import {PartialCardWithCopiesT} from 'common/types/cards'
 
 function* newCardsSaga(action: UnknownAction) {
 	const state = store.getState()
@@ -51,7 +52,7 @@ function* lastRollResultSaga(action: UnknownAction) {
 	const state = store.getState()
 	const uuid = getUuid(state)
 	const initialPayload = action.payload as {
-		cards: Array<Card>
+		cards: Array<PartialCardWithCopiesT>
 		metadata: PastPurchasesT
 		cost: number
 	}

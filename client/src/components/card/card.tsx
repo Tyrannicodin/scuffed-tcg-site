@@ -61,7 +61,14 @@ export function CardInfo({
 		return (
 			<>
 				<b>
-					{attack.name} - {attack.damage}
+					{attack.name} - {attack.damage} (
+					{attack.cost.map((cost, index) => {
+						if (index < attack.cost.length - 1) {
+							return cost + ', '
+						}
+						return cost
+					})}
+					)
 				</b>
 				<p>{attack.ability}</p>
 			</>
@@ -74,6 +81,9 @@ export function CardInfo({
 		} else if (card.type === 'hermit') {
 			return (
 				<div className={css.description}>
+					<div>
+						<b>{(card as HermitCard).health} HP</b>
+					</div>
 					{getAttackDescription((card as HermitCard).primaryAttack)}
 					{getAttackDescription((card as HermitCard).secondaryAttack)}
 				</div>
