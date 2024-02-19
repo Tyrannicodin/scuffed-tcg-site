@@ -49,7 +49,7 @@ export function Shop({menuSetter}: Props) {
 		dispatch({
 			type: 'CARDS_ROLLED',
 			payload: {
-				cards: [card],
+				cards: [{card: card, copies: 1}],
 				metadata: {
 					type: 'card',
 					purchase: card,
@@ -66,7 +66,9 @@ export function Shop({menuSetter}: Props) {
 		dispatch({
 			type: 'CARDS_ROLLED',
 			payload: {
-				cards: results,
+				cards: results.map((card) => {
+					return {card: card, copies: 1}
+				}),
 				metadata: {
 					type: 'pack',
 					purchase: {name: pack.name},

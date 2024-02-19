@@ -6,7 +6,7 @@ import {getFormattedDate} from '../../../common/functions/daily-shop'
 import {privateDecrypt, publicEncrypt} from 'crypto'
 import {authenticator} from 'otplib'
 import {DeckWithPartialCardT} from '../../../common/types/deck'
-import { deleteDeck } from './decks'
+import {deleteDeck} from './decks'
 
 export async function createUser(username: string, hash: string): Promise<userCreateResultT> {
 	try {
@@ -318,7 +318,10 @@ export async function updateUserTokens(uuid: string, tokens: number) {
 	)
 }
 
-export async function addCardsToUser(uuid: string, cards: Array<PartialCardT>): Promise<string> {
+export async function addCardsToUser(
+	uuid: string,
+	cards: Array<PartialCardWithCopiesT>
+): Promise<string> {
 	const flippedCards: {
 		names: Array<string>
 		rarities: Array<RarityT>
@@ -329,26 +332,19 @@ export async function addCardsToUser(uuid: string, cards: Array<PartialCardT>): 
 		copies: [],
 	}
 
-	cards.forEach((card, index) => {
-		if (cards.findIndex((v) => v.name === card.name && v.rarity === card.rarity) < index) return
-		flippedCards.names.push(card.name)
-		flippedCards.rarities.push(card.rarity)
-		flippedCards.copies.push(
-			cards.filter((v) => v.name === card.name && v.rarity === card.rarity).length
-		)
+	cards.forEach((card) => {
+		flippedCards.names.push(card.card.name)
+		flippedCards.rarities.push(card.card.rarity)
+		flippedCards.copies.push(card.copies)
 	})
 
 	try {
 		await pool.query(
 			sql`
 				INSERT INTO libraries (user_id,card_name,rarity,copies) SELECT * FROM UNNEST (
-					$1::uuid[],
-					$2::text[],
-					$3::text[],
-					$4::int[]
-				) ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + (SELECT * FROM UNNEST (
-					$4::int[]
-				) LIMIT 1);
+					$1::uuid[],$2::text[],$3::text[],$4::int[]
+				)
+				ON CONFLICT (user_id,card_name,rarity) DO UPDATE SET copies = libraries.copies + excluded.copies;
 			`,
 			[
 				Array(flippedCards.names.length).fill(uuid),
