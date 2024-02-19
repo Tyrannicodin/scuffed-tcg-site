@@ -65,7 +65,7 @@ const updateCards = new CronJob(
 		addCardsToDatabase()
 	},
 	null,
-	false, // start
+	true, // start
 	'UTC',
 	null,
 	true
