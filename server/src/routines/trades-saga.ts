@@ -68,19 +68,19 @@ function* salePurchaseSaga(action: any) {
 	const {sale}: {sale: Sale} = yield call(getSale, id)
 	if (!sale) return
 
-	const unlisted = user.username === sale.seller
+	const unlisting = user.username === sale.seller
 
 	const sellerUuid: string = yield selectUserUUIDUnsecure(sale.seller)
 
-	if (sale.price > 0 && user.tokens < sale.price && !unlisted) return
+	if (sale.price > 0 && user.tokens < sale.price && !unlisting) return
 
-	if (unlisted && sale.price < 0) {
+	if (unlisting && sale.price < 0) {
 		yield updateUserTokens(sellerUuid, -sale.price)
 	}
-	if (!unlisted) {
+	if (!unlisting) {
 		yield updateUserTokens(user.uuid, -sale.price)
 	}
-	if (!unlisted && sale.price > 0) {
+	if (!unlisting && sale.price > 0) {
 		yield updateUserTokens(sellerUuid, sale.price)
 	}
 
